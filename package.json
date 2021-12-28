@@ -1,0 +1,73 @@
+{
+  "name": "loidolt-design",
+  "private": true,
+  "description": "Official Loidolt Design website",
+  "version": "2.5.0",
+  "author": "Chris Loidolt <loidolt@gmail.com>",
+  "dependencies": {
+    "@babel/core": "^7.14.3",
+    "@emotion/react": "latest",
+    "@emotion/server": "latest",
+    "@emotion/styled": "latest",
+    "@mui/icons-material": "^5.0.3",
+    "@mui/material": "5.0.3",
+    "@mui/styles": "^5.0.1",
+    "algoliasearch": "^4.9.1",
+    "assert": "^2.0.0",
+    "axios": "^0.21.1",
+    "clsx": "^1.1.1",
+    "dotenv": "^10.0.0",
+    "gatsby": "latest",
+    "gatsby-awesome-pagination": "^0.3.8",
+    "gatsby-plugin-algolia": "^0.19.0",
+    "gatsby-plugin-google-analytics": "^3.5.0",
+    "gatsby-plugin-image": "^1.5.0",
+    "gatsby-plugin-manifest": "^3.5.0",
+    "gatsby-plugin-material-ui": "^4.0.3",
+    "gatsby-plugin-react-helmet": "latest",
+    "gatsby-plugin-robots-txt": "^1.6.2",
+    "gatsby-plugin-sharp": "^3.5.0",
+    "gatsby-plugin-sitemap": "^4.4.0",
+    "gatsby-remark-embed-video": "^3.1.1",
+    "gatsby-remark-images": "^5.2.0",
+    "gatsby-remark-prismjs": "^5.2.0",
+    "gatsby-source-airtable": "^2.2.1",
+    "gatsby-source-filesystem": "^3.5.0",
+    "gatsby-transformer-remark": "^4.2.0",
+    "gatsby-transformer-sharp": "^3.5.0",
+    "marked": "^3.0.7",
+    "prettier": "^2.3.0",
+    "prismjs": "^1.23.0",
+    "prop-types": "^15.7.2",
+    "rambdax": "^7.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-helmet": "^6.1.0",
+    "react-instantsearch-dom": "^6.8.2",
+    "react-material-ui-form-validator": "^2.1.4",
+    "simple-react-lightbox": "^3.6.9-0",
+    "typeface-inconsolata": "^1.1.13",
+    "typeface-inter": "^3.15.1",
+    "underscore": "^1.13.1"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "gatsby"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "gatsby build",
+    "develop": "gatsby develop",
+    "format": "prettier --write src/**/*.{js,jsx}",
+    "start": "npm run develop",
+    "serve": "gatsby serve",
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loidolt/loidolt-design"
+  },
+  "bugs": {
+    "url": "https://github.com/loidolt/loidolt-design/issues"
+  }
+}
