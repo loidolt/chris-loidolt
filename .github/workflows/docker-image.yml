@@ -15,7 +15,7 @@ jobs:
 
       - name: Test Output
         ## Reference your environment variables
-        run: echo "Posts Table Name:${{secrets.AIRTABLE_POSTS_TABLENAME}}"
+        run: echo "Posts Table Name:${{ secrets.AIRTABLE_POSTS_TABLENAME }}"
 
       - name: Build the Docker image
         env:
