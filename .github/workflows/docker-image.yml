@@ -12,6 +12,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Test Output
+        ## Reference your environment variables
+        run: echo "Posts Table Name:${{secrets.AIRTABLE_POSTS_TABLENAME}}"
+
       - name: Build the Docker image
         env:
           GATSBY_ALGOLIA_APP_ID: $secrets.GATSBY_ALGOLIA_APP_ID
