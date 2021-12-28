@@ -96,7 +96,13 @@ module.exports = {
     },
     `gatsby-plugin-image`,
     `gatsby-transformer-sharp`,
-    `gatsby-plugin-sharp`,
+    {
+      resolve: `gatsby-plugin-sharp`,
+      options: {
+        stripMetadata: true,
+        defaultQuality: 80,
+      },
+    },
     {
       resolve: `gatsby-transformer-remark`,
       options: {

@@ -1,2 +1,2 @@
 # loidolt-design
-Offical Loidolt Design website, built using gatsby and markdown.
+Official Loidolt Design website, built using Gatsby, Airtable and Markdown.
