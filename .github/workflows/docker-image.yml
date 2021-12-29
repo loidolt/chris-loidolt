@@ -9,23 +9,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Build image and push to DockerHub
     environment: production
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Test Output
-        ## Reference your environment variables
-        run: echo "Posts Table Name:${{ secrets.AIRTABLE_POSTS_TABLENAME }}"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PASS }}
 
       - name: Build the Docker image
-        env:
-          GATSBY_ALGOLIA_APP_ID: ${{ secrets.GATSBY_ALGOLIA_APP_ID }}
-          GATSBY_ALGOLIA_INDEX_NAME: ${{ secrets.GATSBY_ALGOLIA_INDEX_NAME }}
-          GATSBY_ALGOLIA_SEARCH_KEY: ${{ secrets.GATSBY_ALGOLIA_SEARCH_KEY }}
-          ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
-          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
-          AIRTABLE_POSTS_BASEID: ${{ secrets.AIRTABLE_POSTS_BASEID }}
-          AIRTABLE_POSTS_TABLENAME: ${{ secrets.AIRTABLE_POSTS_TABLENAME }}
-          AIRTABLE_QUALIFICATIONS_TABLENAME: ${{ secrets.AIRTABLE_QUALIFICATIONS_TABLENAME }}
-          AIRTABLE_WEBSITES_TABLENAME: ${{ secrets.AIRTABLE_WEBSITES_TABLENAME }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          pull: true
+          push: true
+          cache-from: type=registry,ref=loidolt/loidolt-design:latest
+          cache-to: type=inline
+          tags: hustakin/hello-world-docker-action:latest
+          build-args: GATSBY_ALGOLIA_APP_ID=${{ secrets.GATSBY_ALGOLIA_APP_ID }},GATSBY_ALGOLIA_INDEX_NAME=${{ secrets.GATSBY_ALGOLIA_INDEX_NAME }},GATSBY_ALGOLIA_SEARCH_KEY=${{ secrets.GATSBY_ALGOLIA_SEARCH_KEY }},ALGOLIA_ADMIN_KEY=${{ secrets.ALGOLIA_ADMIN_KEY }},AIRTABLE_API_KEY=${{ secrets.AIRTABLE_API_KEY }},AIRTABLE_POSTS_BASEID=${{ secrets.AIRTABLE_POSTS_BASEID }},AIRTABLE_POSTS_TABLENAME=${{ secrets.AIRTABLE_POSTS_TABLENAME }},AIRTABLE_QUALIFICATIONS_TABLENAME=${{ secrets.AIRTABLE_QUALIFICATIONS_TABLENAME }},AIRTABLE_WEBSITES_TABLENAME=${{ secrets.AIRTABLE_WEBSITES_TABLENAME }}
         run: docker build . --file Dockerfile --tag loidolt-design:$(date +%s)
