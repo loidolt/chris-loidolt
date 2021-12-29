@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build image and push to DockerHub
     environment: production
     steps:
       - name: Checkout code
