@@ -23,33 +23,25 @@ const About = () => {
           gatsbyImageData
         }
       }
-      allAirtable(
-        filter: { table: { eq: "Qualifications" } }
-        sort: { fields: data___Sort_Order }
-      ) {
-        edges {
-          node {
-            data {
-              Name
-              Type
-              Category
-              Level
-              More_Info_URL
-            }
-          }
+      allQualificationsJson {
+        nodes {
+          level
+          more_info
+          name
+          type
+          id
+          category
         }
       }
     }
   `);
 
-  //console.log(data.allAirtable.edges);
-
-  const qualifications = data.allAirtable.edges;
+  const qualifications = data.allQualificationsJson.nodes;
 
   // Get all types and filter unique values
   let allTypes = [];
   qualifications.map((qual) => {
-    return allTypes.push(qual.node.data.Type);
+    return allTypes.push(qual.type);
   });
   let types = [...new Set(allTypes)];
   //console.log(types);
@@ -57,11 +49,11 @@ const About = () => {
   // Filter By Type
   let items = function (type) {
     let filtered = qualifications.filter(
-      (qual) => qual.node.data.Type === type
+      (qual) => qual.type === type
     );
     //console.log(filtered);
     // Group By Category
-    let grouped = _.groupBy(filtered, (qual) => qual.node.data.Category);
+    let grouped = _.groupBy(filtered, (qual) => qual.category);
     //console.log(Object.entries(grouped));
     return Object.entries(grouped);
   };
@@ -147,19 +139,19 @@ const About = () => {
                 {category[1].map((item, index) => (
                   <ListItem key={index}>
                     <ListItemText
-                      primary={item.node.data.Name}
-                      secondary={item.node.data.Level || ""}
+                      primary={item.name}
+                      secondary={item.level || ""}
                       secondaryTypographyProps={{
                         style: { color: "rgba(255, 255, 255, 0.38)" },
                       }}
                     />
-                    {item.node.data.More_Info_URL && (
+                    {item.more_info && (
                       <ListItemSecondaryAction>
                         <IconButton
                           color="primary"
                           edge="end"
                           aria-label="more-info"
-                          href={item.node.data.More_Info_URL}
+                          href={item.more_info}
                           target="_blank"
                           rel="noreferrer"
                           size="large"

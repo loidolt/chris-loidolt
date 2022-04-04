@@ -1,0 +1,50 @@
+[
+  {
+    "name": "ADS-B",
+    "subtitle": "Ground Station",
+    "summary": "ADS-B is a aviation broadcast system that allows for the transmission of several critical pieces of data including aircraft type, speed, flight number, and average movement vector. This data is sent to air traffic control as well as other aircraft to aid in monitoring and safety. This ground station gathers transmitted ADS-B information within 250 miles and relays it to FlightAware for viewing and analysis.",
+    "url": "https://ads-b.loidoltserver.com/",
+    "more_info": "https://flightaware.com/adsb/stats/user/loidolt",
+    "image": null
+  },
+  {
+    "name": "LoRaWAN",
+    "subtitle": "Gateway Provider",
+    "summary": "LoRa is a wireless protocol that encodes information on radio waves using chirp pulses, this technology allows for robust data transmission over very large distances. LoRaWAN allows the connection of multiple end-devices to a single gateway. This gateway is a public service that anyone can use within an approximate radius of about 8-12 kilometers.",
+    "url": "https://www.thethingsnetwork.org/",
+    "more_info": "https://www.thethingsnetwork.org/docs/lorawan/",
+    "image": null
+  },
+  {
+    "name": "Weather Station",
+    "subtitle": "Monument, CO",
+    "summary": "Real-time publicly viewable weather station collecting temperature, wind speed and direction, rainfall, pressure, humidity, UV index, and solar radiation. This station is located in the Cherry Springs Ranch Community in Monument, CO. This data is available through Ambient Weather, Weather Underground, and PWS Weather.",
+    "url": "https://ambientweather.net/dashboard/dc8e8c4f1ebd150913dc99f66416e50e",
+    "more_info": "https://www.wunderground.com/dashboard/pws/KCOMONUM209",
+    "image": null
+  },
+  {
+    "name": "Weather Station",
+    "subtitle": "Palmer Lake, CO",
+    "summary": "Real-time publicly viewable weather station collecting temperature, wind speed and direction, rainfall, pressure, humidity, UV index, and solar radiation. This station is located in the Red Rock Ranch Community in Palmer Lake, CO. This data is available through Ambient Weather, Weather Underground, and PWS Weather.",
+    "url": "https://ambientweather.net/dashboard/dc8e8c4f1ebd150913dc99f66416e50e",
+    "more_info": "https://www.wunderground.com/dashboard/pws/KCOMONUM231",
+    "image": null
+  },
+  {
+    "name": "Weather Station",
+    "subtitle": "Lake Pleasant, NY",
+    "summary": "Real-time publicly viewable weather station collecting temperature, wind speed and direction, rainfall, pressure, humidity, UV index, and solar radiation. This station is located in a camp on Lake Pleasant in NY. This data is available through Ambient Weather, Weather Underground, and PWS Weather.",
+    "url": "https://ambientweather.net/dashboard/dc8e8c4f1ebd150913dc99f66416e50e",
+    "more_info": "https://www.wunderground.com/dashboard/pws/KNYLAKEP54",
+    "image": null
+  },
+  {
+    "name": "Certified Wildlife Habitat",
+    "subtitle": "National Wildlife Federation",
+    "summary": "Our backyard pond is a Certified Wildlife Habitat through the NWF. This habitat provides replenishing recourses for wildlife such as bees, butterflies, birds, and amphibians. Our pond meets the requirements of food, water, cover, places to raise young, and sustainable practices.",
+    "url": null,
+    "more_info": "https://www.nwf.org/certify",
+    "image": null
+  }
+]

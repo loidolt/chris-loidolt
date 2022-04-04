@@ -1,0 +1,394 @@
+[
+  {
+    "name": "Woodworking",
+    "type": "Skills",
+    "category": "Workshop",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "CNC Routing and Machining",
+    "type": "Skills",
+    "category": "Workshop",
+    "level": "Advanced",
+    "more_info": null
+  },
+  {
+    "name": "3D Printing",
+    "type": "Skills",
+    "category": "Workshop",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "Laser Cutting",
+    "type": "Skills",
+    "category": "Workshop",
+    "level": "Intermediate",
+    "more_info": null
+  },
+  {
+    "name": "Composites",
+    "type": "Skills",
+    "category": "Workshop",
+    "level": "Elementary",
+    "more_info": null
+  },
+  {
+    "name": "Metalworking",
+    "type": "Skills",
+    "category": "Workshop",
+    "level": "Intermediate",
+    "more_info": null
+  },
+  {
+    "name": "Industrial Sewing",
+    "type": "Skills",
+    "category": "Workshop",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "Electronics Soldering and Assembly",
+    "type": "Skills",
+    "category": "Workshop",
+    "level": "Intermediate",
+    "more_info": null
+  },
+  {
+    "name": "2D CAD",
+    "type": "Skills",
+    "category": "Software",
+    "level": "Elementary",
+    "more_info": null
+  },
+  {
+    "name": "3D CAD",
+    "type": "Skills",
+    "category": "Software",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "Photogrammetry",
+    "type": "Skills",
+    "category": "Software",
+    "level": "Advanced",
+    "more_info": null
+  },
+  {
+    "name": "Planimetrics",
+    "type": "Skills",
+    "category": "Software",
+    "level": "Intermediate",
+    "more_info": "https://www.propelleraero.com/"
+  },
+  {
+    "name": "Spatial Analysis",
+    "type": "Skills",
+    "category": "Software",
+    "level": "Elementary",
+    "more_info": null
+  },
+  {
+    "name": "Earthworks Surface Modeling",
+    "type": "Skills",
+    "category": "Software",
+    "level": "Advanced",
+    "more_info": "https://geospatial.trimble.com/products-and-solutions/trimble-business-center"
+  },
+  {
+    "name": "Raster Graphics",
+    "type": "Skills",
+    "category": "Software",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "Vector Graphics",
+    "type": "Skills",
+    "category": "Software",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "Photography",
+    "type": "Skills",
+    "category": "Media",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "Photo/Video Editing",
+    "type": "Skills",
+    "category": "Media",
+    "level": "Intermediate",
+    "more_info": null
+  },
+  {
+    "name": "HTML",
+    "type": "Programming",
+    "category": "Frontend",
+    "level": "Expert",
+    "more_info": "https://en.wikipedia.org/wiki/HTML"
+  },
+  {
+    "name": "CSS",
+    "type": "Programming",
+    "category": "Frontend",
+    "level": "Expert",
+    "more_info": "https://en.wikipedia.org/wiki/CSS"
+  },
+  {
+    "name": "Javascript",
+    "type": "Programming",
+    "category": "Frontend",
+    "level": "Advanced",
+    "more_info": "https://www.javascript.com/"
+  },
+  {
+    "name": "jQuery",
+    "type": "Programming",
+    "category": "Frontend",
+    "level": "Elementary",
+    "more_info": "https://jquery.com/"
+  },
+  {
+    "name": "PHP",
+    "type": "Programming",
+    "category": "Frontend",
+    "level": "Elementary",
+    "more_info": "https://www.php.net/"
+  },
+  {
+    "name": "ReactJS",
+    "type": "Programming",
+    "category": "Frontend",
+    "level": "Expert",
+    "more_info": "https://reactjs.org/"
+  },
+  {
+    "name": "Shopify/Liquid",
+    "type": "Programming",
+    "category": "Frontend",
+    "level": "Advanced",
+    "more_info": "https://www.shopify.com/"
+  },
+  {
+    "name": "GatsbyJS",
+    "type": "Programming",
+    "category": "Backend",
+    "level": "Expert",
+    "more_info": "https://www.gatsbyjs.com/"
+  },
+  {
+    "name": "Python",
+    "type": "Programming",
+    "category": "Backend",
+    "level": "Intermediate",
+    "more_info": "https://www.python.org/"
+  },
+  {
+    "name": "C++",
+    "type": "Programming",
+    "category": "Backend",
+    "level": "Advanced",
+    "more_info": "https://en.wikipedia.org/wiki/C%2B%2B"
+  },
+  {
+    "name": "MySQL",
+    "type": "Programming",
+    "category": "Backend",
+    "level": "Intermediate",
+    "more_info": "https://www.mysql.com/"
+  },
+  {
+    "name": "Airtable",
+    "type": "Programming",
+    "category": "Backend",
+    "level": "Expert",
+    "more_info": "https://airtable.com/"
+  },
+  {
+    "name": "Docker",
+    "type": "Programming",
+    "category": "Backend",
+    "level": "Advanced",
+    "more_info": "https://www.docker.com/"
+  },
+  {
+    "name": "Server Administration",
+    "type": "Programming",
+    "category": "Backend",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "Cloud Services",
+    "type": "Programming",
+    "category": "Backend",
+    "level": "Expert",
+    "more_info": null
+  },
+  {
+    "name": "FAA Private Pilot",
+    "type": "Ratings",
+    "category": "Aviation",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "FAA Instrument Pilot",
+    "type": "Ratings",
+    "category": "Aviation",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "High Performance Endorsement",
+    "type": "Ratings",
+    "category": "Aviation",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "Complex Endorsement",
+    "type": "Ratings",
+    "category": "Aviation",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "Tailwheel Endorsement",
+    "type": "Ratings",
+    "category": "Aviation",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "FAA Commercial Drone Pilot",
+    "type": "Ratings",
+    "category": "Aviation",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "Technician HAM Radio License",
+    "type": "Ratings",
+    "category": "Radio",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "PADI Open Water Diver",
+    "type": "Ratings",
+    "category": "SCUBA",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "PADI Advanced Open Water Diver",
+    "type": "Ratings",
+    "category": "SCUBA",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "PADI Rescue Diver",
+    "type": "Ratings",
+    "category": "SCUBA",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "PADI Divemaster",
+    "type": "Ratings",
+    "category": "SCUBA",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "PADI Discover SCUBA Diving Leader",
+    "type": "Ratings",
+    "category": "SCUBA",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "Emergency First Responder",
+    "type": "Ratings",
+    "category": "SCUBA",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "USPA A Skydiving License",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "USPA B Skydiving License",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "USPA C Skydiving License",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "USPA D Skydiving License",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "USPA Skydiving Coach",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "USPA Skydiving IAD Instructor",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "USPA Pro License",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "USHPA P-2 Paragliding License",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "FAA Senior Parachute Rigger Back",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  },
+  {
+    "name": "FAA Senior Parachute Rigger Seat",
+    "type": "Ratings",
+    "category": "Skydiving",
+    "level": null,
+    "more_info": null
+  }
+]

@@ -12,30 +12,21 @@ import Seo from "../components/seo";
 
 const Services = () => {
   const data = useStaticQuery(graphql`
-    query Services {
-      allAirtable(
-        filter: {
-          table: { eq: "Services" }
-          data: { Status: { eq: "Published" } }
-        }
-      ) {
-        edges {
-          node {
-            data {
-              URL
-              Name
-              Subtitle
-              Summary
-              URL
-              More_Info_URL
-            }
-          }
-        }
+  query Services {
+    allServicesJson {
+      nodes {
+        id
+        more_info
+        name
+        subtitle
+        summary
+        url
       }
     }
-  `);
+  }
+`);
 
-  const services = data.allAirtable.edges;
+  const services = data.allServicesJson.nodes;
 
   return (
     <Layout>
@@ -68,7 +59,7 @@ const Services = () => {
                   alt={website.node.data.Name + " Screenshot"}
                 />
               </a> */}
-              {service.node.data.Summary && (
+              {service.summary && (
                 <React.Fragment>
                   <CardContent>
                     <Typography
@@ -79,7 +70,7 @@ const Services = () => {
                       }}
                       gutterBottom
                     >
-                      {service.node.data.Name}
+                      {service.name}
                     </Typography>
                     <Typography
                       sx={{
@@ -90,28 +81,28 @@ const Services = () => {
                       }}
                       gutterBottom
                     >
-                      {service.node.data.Subtitle}
+                      {service.subtitle}
                     </Typography>
                     <Typography gutterBottom>
-                      {service.node.data.Summary}
+                      {service.summary}
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    {service.node.data.More_Info_URL && (
+                    {service.more_info && (
                       <Button
                         target="_blank"
                         rel="noreferrer"
-                        href={service.node.data.More_Info_URL}
+                        href={service.more_info}
                         size="small"
                       >
                         Learn More
                       </Button>
                     )}
-                    {service.node.data.URL && (
+                    {service.url && (
                       <Button
                         target="_blank"
                         rel="noreferrer"
-                        href={service.node.data.URL}
+                        href={service.url}
                         size="small"
                       >
                         View

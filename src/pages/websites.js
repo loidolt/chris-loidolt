@@ -1,6 +1,6 @@
 import React from "react";
 import { useStaticQuery, graphql } from "gatsby";
-import { GatsbyImage } from "gatsby-plugin-image";
+import { GatsbyImage } from "gatsby-plugin-image"
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -13,35 +13,24 @@ import Seo from "../components/seo";
 
 const Websites = () => {
   const data = useStaticQuery(graphql`
-    query Websites {
-      allAirtable(
-        filter: {
-          table: { eq: "Websites" }
-          data: { Status: { eq: "Published" } }
-        }
-        sort: { fields: data___Sort_Order }
-      ) {
-        edges {
-          node {
-            data {
-              URL
-              Name
-              Summary
-              Screenshot {
-                localFiles {
-                  childImageSharp {
-                    gatsbyImageData
-                  }
-                }
-              }
-            }
+  query Websites {
+    allWebsitesJson {
+      nodes {
+        id
+        name
+        summary
+        url
+        image {
+          childImageSharp {
+            gatsbyImageData
           }
         }
       }
     }
+  }
   `);
 
-  const websites = data.allAirtable.edges;
+  const websites = data.allWebsitesJson.nodes;
 
   return (
     <Layout>
@@ -62,19 +51,19 @@ const Websites = () => {
                 },
               }}
             >
-              <a target="_blank" rel="noreferrer" href={website.node.data.URL}>
+              <a target="_blank" rel="noreferrer" href={website.url}>
                 <GatsbyImage
                   sx={{
                     height: "100%",
                   }}
                   image={
-                    website.node.data.Screenshot.localFiles[0].childImageSharp
+                    website.image.childImageSharp
                       .gatsbyImageData
                   }
-                  alt={website.node.data.Name + " Screenshot"}
+                  alt={website.name + " Screenshot"}
                 />
               </a>
-              {website.node.data.Summary && (
+              {website.summary && (
                 <React.Fragment>
                   <CardContent>
                     <Typography
@@ -86,7 +75,7 @@ const Websites = () => {
                         fontWeight: 700,
                       }}
                     >
-                      {website.node.data.Name}
+                      {website.name}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -95,14 +84,14 @@ const Websites = () => {
                         color: "#c6c6c6",
                       }}
                     >
-                      {website.node.data.Summary}
+                      {website.summary}
                     </Typography>
                   </CardContent>
                   <CardActions>
                     <Button
                       target="_blank"
                       rel="noreferrer"
-                      href={website.node.data.URL}
+                      href={website.url}
                       size="small"
                     >
                       Visit Website
