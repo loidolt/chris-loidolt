@@ -17,6 +17,7 @@ export default function PostCard(props) {
       sx={{
         backgroundColor: "#1e1e1e",
         boxShadow: "0 3px 10px rgba(0, 0, 0, 0.43)",
+        borderRadius: "20px",
         "&:hover": {
           boxShadow: "0 15px 35px 0 rgba(0, 0, 0, 0.41)",
           transition: "all 0.55s ease-in-out",
@@ -34,7 +35,7 @@ export default function PostCard(props) {
             }}
             image={props.coverImage.childImageSharp.gatsbyImageData}
             alt={props.title + "Featured Image"}
-            style={{ borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
+            style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
           />
         )}
         <CardContent>

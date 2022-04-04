@@ -41,14 +41,9 @@ class Gallery extends React.Component {
                         }}
                       >
                         <GatsbyImage
-                          sx={{
-                            borderRadius: 8,
-                            marginBottom: -6,
-                            cursor: "pointer",
-                          }}
                           image={image.childImageSharp.gatsbyImageData}
                           alt={this.props.postName + " " + index}
-                          style={{ borderRadius: 8 }}
+                          style={{ borderRadius: "10px", cursor: "pointer", }}
                         />
                       </Paper>
                     </Grid>

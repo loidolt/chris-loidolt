@@ -67,20 +67,15 @@ export default function PostTemplate({ data, pageContext }) {
         <Paper
           sx={{
             marginBottom: 2,
+            borderRadius: "20px"
           }}
         >
           <GatsbyImage
-            sx={{
-              borderRadius: "10px",
-              backgroundColor: "#121212",
-              marginBottom: "-6px",
-              boxShadow: "0 3px 10px rgba(0, 0, 0, 0.43)",
-            }}
             image={
               post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData
             }
             alt={post.Title + " Featured Image"}
-            style={{ borderRadius: 8 }}
+            style={{ borderRadius: "20px" }}
           />
         </Paper>
       )}
@@ -92,6 +87,7 @@ export default function PostTemplate({ data, pageContext }) {
             marginTop: 3,
             marginBottom: 3,
             backgroundColor: "#1e1e1e",
+            borderRadius: "20px"
           }}
         >
           <Grid

@@ -45,6 +45,7 @@ const Websites = () => {
               sx={{
                 backgroundColor: "#1e1e1e",
                 boxShadow: "0 3px 10px rgba(0, 0, 0, 0.87)",
+                borderRadius: "20px",
                 "&:hover": {
                   boxShadow: "0 15px 35px 0 rgba(0, 0, 0, 0.41)",
                   transition: "all 0.55s ease-in-out",

@@ -91,14 +91,11 @@ const About = () => {
           </Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Paper>
+          <Paper sx={{ borderRadius: "20px" }}>
             <GatsbyImage
-              sx={{
-                borderRadius: "10px",
-                marginBottom: -6,
-              }}
               image={data.placeholderImage.childImageSharp.gatsbyImageData}
               alt={"Chris Loidolt Profile Picture"}
+              style={{ borderRadius: "20px" }}
             />
           </Paper>
         </Grid>
@@ -133,7 +130,7 @@ const About = () => {
                 sx={{
                   backgroundColor: "#1e1e1e",
                   color: "rgba(255, 255, 255, 0.87)",
-                  borderRadius: "10px",
+                  borderRadius: "20px",
                 }}
               >
                 {category[1].map((item, index) => (
