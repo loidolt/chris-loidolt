@@ -10,7 +10,7 @@ import PostItem from './algolia/postItem';
 
 const searchClient = algoliasearch(
   process.env.GATSBY_ALGOLIA_APP_ID,
-  process.env.ALGOLIA_ADMIN_KEY
+  process.env.GATSBY_ALGOLIA_ADMIN_KEY
 )
 
 export default function Search() {
