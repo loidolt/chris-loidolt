@@ -116,7 +116,7 @@ class Contact extends React.Component {
               <p>Thanks! I'll get back to you as soon as possible.</p>
             </Box>
           ) : (
-            <form netlify>
+            <form name="contact" netlify>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <FormControl fullWidth variant="filled">
