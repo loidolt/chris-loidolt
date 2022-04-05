@@ -64,7 +64,7 @@ class Contact extends React.Component {
     }));
   };
 
-  handleOnSubmit = (event) => {
+  /* handleOnSubmit = (event) => {
     event.preventDefault();
     this.setState({ submitting: true });
     axios({
@@ -90,7 +90,7 @@ class Contact extends React.Component {
         this.setState({ submitting: false, status: "ERROR" });
         console.log(r.body);
       });
-  };
+  }; */
 
   render() {
     return (
@@ -116,7 +116,7 @@ class Contact extends React.Component {
               <p>Thanks! I'll get back to you as soon as possible.</p>
             </Box>
           ) : (
-            <>
+            <form netlify>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <FormControl fullWidth variant="filled">
@@ -166,7 +166,7 @@ class Contact extends React.Component {
                   <Button
                     variant="contained"
                     type="submit"
-                    onClick={this.handleOnSubmit}
+                    /* onClick={this.handleOnSubmit} */
                     disabled={this.state.submitting}
                     sx={{ float: "right" }}
                   >
@@ -184,7 +184,7 @@ class Contact extends React.Component {
                   )}
                 </Grid>
               </Grid>
-            </>
+            </form>
           )}
         </Paper>
       </Layout>
