@@ -24,7 +24,7 @@ const Websites = () => {
         status_url
         image {
           childImageSharp {
-            gatsbyImageData(width: 600)
+            gatsbyImageData(width: 1024, quality: 50)
           }
         }
       }

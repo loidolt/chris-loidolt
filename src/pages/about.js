@@ -9,7 +9,6 @@ import IconButton from "@mui/material/IconButton";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import InfoIcon from "@mui/icons-material/Info";
 
 import Layout from "../components/layout";
@@ -20,7 +19,7 @@ const About = () => {
     query About {
       placeholderImage: file(relativePath: { eq: "AboutPagePicture.jpg" }) {
         childImageSharp {
-          gatsbyImageData(width: 600)
+          gatsbyImageData(width: 600, quality: 50)
         }
       }
       allQualificationsJson {
