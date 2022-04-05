@@ -91,13 +91,11 @@ const About = () => {
           </Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Paper sx={{ borderRadius: "20px" }}>
-            <GatsbyImage
-              image={data.placeholderImage.childImageSharp.gatsbyImageData}
-              alt={"Chris Loidolt Profile Picture"}
-              style={{ borderRadius: "20px" }}
-            />
-          </Paper>
+          <GatsbyImage
+            image={data.placeholderImage.childImageSharp.gatsbyImageData}
+            alt={"Chris Loidolt Profile Picture"}
+            style={{ borderRadius: "20px" }}
+          />
         </Grid>
       </Grid>
       {types.map((type, index) => (
