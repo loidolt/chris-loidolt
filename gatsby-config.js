@@ -1,4 +1,4 @@
-const queries = require("./src/helpers/algolia-queries");
+const queries = require("./src/components/algolia/queries/algolia-queries");
 
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
@@ -8,7 +8,7 @@ module.exports = {
   siteMetadata: {
     title: `Loidolt Design`,
     description: `I like learning and creating. I strongly believe the world needs more of that.`,
-    copyrights: "Loidolt Design 2021",
+    copyrights: "Loidolt Design 202s",
     author: `Chris Loidolt`,
     siteUrl: `https://loidolt.design`,
   },

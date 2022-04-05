@@ -1,0 +1,51 @@
+:root {
+  /* Icons */
+  --aa-icon-size: 20px;
+  --aa-icon-stroke-width: 1.6;
+  --aa-icon-color-rgb: 80, 80, 79;
+  --aa-icon-color-alpha: 1;
+  --aa-action-icon-size: 20px;
+  /* Text colors */
+  --aa-text-color-rgb: 38, 38, 39;
+  --aa-text-color-alpha: 1;
+  --aa-primary-color-rgb: 169, 28, 34;
+  --aa-primary-color-alpha: 0.2;
+  --aa-muted-color-rgb: 128, 126, 163;
+  --aa-muted-color-alpha: 0.6;
+  /* Border colors */
+  --aa-panel-border-color-rgb: 80, 80, 79;
+  --aa-panel-border-color-alpha: 0.3;
+  --aa-input-border-color-rgb: 168, 28, 34;
+  --aa-input-border-color-alpha: 0.8;
+  /* Background colors */
+  --aa-background-color-rgb: 255, 255, 255;
+  --aa-background-color-alpha: 1;
+  --aa-input-background-color-rgb: 255, 255, 255;
+  --aa-input-background-color-alpha: 1;
+  --aa-selected-color-rgb: 198, 198, 198;
+  --aa-selected-color-alpha: 0.3;
+  --aa-description-highlight-background-color-rgb: 169, 28, 34;
+  --aa-description-highlight-background-color-alpha: 0.5;
+  /* Detached mode */
+  --aa-detached-media-query: (max-width: 680px);
+  --aa-detached-modal-media-query: (min-width: 680px);
+  --aa-detached-modal-max-width: 680px;
+  --aa-detached-modal-max-height: 500px;
+  --aa-overlay-color-rgb: 115, 114, 129;
+  --aa-overlay-color-alpha: 0.4;
+  /* Shadows */
+  --aa-panel-shadow: 0 0 0 1px rgba(80, 80, 79, 0.1),
+    0 6px 16px -4px rgba(5, 100, 132, 0.15);
+}
+
+.aa-ItemIcon {
+  border-radius: 8px;
+}
+
+.aa-ItemIcon--picture img {
+  padding: 0px;
+}
+
+.aa-DetachedSearchButton {
+  padding-right: 16px;
+}
