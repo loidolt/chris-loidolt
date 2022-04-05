@@ -18,7 +18,7 @@ import GalleryComponent from "../components/gallery";
 import { toKebabCase } from "../helpers";
 
 function getMarkdownText(markdown) {
-  var rawMarkup = marked(markdown, { sanitize: true });
+  var rawMarkup = marked(markdown);
   return { __html: rawMarkup };
 }
 
@@ -64,28 +64,30 @@ export default function PostTemplate({ data, pageContext }) {
         ))}
       </Box>
       {post.Cover_Image && (
-        <Box
-          sx={{
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Grid item sx={{
             marginBottom: 2,
             borderRadius: "20px"
-          }}
-        >
-          <GatsbyImage
-            image={
-              post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData
-            }
-            alt={post.Title + " Featured Image"}
-            style={{ borderRadius: "20px" }}
-          />
-        </Box>
+          }}>
+            <GatsbyImage
+              image={
+                post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData
+              }
+              alt={post.Title + " Featured Image"}
+              style={{ borderRadius: "20px" }}
+            />
+          </Grid>
+        </Grid>
       )}
       {(post.Repository || post.Model || post.Attribution) && (
         <Paper
           sx={{
-            paddingTop: 2,
-            paddingBottom: 2,
-            marginTop: 3,
-            marginBottom: 3,
+            padding: 2,
             backgroundColor: "#1e1e1e",
             borderRadius: "20px"
           }}
@@ -186,7 +188,7 @@ export const pageQuery = graphql`
         Cover_Image {
           localFiles {
             childImageSharp {
-              gatsbyImageData
+              gatsbyImageData(width: 1024)
             }
           }
         }
@@ -195,7 +197,7 @@ export const pageQuery = graphql`
         Gallery {
           localFiles {
             childImageSharp {
-              gatsbyImageData
+              gatsbyImageData(width: 1024)
             }
           }
         }

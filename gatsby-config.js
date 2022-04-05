@@ -1,4 +1,4 @@
-const queries = require("./src/components/algolia/queries/algolia-queries");
+const queries = require("./src/components/algolia/algolia-queries");
 
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
@@ -15,8 +15,6 @@ module.exports = {
   plugins: [
     'gatsby-plugin-top-layout',
     'gatsby-plugin-react-helmet',
-    // If you want to use styled components you should add the plugin here.
-    // 'gatsby-plugin-styled-components',
     'gatsby-plugin-mui-emotion',
     {
       resolve: "gatsby-plugin-sitemap",
@@ -148,30 +146,5 @@ module.exports = {
         icon: `src/images/CLLightBulbBlue.png`, // This path is relative to the root of the site.
       },
     },
-    /* {
-      resolve: `gatsby-plugin-material-ui`,
-      // If you want to use styled components, in conjunction to Material-UI, you should:
-      // - Change the injection order
-      // - Add the plugin
-      options: {
-        stylesProvider: {
-          injectFirst: true,
-        },
-        webFontsConfig: {
-          fonts: {
-            google: [
-              {
-                family: `Inter`,
-                variants: [`300`, `400`, `500`, "700"],
-              },
-              {
-                family: `Inconsolata`,
-                variants: [`300`, `400`, `500`, "700"],
-              },
-            ],
-          },
-        },
-      },
-    }, */
   ],
 };

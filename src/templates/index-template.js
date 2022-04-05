@@ -81,7 +81,7 @@ export const postsQuery = graphql`
             Cover_Image {
               localFiles {
                 childImageSharp {
-                  gatsbyImageData
+                  gatsbyImageData(width: 600)
                 }
               }
             }

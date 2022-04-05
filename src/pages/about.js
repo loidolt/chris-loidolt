@@ -20,7 +20,7 @@ const About = () => {
     query About {
       placeholderImage: file(relativePath: { eq: "AboutPagePicture.jpg" }) {
         childImageSharp {
-          gatsbyImageData
+          gatsbyImageData(width: 600)
         }
       }
       allQualificationsJson {

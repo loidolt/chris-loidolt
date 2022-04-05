@@ -2,22 +2,16 @@ import React from 'react';
 import { navigate } from 'gatsby';
 import { getAlgoliaResults } from '@algolia/autocomplete-js';
 import algoliasearch from 'algoliasearch';
-import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query-suggestions';
 import '@algolia/autocomplete-theme-classic';
 /* import './algolia/autocomplete/autocomplete.css'; */
 
-import Autocomplete from "./algolia/autocomplete/customAutocomplete";
-import PostItem from './algolia/autocomplete/postItem';
+import Autocomplete from "./algolia/customAutocomplete";
+import PostItem from './algolia/postItem';
 
 const searchClient = algoliasearch(
   process.env.GATSBY_ALGOLIA_APP_ID,
   process.env.ALGOLIA_ADMIN_KEY
 )
-
-const querySuggestionsPlugin = createQuerySuggestionsPlugin({
-  searchClient,
-  indexName: process.env.GATSBY_ALGOLIA_QUERY_INDEX_NAME,
-});
 
 export default function Search() {
 
@@ -25,7 +19,6 @@ export default function Search() {
     <Autocomplete
       openOnFocus={true}
       detachedMediaQuery={''}
-      plugins={[querySuggestionsPlugin]}
       getSources={({ query }) => [
         {
           sourceId: 'posts',
