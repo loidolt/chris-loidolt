@@ -3,7 +3,7 @@ import { navigate } from 'gatsby';
 import { getAlgoliaResults } from '@algolia/autocomplete-js';
 import algoliasearch from 'algoliasearch';
 import '@algolia/autocomplete-theme-classic';
-/* import './algolia/autocomplete/autocomplete.css'; */
+import './algolia/autocomplete.css';
 
 import Autocomplete from "./algolia/customAutocomplete";
 import PostItem from './algolia/postItem';
@@ -51,7 +51,7 @@ export default function Search() {
             header() {
               return (
                 <>
-                  <span className="aa-SourceHeaderTitle">POSTS</span>
+                  <span className="aa-SourceHeaderTitle">PROJECTS</span>
                   <div className="aa-SourceHeaderLine" />
                 </>
               );

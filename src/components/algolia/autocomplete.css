@@ -1,41 +1,23 @@
-:root {
-  /* Icons */
-  --aa-icon-size: 20px;
-  --aa-icon-stroke-width: 1.6;
-  --aa-icon-color-rgb: 80, 80, 79;
-  --aa-icon-color-alpha: 1;
-  --aa-action-icon-size: 20px;
+body,
+body.dark {
   /* Text colors */
-  --aa-text-color-rgb: 38, 38, 39;
-  --aa-text-color-alpha: 1;
-  --aa-primary-color-rgb: 169, 28, 34;
-  --aa-primary-color-alpha: 0.2;
-  --aa-muted-color-rgb: 128, 126, 163;
-  --aa-muted-color-alpha: 0.6;
-  /* Border colors */
-  --aa-panel-border-color-rgb: 80, 80, 79;
-  --aa-panel-border-color-alpha: 0.3;
-  --aa-input-border-color-rgb: 168, 28, 34;
-  --aa-input-border-color-alpha: 0.8;
+  --aa-text-color-rgb: 255, 255, 255;
+  --aa-primary-color-rgb: 255, 255, 255;
+  --aa-muted-color-rgb: 255, 255, 255;
   /* Background colors */
-  --aa-background-color-rgb: 255, 255, 255;
-  --aa-background-color-alpha: 1;
-  --aa-input-background-color-rgb: 255, 255, 255;
-  --aa-input-background-color-alpha: 1;
-  --aa-selected-color-rgb: 198, 198, 198;
-  --aa-selected-color-alpha: 0.3;
-  --aa-description-highlight-background-color-rgb: 169, 28, 34;
-  --aa-description-highlight-background-color-alpha: 0.5;
-  /* Detached mode */
-  --aa-detached-media-query: (max-width: 680px);
-  --aa-detached-modal-media-query: (min-width: 680px);
-  --aa-detached-modal-max-width: 680px;
-  --aa-detached-modal-max-height: 500px;
-  --aa-overlay-color-rgb: 115, 114, 129;
-  --aa-overlay-color-alpha: 0.4;
+  --aa-input-background-color-rgb: 0, 3, 9;
+  --aa-background-color-rgb: 41, 41, 41;
+  --aa-selected-color-rgb: 169, 216, 240;
+  --aa-selected-color-alpha: 0.25;
+  --aa-description-highlight-background-color-rgb: 0 255 255;
+  --aa-description-highlight-background-color-alpha: 0.25;
+  /* Icons */
+  --aa-icon-color-rgb: 255, 255, 255;
   /* Shadows */
-  --aa-panel-shadow: 0 0 0 1px rgba(80, 80, 79, 0.1),
-    0 6px 16px -4px rgba(5, 100, 132, 0.15);
+  --aa-panel-shadow: inset 1px 1px 0 0 rgb(41, 41, 41), 0 3px 8px 0 rgb(0, 3, 9);
+  /* Scrollbar */
+  --aa-scrollbar-track-background-color-rgb: 18, 18, 18;
+  --aa-scrollbar-thumb-background-color-rgb: var(--aa-background-color-rgb);
 }
 
 .aa-ItemIcon {
