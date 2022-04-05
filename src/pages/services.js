@@ -1,9 +1,10 @@
 import React from "react";
 import { useStaticQuery, graphql } from "gatsby";
 import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
@@ -88,28 +89,34 @@ const Services = () => {
                       {service.summary}
                     </Typography>
                   </CardContent>
-                  <CardActions>
+                  <Divider />
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-end"
+                    spacing={2}
+                    sx={{ padding: 2 }}
+                  >
                     {service.more_info && (
                       <Button
                         target="_blank"
                         rel="noreferrer"
                         href={service.more_info}
-                        size="small"
                       >
                         Learn More
                       </Button>
                     )}
                     {service.url && (
                       <Button
+                        variant={"contained"}
                         target="_blank"
                         rel="noreferrer"
                         href={service.url}
-                        size="small"
                       >
-                        View
+                        View Service
                       </Button>
                     )}
-                  </CardActions>
+                  </Stack>
                 </React.Fragment>
               )}
             </Card>

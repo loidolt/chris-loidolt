@@ -64,7 +64,7 @@ export default function PostTemplate({ data, pageContext }) {
         ))}
       </Box>
       {post.Cover_Image && (
-        <Paper
+        <Box
           sx={{
             marginBottom: 2,
             borderRadius: "20px"
@@ -77,7 +77,7 @@ export default function PostTemplate({ data, pageContext }) {
             alt={post.Title + " Featured Image"}
             style={{ borderRadius: "20px" }}
           />
-        </Paper>
+        </Box>
       )}
       {(post.Repository || post.Model || post.Attribution) && (
         <Paper

@@ -24,7 +24,6 @@ export default function Navigation(props) {
             <Button
               variant="contained"
               fullWidth
-              color="primary"
               startIcon={<NavigateBeforeIcon />}
               onClick={() => navigate(props.previousPath)}
             >
@@ -37,7 +36,6 @@ export default function Navigation(props) {
             <Button
               variant="contained"
               fullWidth
-              color="primary"
               endIcon={<NavigateNextIcon />}
               onClick={() => navigate(props.nextPath)}
             >

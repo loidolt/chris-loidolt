@@ -103,6 +103,7 @@ class Contact extends React.Component {
           sx={{
             padding: 4,
             backgroundColor: "#1e1e1e",
+            borderRadius: "20px",
           }}
         >
           {this.state.status === "SUCCESS" ? (
@@ -167,6 +168,7 @@ class Contact extends React.Component {
                     type="submit"
                     onClick={this.handleOnSubmit}
                     disabled={this.state.submitting}
+                    sx={{ float: "right" }}
                   >
                     SUBMIT
                   </Button>

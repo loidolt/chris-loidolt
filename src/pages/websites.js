@@ -3,8 +3,9 @@ import { useStaticQuery, graphql } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image"
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
+import Divider from '@mui/material/Divider';
 import CardContent from "@mui/material/CardContent";
+import Stack from '@mui/material/Stack';
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
@@ -20,6 +21,7 @@ const Websites = () => {
         name
         summary
         url
+        status_url
         image {
           childImageSharp {
             gatsbyImageData
@@ -40,7 +42,7 @@ const Websites = () => {
       </Typography>
       <Grid container spacing={2}>
         {websites.map((website, index) => (
-          <Grid item xs={12} sm={6} key={index}>
+          <Grid item xs={12} md={6} key={index}>
             <Card
               sx={{
                 backgroundColor: "#1e1e1e",
@@ -88,16 +90,34 @@ const Websites = () => {
                       {website.summary}
                     </Typography>
                   </CardContent>
-                  <CardActions>
-                    <Button
-                      target="_blank"
-                      rel="noreferrer"
-                      href={website.url}
-                      size="small"
-                    >
-                      Visit Website
-                    </Button>
-                  </CardActions>
+                  <Divider />
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-end"
+                    spacing={2}
+                    sx={{ padding: 2 }}
+                  >
+                    {website.status_url &&
+                      <Button
+                        target="_blank"
+                        rel="noreferrer"
+                        href={website.status_url}
+                      >
+                        Status
+                      </Button>
+                    }
+                    {website.url &&
+                      <Button
+                        variant={"contained"}
+                        target="_blank"
+                        rel="noreferrer"
+                        href={website.url}
+                      >
+                        Visit Website
+                      </Button>
+                    }
+                  </Stack>
                 </React.Fragment>
               )}
             </Card>

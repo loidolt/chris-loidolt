@@ -3,78 +3,91 @@
     "name": "Classic Homes Website",
     "summary": "Official website for Classic Homes, the leading local homebuilder and land developer in the Pikes Peak region since 1989.",
     "url": "https://classichomes.com/",
+    "status_url": "https://status.classichomes.com/",
     "image": "../images/websites/classichomes-com.jpg"
   },
   {
     "name": "Classic Homes Online Design Studio",
     "summary": "Online Design Studio for Classic Homes that allows online selection of home customization options, viewing home of build status and information, and keeping track of service requests.",
     "url": "https://designstudio.classichomes.com/",
+    "status_url": "https://status.classichomes.com/",
     "image": "../images/websites/designstudio-classichomes-com.jpg"
   },
   {
     "name": "The Club at Flying Horse Website",
     "summary": "The Club at Flying Horse is a golf course and club in Colorado Springs focused on providing a first class golf, recreation and dining Club experience that is unparalleled in the Rocky Mountain region.",
     "url": "https://flyinghorseclub.com/",
+    "status_url": "https://status.flyinghorseclub.com/",
     "image": "../images/websites/flyinghorseclub-com.jpg"
   },
   {
     "name": "The Lodge at Flying Horse",
     "summary": "The Lodge at Flying Horse is a AAA Four Diamond Hotel designation and is one of Colorado's most desirable boutique resort and meeting destinations located in the heart of the Flying Horse community.",
     "url": "https://lodgeatflyinghorse.com/",
+    "status_url": "https://status.lodgeatflyinghorse.com/",
     "image": "../images/websites/lodgeatflyinghorse-com.jpg"
   },
   {
     "name": "The Steakhouse at Flying Horse",
     "summary": "The Steakhouse at Flying Horse is a contemporary restaurant in a beautiful Tuscan style villa with dazzling views of the Front Range.",
     "url": "https://flyinghorsesteakhouse.com/",
+    "status_url": "https://status.flyinghorsesteakhouse.com/",
     "image": "../images/websites/flyinghorsesteakhouse-com.jpg"
   },
   {
     "name": "Flying Horse Ranch",
     "summary": "Flying Horse Ranch in Douglas County is one of the finest cattle & equestrian ranches in the Front Range of Colorado.",
     "url": "https://flyinghorseranch.com/",
+    "status_url": "https://status.flyinghorseranch.com/",
     "image": "../images/websites/flyinghorseranch-com.jpg"
   },
   {
     "name": "Flying Horse Wedding Venues",
     "summary": "The Flying Horse Wedding Venues provides an easy jumping off point for lucky couples looking for a wedding on the front range.",
     "url": "https://flyinghorseweddings.com/",
+    "status_url": "https://status.flyinghorseranch.com/",
     "image": "../images/websites/flyinghorseweddings-com.jpg"
   },
   {
     "name": "Flying Horse Realty",
     "summary": "Flying Horse Realty is a real estate agency serving the front range of Colorado. They provide personalized service with a specialty on Colorado Springs communities and new home builds.",
     "url": "https://flyinghorserealty.com/",
+    "status_url": "https://status.flyinghorserealty.com/",
     "image": "../images/websites/flyinghorserealty-com.jpg"
   },
   {
     "name": "Athabasca Fishing Lodges",
     "summary": "Athabasca Fishing Lodges is a trophy fly-in fishing camp on Canada's famous Lake Athabasca in Northern Saskatchewan.",
     "url": "https://athabascafishing.com/",
+    "status_url": "https://status.athabascafishing.com/",
     "image": "../images/websites/athabascafishing-com.jpg"
   },
   {
     "name": "Hummingbird Hammocks",
     "summary": "Hummingbird Hammocks is an ultralight backpacking and camping gear manufacturer specializing in hammocks and hammock related accessories.",
     "url": "https://hummingbirdhammocks.com/",
+    "status_url": "https://status.hummingbirdhammocks.com/",
     "image": "../images/websites/hummingbirdhammocks-com.jpg"
   },
   {
     "name": "Buy and Sell with Kathy L",
     "summary": "Personal realtor website for Kathy Loidolt, a results-driven and client-focused real estate agent serving Southern Colorado.",
     "url": "https://buyandsellwithkathyl.com/",
+    "status_url": null,
     "image": "../images/websites/buyandsellwithkathyl-com.jpg"
   },
   {
     "name": "KLo Home Design",
     "summary": "KLo Home Design is an up and coming interior design company run by my sister Kim Loidolt. Kim specializes in modern designs that highlight your home's existing features.",
     "url": "https://klohomedesign.com/",
+    "status_url": "https://status.klohomedesign.com/",
     "image": "../images/websites/klohomedesign-com.jpg"
   },
   {
     "name": "The Milton Camp",
     "summary": "The Milton Camp is a camp in upstate New York on Lake Pleasant. A quiet little location for rest and relaxation.",
     "url": "https://themiltoncamp.com/",
+    "status_url": "https://status.themiltoncamp.com/",
     "image": "../images/websites/themiltoncamp-com.jpg"
   }
 ]
