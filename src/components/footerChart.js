@@ -43,6 +43,25 @@ export default class FooterChart extends React.Component {
         };
     }
 
+    skylineTransform = (array) => {
+        let contributionData = []
+        array.forEach((wk) => {
+            let count = 0
+            wk.days.forEach((day) => {
+                count += day.count
+            })
+
+            if (count > 0) {
+                contributionData.push({
+                    week: wk.week,
+                    contributions: count
+                })
+            }
+        });
+
+        return contributionData
+    }
+
     getContributions = () => {
         const year = new Date().getFullYear()
 
@@ -51,7 +70,9 @@ export default class FooterChart extends React.Component {
             url: 'https://skyline.github.com/' + this.state.username + '/' + year + '.json',
         })
             .then((r) => {
-                console.log(r)
+                this.setState({
+                    data: this.skylineTransform(r.contributions),
+                })
             })
             .catch((r) => {
                 this.setState({

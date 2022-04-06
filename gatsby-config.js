@@ -65,6 +65,33 @@ module.exports = {
       },
     },
     {
+      resolve: `gatsby-source-github-api`,
+      options: {
+        token: process.env.GITHUB_TOKEN,
+        variables: {
+          variables: { author: "loidolt" },
+          graphQLQuery: `
+          query($author: String = "",) { 
+            user(login: $author) {
+              contributionsCollection {
+                contributionCalendar {
+                  totalContributions
+                  weeks {
+                    contributionDays {
+                      contributionCount
+                      weekday
+                      date
+                    }
+                  }
+                }
+              }
+            }
+          }
+          `
+        }
+      }
+    },
+    {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `images`,

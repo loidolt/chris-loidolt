@@ -63,34 +63,6 @@ class Contact extends React.Component {
     }));
   };
 
-  /* handleOnSubmit = (event) => {
-    event.preventDefault();
-    this.setState({ submitting: true });
-    axios({
-      method: "POST",
-      url: "https://formspree.io/f/mzbkaobg",
-      data: {
-        name: this.state.name,
-        email: this.state.email,
-        message: this.state.message,
-        _gotcha: this.state._gotcha,
-      },
-    })
-      .then((r) => {
-        this.setState({
-          submitting: false,
-          status: "SUCCESS",
-          name: "",
-          email: "",
-          message: "",
-        });
-      })
-      .catch((r) => {
-        this.setState({ submitting: false, status: "ERROR" });
-        console.log(r.body);
-      });
-  }; */
-
   render() {
     return (
       <Layout>
@@ -166,7 +138,6 @@ class Contact extends React.Component {
                   <Button
                     variant="contained"
                     type="submit"
-                    /* onClick={this.handleOnSubmit} */
                     disabled={this.state.submitting}
                     sx={{ float: "right" }}
                   >
