@@ -13,7 +13,7 @@ import Chip from "@mui/material/Chip";
 import Layout from "../components/layout";
 import Seo from "../components/seo";
 import Navigation from "../components/navigation";
-import GalleryComponent from "../components/gallery";
+import GalleryComponent from "../components/galleryGrid";
 
 import { toKebabCase } from "../helpers";
 
@@ -196,9 +196,7 @@ export const pageQuery = graphql`
         Excerpt
         Gallery {
           localFiles {
-            childImageSharp {
-              gatsbyImageData(width: 1024)
-            }
+            publicURL
           }
         }
         Markdown

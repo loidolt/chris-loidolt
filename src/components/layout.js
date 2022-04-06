@@ -1,14 +1,6 @@
-/**
- * Layout component that queries for data
- * with Gatsby's StaticQuery component
- *
- * See: https://www.gatsbyjs.org/docs/static-query/
- */
-
 import React from "react";
 import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
-import SimpleReactLightbox from "simple-react-lightbox";
 import Box from "@mui/material/Box";
 
 import Header from "./header";
@@ -29,7 +21,7 @@ const Layout = ({ children }) => {
         }
       `}
       render={(data) => (
-        <SimpleReactLightbox>
+        <>
           <Header siteTitle={data.site.siteMetadata.title} />
           <Box sx={{ backgroundColor: "#121212" }}>
             <Box
@@ -45,8 +37,8 @@ const Layout = ({ children }) => {
               <main>{children}</main>
             </Box>
           </Box>
-          <Footer githubUrl={data.site.siteMetadata.githubUrl}/>
-        </SimpleReactLightbox>
+          <Footer githubUrl={data.site.siteMetadata.githubUrl} />
+        </>
       )}
     />
   );
