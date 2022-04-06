@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import withStyles from "@mui/styles/withStyles";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -116,7 +115,8 @@ class Contact extends React.Component {
               <p>Thanks! I'll get back to you as soon as possible.</p>
             </Box>
           ) : (
-            <form name="contact" netlify>
+            <form name="contact" method="POST" data-netlify="true" >
+              <input type="hidden" name="form-name" value="contact" />
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <FormControl fullWidth variant="filled">
