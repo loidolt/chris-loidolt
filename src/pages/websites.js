@@ -64,6 +64,7 @@ const Websites = () => {
                       .gatsbyImageData
                   }
                   alt={website.name + " Screenshot"}
+                  style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
                 />
               </a>
               {website.summary && (

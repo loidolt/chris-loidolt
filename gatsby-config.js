@@ -17,6 +17,7 @@ module.exports = {
     'gatsby-plugin-top-layout',
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-mui-emotion',
+    `gatsby-plugin-netlify`,
     {
       resolve: "gatsby-plugin-sitemap",
       options: {

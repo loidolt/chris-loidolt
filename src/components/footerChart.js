@@ -65,12 +65,13 @@ export default class FooterChart extends React.Component {
     getContributions = () => {
         axios({
             method: "GET",
-            url: "/.netlify/functions/skyline",
+            url: "/.netlify/functions/skyline-fetch",
             headers: { accept: "Accept: application/json" }
         })
             .then((r) => {
+                console.log(r.data)
                 this.setState({
-                    data: this.skylineTransform(r.json()),
+                    data: this.skylineTransform(r.data.contributions),
                 })
             })
             .catch((r) => {
