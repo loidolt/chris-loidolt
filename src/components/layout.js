@@ -12,6 +12,7 @@ import SimpleReactLightbox from "simple-react-lightbox";
 import Box from "@mui/material/Box";
 
 import Header from "./header";
+import Footer from "./footer";
 import "../style.css";
 
 const Layout = ({ children }) => {
@@ -22,16 +23,19 @@ const Layout = ({ children }) => {
           site {
             siteMetadata {
               title
+              githubUrl
             }
           }
         }
       `}
       render={(data) => (
         <SimpleReactLightbox>
-          <Box sx={{ minHeight: "100vh", backgroundColor: "#121212" }}>
-            <Header siteTitle={data.site.siteMetadata.title} />
+          <Header siteTitle={data.site.siteMetadata.title} />
+          <Box sx={{ backgroundColor: "#121212" }}>
             <Box
               sx={{
+                display: "flex",
+                minHeight: "88vh",
                 margin: `0 auto`,
                 maxWidth: 960,
                 padding: `0px 1.0875rem 1.45rem`,
@@ -39,18 +43,9 @@ const Layout = ({ children }) => {
               }}
             >
               <main>{children}</main>
-              <footer
-                style={{
-                  paddingTop: 10,
-                  paddingBottom: 20,
-                  color: "rgba(255, 255, 255, 0.38)",
-                  fontFamily: '"Inconsolata", "Helvetica", "Arial", sans-serif',
-                }}
-              >
-                Loidolt Design © {new Date().getFullYear()}
-              </footer>
             </Box>
           </Box>
+          <Footer githubUrl={data.site.siteMetadata.githubUrl}/>
         </SimpleReactLightbox>
       )}
     />

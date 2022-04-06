@@ -118,7 +118,7 @@ class Contact extends React.Component {
             <form name="contact" method="POST" data-netlify="true" >
               <input type="hidden" name="form-name" value="contact" />
               <Grid container spacing={2}>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth variant="filled">
                     <CustomTextField
                       id="name"
@@ -130,7 +130,7 @@ class Contact extends React.Component {
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth variant="filled">
                     <CustomTextField
                       id="email"

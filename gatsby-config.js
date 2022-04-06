@@ -11,6 +11,7 @@ module.exports = {
     copyrights: "Loidolt Design 202s",
     author: `Chris Loidolt`,
     siteUrl: `https://loidolt.design`,
+    githubUrl: `https://github.com/loidolt`,
   },
   plugins: [
     'gatsby-plugin-top-layout',
