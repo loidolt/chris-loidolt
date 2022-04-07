@@ -10,6 +10,10 @@ import Chip from "@mui/material/Chip";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
@@ -17,6 +21,7 @@ import TabArea from "../components/tabArea"
 import Navigation from "../components/navigation";
 import Markdown from "../components/markdown"
 import GalleryComponent from "../components/galleryGrid";
+/* import ModelViewer from "../components/modelViewer"; */
 
 import { toKebabCase } from "../helpers";
 
@@ -99,24 +104,35 @@ export default function PostTemplate({ data, pageContext }) {
                 View 3D Model
               </Button>
             </div>
-          )}
+          )
+        }
         links={
           (post.Repository || post.Attribution) && (
             <List dense={true}>
               {post.Repository && (
                 <ListItem>
-                  <ListItemText
-                    primary={'Repository'}
-                    secondary={post.Repository}
-                  />
+                  <ListItemButton component="a" href={post.Repository} target="__blank">
+                    <ListItemIcon>
+                      <GitHubIcon />
+                    </ ListItemIcon>
+                    <ListItemText
+                      primary={'Git Repository'}
+                      secondary={post.Repository}
+                    />
+                  </ListItemButton>
                 </ListItem>
               )}
               {post.Attribution && (
-                <ListItem>
-                  <ListItemText
-                    primary={'Attribution'}
-                    secondary={post.Attribution}
-                  />
+                <ListItem href={post.Attribution} target="__blank">
+                  <ListItemButton component="a" href={post.Attribution} target="__blank">
+                    <ListItemIcon>
+                      <FavoriteIcon />
+                    </ ListItemIcon>
+                    <ListItemText
+                      primary={'Attribution'}
+                      secondary={post.Attribution}
+                    />
+                  </ListItemButton>
                 </ListItem>
               )}
             </List>
@@ -125,13 +141,13 @@ export default function PostTemplate({ data, pageContext }) {
       />
 
 
-      <Navigation
+      < Navigation
         previousPath={pageContext.previousPostPath}
         previousLabel={pageContext.previousPostTitle}
         nextPath={pageContext.nextPostPath}
         nextLabel={pageContext.nextPostTitle}
       />
-    </Layout>
+    </Layout >
   );
 }
 
@@ -168,7 +184,11 @@ export const pageQuery = graphql`
         Tags
         Title
         Path
-        glb-model
+        models {
+          filename
+          url
+          type
+        }
       }
       id
     }
