@@ -14,6 +14,7 @@ module.exports = {
     githubUrl: `https://github.com/loidolt`,
   },
   plugins: [
+    `gatsby-plugin-gatsby-cloud`,
     'gatsby-plugin-top-layout',
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-mui-emotion',
