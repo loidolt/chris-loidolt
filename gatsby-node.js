@@ -142,7 +142,7 @@ async function getPosts({ graphql, reporter }) {
 
 
 //Netlify Functions
-exports.onPostBuild = async (gatsbyNodeHelpers) => {
+/* exports.onPostBuild = async (gatsbyNodeHelpers) => {
   const { reporter } = gatsbyNodeHelpers;
 
   const reportOut = (report) => {
@@ -154,4 +154,4 @@ exports.onPostBuild = async (gatsbyNodeHelpers) => {
   // NOTE: the gatsby build process automatically copies /static/functions to /public/functions
   // If you use yarn, replace "npm install" with "yarn install"
   reportOut(await exec("cd ./public/functions && npm install"));
-};
+}; */
