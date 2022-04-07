@@ -13,9 +13,6 @@ module.exports = {
     siteUrl: `https://loidolt.design`,
     githubUrl: `https://github.com/loidolt`,
   },
-  flags: {
-    FUNCTIONS: true
-  },
   plugins: [
     `gatsby-plugin-gatsby-cloud`,
     'gatsby-plugin-top-layout',
