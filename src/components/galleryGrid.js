@@ -11,7 +11,6 @@ export default function GalleryGrid({ photos, postName }) {
     return (
       <Box
         sx={{
-          marginTop: 10,
           flexGrow: 1,
         }}
       >
