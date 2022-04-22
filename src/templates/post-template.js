@@ -21,7 +21,7 @@ import TabArea from "../components/tabArea"
 import Navigation from "../components/navigation";
 import Markdown from "../components/markdown"
 import GalleryComponent from "../components/galleryGrid";
-/* import ModelViewer from "../components/modelViewer"; */
+import ModelViewer from "../components/modelViewer";
 
 import { toKebabCase } from "../helpers";
 
@@ -49,8 +49,9 @@ export default function PostTemplate({ data, pageContext }) {
           paddingBottom: 2,
         }}
       >
-        {post.Tags.map((tag) => (
+        {post.Tags.map((tag, index) => (
           <Chip
+            key={index}
             label={"#" + tag}
             variant="outlined"
             sx={{
@@ -98,12 +99,18 @@ export default function PostTemplate({ data, pageContext }) {
             />
           )}
         model={
-          post.Model && (
-            <div>
-              <Button variant="contained" href={post.Model} target="__blank">
-                View 3D Model
-              </Button>
-            </div>
+          post.Model || post.models && (
+            <>
+              {post.models &&
+                <ModelViewer file={post.models[0].url} />
+              }
+
+              {post.Model &&
+                <Button variant="contained" href={post.Model} target="__blank">
+                  View 3D Model
+                </Button>
+              }
+            </>
           )
         }
         links={

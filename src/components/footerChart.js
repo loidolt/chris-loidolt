@@ -1,7 +1,7 @@
 import React from 'react';
-import axios from 'axios';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import Box from "@mui/material/Box";
+import { useContributions } from '../hooks/useContributions';
 
 const placeholderData = [
     {
@@ -34,16 +34,11 @@ const placeholderData = [
     },
 ]
 
-export default class FooterChart extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: "loidolt",
-            data: [],
-        };
-    }
+export default function FooterChart() {
+    const [contributions, setContributions] = React.useState(placeholderData);
+    const { data, isLoading, error } = useContributions
 
-    skylineTransform = (array) => {
+    const skylineTransform = (array) => {
         let contributionData = []
         array.forEach((wk) => {
             let count = 0
@@ -62,57 +57,37 @@ export default class FooterChart extends React.Component {
         return contributionData
     }
 
-    getContributions = () => {
-        axios({
-            method: "GET",
-            /* url: "/.netlify/functions/skyline-fetch", */
-            url: "/api/skyline-fetch",
-            headers: { accept: "Accept: application/json" }
-        })
-            .then((r) => {
-                console.log(r.data)
-                this.setState({
-                    data: this.skylineTransform(r.data.contributions),
-                })
-            })
-            .catch((r) => {
-                this.setState({
-                    data: placeholderData,
-                })
-                console.log(r.body);
-            });
-    };
-
-    componentDidMount = () => {
-        this.getContributions()
+    if (error) {
+        setContributions(placeholderData)
+    }
+    if (!isLoading && data) {
+        setContributions(skylineTransform(data))
     }
 
-    render() {
-        return (
-            <Box sx={{ width: '100%', height: 250 }}>
-                <ResponsiveContainer>
-                    <AreaChart
-                        data={this.state.data}
-                        name="Git Weekly"
-                        margin={{
-                            top: 10,
-                            right: 0,
-                            left: 0,
-                            bottom: 0,
-                        }}
-                    >
-                        <defs>
-                            <linearGradient id="colorContributions" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#056484" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="#056484" stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <XAxis dataKey="week" hide={true} />
-                        <YAxis hide={true} />
-                        <Area type="monotone" name="Contributions" dataKey="contributions" stroke="#a9d8f0" fillOpacity={1} fill="url(#colorContributions)" />
-                    </AreaChart>
-                </ResponsiveContainer>
-            </Box>
-        );
-    }
+    return (
+        <Box sx={{ width: '100%', height: 250 }}>
+            <ResponsiveContainer>
+                <AreaChart
+                    data={contributions}
+                    name="Git Weekly"
+                    margin={{
+                        top: 10,
+                        right: 0,
+                        left: 0,
+                        bottom: 0,
+                    }}
+                >
+                    <defs>
+                        <linearGradient id="colorContributions" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#056484" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#056484" stopOpacity={0} />
+                        </linearGradient>
+                    </defs>
+                    <XAxis dataKey="week" hide={true} />
+                    <YAxis hide={true} />
+                    <Area type="monotone" name="Contributions" dataKey="contributions" stroke="#a9d8f0" fillOpacity={1} fill="url(#colorContributions)" />
+                </AreaChart>
+            </ResponsiveContainer>
+        </Box>
+    );
 }
