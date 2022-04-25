@@ -99,7 +99,7 @@ export default function PostTemplate({ data, pageContext }) {
             />
           )}
         model={
-          post.Model || post.models && (
+          (post.Model || post.models) && (
             <>
               {post.models &&
                 <ModelViewer file={post.models[0].url} />

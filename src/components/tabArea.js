@@ -42,7 +42,13 @@ export default function TabArea(props) {
     return (
         <Paper variant="outlined" sx={{ width: '100%' }} >
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleChange} aria-label="post tabs">
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    aria-label="post tabs"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                >
                     {props.about && <Tab label="About" {...a11yProps(0)} />}
                     {props.images && <Tab label="Images" {...a11yProps(1)} />}
                     {props.model && <Tab label="3D Model" {...a11yProps(2)} />}
