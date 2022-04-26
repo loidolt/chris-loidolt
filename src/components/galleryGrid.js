@@ -7,7 +7,18 @@ import 'photoswipe/dist/default-skin/default-skin.css'
 
 import { Gallery, Item } from 'react-photoswipe-gallery'
 
-export default function GalleryGrid({ photos, postName }) {
+export default function GalleryGrid({ photos, postName, windowWidth }) {
+
+  const setColumns = (width) => {
+    if (width < 700) {
+      return 1
+    } else if (width < 1100) {
+      return 2
+    } else {
+      return 4
+    }
+  }
+
   if (photos.length > 1) {
     return (
       <Box
@@ -16,7 +27,7 @@ export default function GalleryGrid({ photos, postName }) {
         }}
       >
         <Gallery>
-          <ImageList variant="masonry" cols={3} gap={12}>
+          <ImageList variant="masonry" cols={setColumns(windowWidth)} gap={12}>
             {photos.map(
               (image, index) =>
                 image.publicURL && (

@@ -15,6 +15,8 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 
+import useWindowSize from "../hooks/useGatsbyWindowSize";
+
 import Layout from "../components/layout";
 import Seo from "../components/seo";
 import TabArea from "../components/tabArea"
@@ -27,6 +29,9 @@ import { toKebabCase } from "../helpers";
 
 export default function PostTemplate({ data, pageContext }) {
   const post = data.airtable.data;
+
+  const { windowWidth } = useWindowSize();
+  console.log(windowWidth)
 
   /* console.log(post) */
 
@@ -98,6 +103,7 @@ export default function PostTemplate({ data, pageContext }) {
             <GalleryComponent
               postName={post.Title}
               photos={post.Gallery.localFiles}
+              windowWidth={windowWidth}
             />
           )}
         model={

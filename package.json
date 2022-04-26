@@ -20,6 +20,7 @@
     "algoliasearch": "^4.9.1",
     "assert": "^2.0.0",
     "axios": "^0.21.1",
+    "browser-monads": "^1.0.0",
     "clsx": "^1.1.1",
     "dotenv": "^10.0.0",
     "gatsby": "^4.4.0",
