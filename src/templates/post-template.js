@@ -4,7 +4,6 @@ import { graphql, navigate } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import List from '@mui/material/List';
@@ -14,6 +13,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import ViewInArIcon from '@mui/icons-material/ViewInAr';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
@@ -27,6 +27,8 @@ import { toKebabCase } from "../helpers";
 
 export default function PostTemplate({ data, pageContext }) {
   const post = data.airtable.data;
+
+  /* console.log(post) */
 
   return (
     <Layout>
@@ -99,23 +101,11 @@ export default function PostTemplate({ data, pageContext }) {
             />
           )}
         model={
-          (post.Model || post.models) && (
-            <>
-              {post.models &&
-                <ModelViewer file={post.models[0].url} />
-              }
-
-              {post.Model &&
-                <Button variant="contained" href={post.Model} target="__blank">
-                  View 3D Model
-                </Button>
-              }
-            </>
-          )
+          post.models && (<ModelViewer file={post.models[0].url} />)
         }
         links={
-          (post.Repository || post.Attribution) && (
-            <List dense={true}>
+          (post.Repository || post.Attribution || post.Model) && (
+            <List dense >
               {post.Repository && (
                 <ListItem>
                   <ListItemButton component="a" href={post.Repository} target="__blank">
@@ -129,8 +119,21 @@ export default function PostTemplate({ data, pageContext }) {
                   </ListItemButton>
                 </ListItem>
               )}
+              {post.Model && (
+                <ListItem>
+                  <ListItemButton component="a" href={post.Model} target="__blank">
+                    <ListItemIcon>
+                      <ViewInArIcon />
+                    </ ListItemIcon>
+                    <ListItemText
+                      primary={'Downloadable 3D Model'}
+                      secondary={post.Model}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              )}
               {post.Attribution && (
-                <ListItem href={post.Attribution} target="__blank">
+                <ListItem>
                   <ListItemButton component="a" href={post.Attribution} target="__blank">
                     <ListItemIcon>
                       <FavoriteIcon />
@@ -147,8 +150,7 @@ export default function PostTemplate({ data, pageContext }) {
         }
       />
 
-
-      < Navigation
+      <Navigation
         previousPath={pageContext.previousPostPath}
         previousLabel={pageContext.previousPostTitle}
         nextPath={pageContext.nextPostPath}

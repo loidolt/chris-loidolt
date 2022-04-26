@@ -17,9 +17,9 @@ function TabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Container sx={{ p: 3, minHeight: 240 }}>
+                <Box sx={{ p: 3, minHeight: 240 }}>
                     {children}
-                </Container>
+                </Box>
             )
             }
         </div >
@@ -51,7 +51,7 @@ export default function TabArea(props) {
                 >
                     {props.about && <Tab label="About" {...a11yProps(0)} />}
                     {props.images && <Tab label="Images" {...a11yProps(1)} />}
-                    {props.model && <Tab label="3D Model" {...a11yProps(2)} />}
+                    {props.model && <Tab label="3D Viewer" {...a11yProps(2)} />}
                     {props.links && <Tab label="Links" {...a11yProps(3)} />}
                 </Tabs>
             </Box>

@@ -1,6 +1,7 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 import 'photoswipe/dist/photoswipe.css'
 import 'photoswipe/dist/default-skin/default-skin.css'
 
@@ -15,11 +16,11 @@ export default function GalleryGrid({ photos, postName }) {
         }}
       >
         <Gallery>
-          <Grid container spacing={3}>
+          <ImageList variant="masonry" cols={3} gap={12}>
             {photos.map(
               (image, index) =>
                 image.publicURL && (
-                  <Grid item xs={6} md={4}>
+                  <ImageListItem key={index}>
                     <Item
                       original={image.publicURL}
                       thumbnail={image.publicURL}
@@ -38,12 +39,12 @@ export default function GalleryGrid({ photos, postName }) {
                       )}
 
                     </Item>
-                  </Grid>
+                  </ImageListItem>
                 )
             )}
-          </Grid>
+          </ImageList>
         </Gallery>
-      </Box>
+      </Box >
     );
   } else {
     return null;
