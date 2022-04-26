@@ -4,10 +4,13 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import 'photoswipe/dist/photoswipe.css'
 import 'photoswipe/dist/default-skin/default-skin.css'
-
 import { Gallery, Item } from 'react-photoswipe-gallery'
 
-export default function GalleryGrid({ photos, postName, windowWidth }) {
+import useWindowSize from "../hooks/useGatsbyWindowSize";
+
+export default function GalleryGrid({ photos, postName }) {
+
+  const { windowWidth } = useWindowSize();
 
   const setColumns = (width) => {
     if (width < 700) {
