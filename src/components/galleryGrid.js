@@ -1,5 +1,4 @@
 import React from "react";
-import Box from "@mui/material/Box";
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import 'photoswipe/dist/photoswipe.css'
@@ -24,41 +23,43 @@ export default function GalleryGrid({ photos, postName }) {
 
   if (photos.length > 1) {
     return (
-      <Box
-        sx={{
-          flexGrow: 1,
-        }}
-      >
-        <Gallery>
-          <ImageList variant="masonry" cols={setColumns(windowWidth)} gap={12}>
-            {photos.map(
-              (image, index) =>
-                image.publicURL && (
-                  <ImageListItem key={index}>
-                    <Item
-                      original={image.publicURL}
-                      thumbnail={image.publicURL}
-                      width="1024"
-                      height="768"
-                    >
-                      {({ ref, open }) => (
-                        <img
-                          ref={ref}
-                          onClick={open}
-                          width="100%"
-                          src={image.publicURL}
-                          alt={postName + " " + index}
-                          style={{ borderRadius: "10px", }}
-                        />
-                      )}
+      <Gallery >
+        <ImageList variant="masonry" cols={setColumns(windowWidth)} gap={12}>
+          {photos.map(
+            (image, index) =>
+              image.publicURL && (
+                <ImageListItem key={index}>
+                  <Item
+                    id={postName + " " + index}
+                    original={image.publicURL}
+                    thumbnail={image.publicURL}
+                    width="1024"
+                    height="768"
+                    alt={postName + " " + index}
+                  >
+                    {({ ref, open }) => (
+                      <img
+                        ref={ref}
+                        onClick={open}
+                        width="100%"
+                        src={image.publicURL}
+                        alt={postName + " " + index}
+                        style={{
+                          cursor: 'pointer',
+                          objectFit: 'cover',
+                          width: '100%',
+                          maxHeight: '100%',
+                          borderRadius: "10px",
+                        }}
+                      />
+                    )}
 
-                    </Item>
-                  </ImageListItem>
-                )
-            )}
-          </ImageList>
-        </Gallery>
-      </Box >
+                  </Item>
+                </ImageListItem>
+              )
+          )}
+        </ImageList>
+      </Gallery>
     );
   } else {
     return null;
