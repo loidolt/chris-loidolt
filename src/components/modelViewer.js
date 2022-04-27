@@ -20,7 +20,6 @@ const Model = ({ file }) => {
 };
 
 export default function ModelViewer({ file }) {
-    console.log(file)
     return (
         <Box sx={{ height: 600 }}>
             <Canvas camera={{ position: [10, 10, 10] }}>

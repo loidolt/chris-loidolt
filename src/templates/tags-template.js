@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { graphql } from "gatsby";
 import Layout from "../components/layout";
 import Grid from "@mui/material/Grid";
@@ -52,14 +51,6 @@ const TagsPage = ({
       />
     </Layout>
   );
-};
-
-TagsPage.propTypes = {
-  data: PropTypes.object.isRequired,
-  pageContext: PropTypes.shape({
-    nextPagePath: PropTypes.string,
-    previousPagePath: PropTypes.string,
-  }),
 };
 
 export const postsQuery = graphql`

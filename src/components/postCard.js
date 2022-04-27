@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { navigate, Link } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
 import Card from "@mui/material/Card";
@@ -11,7 +10,14 @@ import Chip from "@mui/material/Chip";
 
 import { toKebabCase } from "../helpers";
 
-export default function PostCard(props) {
+export default function PostCard({
+  title,
+  date,
+  path,
+  coverImage,
+  excerpt,
+  tags,
+}) {
   return (
     <Card
       sx={{
@@ -25,16 +31,16 @@ export default function PostCard(props) {
       }}
     >
       <Link
-        to={props.path}
+        to={path}
         style={{ color: "inherit", textDecoration: "inherit" }}
       >
-        {props.coverImage && (
+        {coverImage && (
           <GatsbyImage
             sx={{
               height: "100%",
             }}
-            image={props.coverImage.childImageSharp.gatsbyImageData}
-            alt={props.title + "Featured Image"}
+            image={coverImage.childImageSharp.gatsbyImageData}
+            alt={title + "Featured Image"}
             style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
           />
         )}
@@ -47,7 +53,7 @@ export default function PostCard(props) {
               float: "right",
             }}
           >
-            {props.date}
+            {date}
           </Typography>
           <Typography
             gutterBottom
@@ -58,7 +64,7 @@ export default function PostCard(props) {
               fontWeight: 700,
             }}
           >
-            {props.title}
+            {title}
           </Typography>
 
           <Typography
@@ -68,13 +74,13 @@ export default function PostCard(props) {
               color: "#c6c6c6",
             }}
           >
-            {props.excerpt}
+            {excerpt}
           </Typography>
         </CardContent>
       </Link>
       <Divider light />
       <CardActions>
-        {props.tags.map((tag) => (
+        {tags.map((tag) => (
           <Chip
             key={tag}
             label={"#" + tag}
@@ -94,12 +100,3 @@ export default function PostCard(props) {
     </Card>
   );
 }
-
-PostCard.propTypes = {
-  title: PropTypes.string,
-  date: PropTypes.string,
-  path: PropTypes.string,
-  coverImage: PropTypes.object,
-  excerpt: PropTypes.string,
-  tags: PropTypes.arrayOf(PropTypes.string),
-};

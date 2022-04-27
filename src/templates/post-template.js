@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { graphql, navigate } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
 import Grid from "@mui/material/Grid";
@@ -159,14 +158,6 @@ export default function PostTemplate({ data, pageContext }) {
     </Layout >
   );
 }
-
-PostTemplate.propTypes = {
-  data: PropTypes.object.isRequired,
-  pageContext: PropTypes.shape({
-    next: PropTypes.object,
-    previous: PropTypes.object,
-  }),
-};
 
 export const pageQuery = graphql`
   query getPost($id: String) {

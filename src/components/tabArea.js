@@ -4,8 +4,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+function TabPanel({ children, value, index, ...other }) {
 
     return (
         <div
@@ -31,7 +30,7 @@ function a11yProps(index) {
     };
 }
 
-export default function TabArea(props) {
+export default function TabArea({ about, images, model, links }) {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
@@ -48,23 +47,23 @@ export default function TabArea(props) {
                     variant="scrollable"
                     scrollButtons="auto"
                 >
-                    {props.about && <Tab label="About" {...a11yProps(0)} />}
-                    {props.images && <Tab label="Images" {...a11yProps(1)} />}
-                    {props.model && <Tab label="3D Viewer" {...a11yProps(2)} />}
-                    {props.links && <Tab label="Links" {...a11yProps(3)} />}
+                    {about && <Tab label="About" {...a11yProps(0)} />}
+                    {images && <Tab label="Images" {...a11yProps(1)} />}
+                    {model && <Tab label="3D Viewer" {...a11yProps(2)} />}
+                    {links && <Tab label="Links" {...a11yProps(3)} />}
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-                {props.about}
+                {about}
             </TabPanel>
             <TabPanel value={value} index={1}>
-                {props.images}
+                {images}
             </TabPanel>
             <TabPanel value={value} index={2}>
-                {props.model}
+                {model}
             </TabPanel>
             <TabPanel value={value} index={3}>
-                {props.links}
+                {links}
             </TabPanel>
         </Paper >
     );

@@ -14,7 +14,7 @@ export default function GalleryGrid({ photos, postName }) {
   const setColumns = (width) => {
     if (width < 700) {
       return 1
-    } else if (width < 1100) {
+    } else if (width < 1000) {
       return 2
     } else {
       return 4

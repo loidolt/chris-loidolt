@@ -8,7 +8,7 @@ import EmailIcon from '@mui/icons-material/Email';
 
 import FooterChart from "./footerChart";
 
-export default function Footer(props) {
+export default function Footer({githubUrl}) {
   return (
     <Box>
       <FooterChart />
@@ -30,7 +30,7 @@ export default function Footer(props) {
               Loidolt Design © {new Date().getFullYear()}
             </Box>
             <Box>
-              <IconButton href={props.githubUrl}>
+              <IconButton href={githubUrl}>
                 <GitHubIcon />
               </IconButton>
               <IconButton component={Link} to={"/contact"}>
