@@ -1,7 +1,7 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import Box from "@mui/material/Box";
-import getContributions from '../helpers/getContributions';
+import { useContributions } from '../hooks/useContributions';
 
 const placeholderData = [
     {
@@ -35,39 +35,13 @@ const placeholderData = [
 ]
 
 export default function FooterChart() {
-    const [contributions, setContributions] = React.useState(placeholderData);
-
-    React.useEffect(() => {
-        skylineTransform();
-    }, []);
-
-    const skylineTransform = async () => {
-        let contributions = await getContributions()
-        let contributionData = []
-
-        if (contributions) {
-            contributions.forEach((wk) => {
-                let count = 0
-                wk.days.forEach((day) => {
-                    count += day.count
-                })
-
-                if (count > 0) {
-                    contributionData.push({
-                        week: wk.week,
-                        contributions: count
-                    })
-                }
-            });
-            setContributions(contributionData)
-        }
-    }
+    const { data, isLoading, error } = useContributions();
 
     return (
         <Box sx={{ width: '100%', height: 250 }}>
             <ResponsiveContainer>
                 <AreaChart
-                    data={contributions}
+                    data={(error || isLoading) ? (placeholderData) : (data)}
                     name="Git Weekly"
                     margin={{
                         top: 10,
