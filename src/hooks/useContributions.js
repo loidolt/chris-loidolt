@@ -17,7 +17,7 @@ export function useContributions() {
         }
 
         const year = new Date().getFullYear()
-        const url = 'https://skyline.github.com/' + process.env.GITHUB_USERNAME + '/' + year + '.json'
+        const url = 'https://skyline.github.com/' + process.env.GATSBY_GITHUB_USERNAME + '/' + year + '.json'
 
         try {
             const { data } = await axios.get("/.netlify/functions/cors/" + url)
