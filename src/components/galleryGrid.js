@@ -27,14 +27,14 @@ export default function GalleryGrid({ photos, postName }) {
         <ImageList variant="masonry" cols={setColumns(windowWidth)} gap={12}>
           {photos.map(
             (image, index) =>
-              image.publicURL && (
+              image.url && (
                 <ImageListItem key={index}>
                   <Item
                     id={postName + " " + index}
-                    original={image.publicURL}
-                    thumbnail={image.publicURL}
-                    width="1024"
-                    height="768"
+                    original={image.url}
+                    thumbnail={image.thumbnails.small.url}
+                    width={image.width}
+                    height={image.height}
                     alt={postName + " " + index}
                   >
                     {({ ref, open }) => (
@@ -42,7 +42,7 @@ export default function GalleryGrid({ photos, postName }) {
                         ref={ref}
                         onClick={open}
                         width="100%"
-                        src={image.publicURL}
+                        src={image.url}
                         alt={postName + " " + index}
                         style={{
                           cursor: 'pointer',

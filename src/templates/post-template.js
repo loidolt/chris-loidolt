@@ -96,7 +96,7 @@ export default function PostTemplate({ data, pageContext }) {
           post.Gallery && (
             <GalleryComponent
               postName={post.Title}
-              photos={post.Gallery.localFiles}
+              photos={post.Gallery}
             />
           )}
         model={
@@ -174,8 +174,15 @@ export const pageQuery = graphql`
         Date(formatString: "DD MMMM YYYY")
         Excerpt
         Gallery {
-          localFiles {
-            publicURL
+          url
+          height
+          width
+          thumbnails {
+            small {
+              height
+              url
+              width
+            }
           }
         }
         Markdown
