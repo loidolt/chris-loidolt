@@ -1,6 +1,9 @@
 [functions]
 node_bundler = "esbuild"
 
+[dev]
+framework = "gatsby"
+
 [build]
 publish = "public"
 
