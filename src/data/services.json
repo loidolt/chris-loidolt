@@ -27,7 +27,7 @@
     "name": "Weather Station",
     "subtitle": "Palmer Lake, CO",
     "summary": "Real-time publicly viewable weather station collecting temperature, wind speed and direction, rainfall, pressure, humidity, UV index, and solar radiation. This station is located in the Red Rock Ranch Community in Palmer Lake, CO. This data is available through Ambient Weather, Weather Underground, and PWS Weather.",
-    "url": "https://ambientweather.net/dashboard/dc8e8c4f1ebd150913dc99f66416e50e",
+    "url": "https://ambientweather.net/dashboard/9aaceea1ebf35b1ded4dd0d090d2021b",
     "more_info": "https://www.wunderground.com/dashboard/pws/KCOMONUM231",
     "image": null
   },
@@ -35,7 +35,7 @@
     "name": "Weather Station",
     "subtitle": "Lake Pleasant, NY",
     "summary": "Real-time publicly viewable weather station collecting temperature, wind speed and direction, rainfall, pressure, humidity, UV index, and solar radiation. This station is located in a camp on Lake Pleasant in NY. This data is available through Ambient Weather, Weather Underground, and PWS Weather.",
-    "url": "https://ambientweather.net/dashboard/dc8e8c4f1ebd150913dc99f66416e50e",
+    "url": "https://ambientweather.net/dashboard/008f46b4e6e234401c98499c651f05ef",
     "more_info": "https://www.wunderground.com/dashboard/pws/KNYLAKEP54",
     "image": null
   },
