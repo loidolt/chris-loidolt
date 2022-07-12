@@ -86,6 +86,8 @@ const Header = ({ siteTitle }) => {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             backgroundColor: "#1f1f1f",
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
           },
         }}
         variant="persistent"
