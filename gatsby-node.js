@@ -100,6 +100,7 @@ async function getPosts({ graphql, reporter }) {
           data: { Status: { eq: "Published" } }
           table: { eq: "Posts" }
         }
+        sort: {fields: data___Date, order: DESC}
       ) {
         edges {
           next {
