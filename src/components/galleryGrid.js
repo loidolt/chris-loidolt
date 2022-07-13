@@ -2,7 +2,6 @@ import React from "react";
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import 'photoswipe/dist/photoswipe.css'
-import 'photoswipe/dist/default-skin/default-skin.css'
 import { Gallery, Item } from 'react-photoswipe-gallery'
 
 import useWindowSize from "../hooks/useGatsbyWindowSize";
@@ -41,6 +40,7 @@ export default function GalleryGrid({ photos, postName }) {
                       <img
                         ref={ref}
                         onClick={open}
+                        onKeyDown={open}
                         width="100%"
                         src={image.url}
                         alt={postName + " " + index}

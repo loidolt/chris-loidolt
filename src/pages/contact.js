@@ -1,5 +1,4 @@
 import React from "react";
-import withStyles from "@mui/styles/withStyles";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
@@ -10,37 +9,6 @@ import Typography from "@mui/material/Typography";
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
-
-const CustomTextField = withStyles({
-  root: {
-    "& input": {
-      color: "rgba(255, 255, 255, 0.87)",
-    },
-    "& textarea": {
-      color: "rgba(255, 255, 255, 0.87)",
-    },
-    "& label": {
-      color: "rgba(255, 255, 255, 0.6)",
-    },
-    "& label.Mui-focused": {
-      color: "rgba(255, 255, 255, 0.38)",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "rgba(255, 255, 255, 0.87)",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "rgba(255, 255, 255, 0.6)",
-      },
-      "&:hover fieldset": {
-        borderColor: "rgba(255, 255, 255, 0.87)",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "rgba(255, 255, 255, 0.87)",
-      },
-    },
-  },
-})(TextField);
 
 class Contact extends React.Component {
   constructor(props) {
@@ -92,7 +60,7 @@ class Contact extends React.Component {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth variant="filled">
-                    <CustomTextField
+                    <TextField
                       id="name"
                       label="Name"
                       type="text"
@@ -104,7 +72,7 @@ class Contact extends React.Component {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth variant="filled">
-                    <CustomTextField
+                    <TextField
                       id="email"
                       label="Email"
                       type="email"
@@ -116,7 +84,7 @@ class Contact extends React.Component {
                 </Grid>
                 <Grid item xs={12}>
                   <FormControl fullWidth variant="filled">
-                    <CustomTextField
+                    <TextField
                       id="message"
                       label="Message"
                       name="message"
