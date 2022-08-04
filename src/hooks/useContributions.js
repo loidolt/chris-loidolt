@@ -17,10 +17,12 @@ export function useContributions() {
         }
 
         const year = new Date().getFullYear()
-        const url = 'https://skyline.github.com/' + process.env.GATSBY_GITHUB_USERNAME + '/' + year + '.json'
 
         try {
-            const { data } = await axios.get("/.netlify/functions/cors/" + url)
+            const { data } = await axios.post(process.env.REACT_APP_FIREBASE_FUNCTIONS_URL + "/userContributions", {
+                username: process.env.GATSBY_GITHUB_USERNAME,
+                year: year
+            })
             if (data.contributions) {
                 let contributionData = []
                 data.contributions.forEach((wk) => {
