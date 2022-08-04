@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 
-import { toKebabCase } from "../helpers";
+import { toKebabCase } from "../utils";
 
 export default function PostCard({
   title,

@@ -8,7 +8,7 @@ module.exports = {
   siteMetadata: {
     title: `Loidolt Design`,
     description: `I like learning and creating. I strongly believe the world needs more of that.`,
-    copyrights: "Loidolt Design 202s",
+    copyrights: "Loidolt Design 2022",
     author: `Chris Loidolt`,
     siteUrl: `https://loidolt.design`,
     githubUrl: `https://github.com/loidolt`,

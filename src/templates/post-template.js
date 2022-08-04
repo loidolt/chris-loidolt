@@ -12,7 +12,7 @@ import TabArea from "../components/tabArea"
 import Navigation from "../components/navigation";
 import Links from "../components/links";
 
-import { toKebabCase } from "../helpers";
+import { toKebabCase } from "../utils";
 
 export default function PostTemplate({ data, pageContext }) {
   const post = data.airtable.data;

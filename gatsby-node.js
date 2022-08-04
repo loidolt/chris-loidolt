@@ -1,6 +1,6 @@
 const { paginate } = require("gatsby-awesome-pagination");
 const path = require("path");
-const { toKebabCase } = require("./src/helpers");
+const { toKebabCase } = require("./src/utils");
 const util = require("util");
 const child_process = require("child_process");
 const exec = util.promisify(child_process.exec);

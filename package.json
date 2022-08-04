@@ -22,6 +22,7 @@
     "browser-monads": "^1.0.0",
     "clsx": "^1.2.1",
     "dotenv": "^16.0.1",
+    "firebase": "^9.9.1",
     "gatsby": "^4.18.2",
     "gatsby-awesome-pagination": "^0.3.8",
     "gatsby-plugin-algolia": "^0.26.0",
