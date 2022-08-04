@@ -71,3 +71,15 @@ yarn-error.log
 
 # Local Netlify folder
 .netlify
+
+# firebase
+firebase-servicekey.json
+.runtimeconfig.json
+.firebase
+firebase-debug.log
+ui-debug.log
+functions/.env
+functions/.env.local
+functions/.env.development
+functions/.env.production
+firebase-debug.1.log
