@@ -35,6 +35,17 @@ jobs:
         with:
           node-version: 14.x
 
+      - name: Caching Gatsby
+        id: gatsby-cache-build
+        uses: actions/cache@v2
+        with:
+          path: |
+            public
+            .cache
+          key: ${{ runner.os }}-gatsby-build-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-gatsby-build-
+
       - uses: actions/checkout@v2
       - run: npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
