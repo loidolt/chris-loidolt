@@ -5,4 +5,4 @@
  */
 
 // You can delete this file if you're not using it
-import 'firebase/analytics';
+require('firebase/analytics');
