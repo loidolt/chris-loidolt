@@ -19,7 +19,7 @@ export function useContributions() {
         const year = new Date().getFullYear()
 
         try {
-            const { data } = await axios.post(process.env.REACT_APP_FIREBASE_FUNCTIONS_URL + "/userContributions", {
+            const { data } = await axios.post(process.env.GATSBY_FIREBASE_FUNCTIONS_URL + "/userContributions", {
                 username: process.env.GATSBY_GITHUB_USERNAME,
                 year: year
             })

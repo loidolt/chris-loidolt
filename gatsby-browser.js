@@ -5,3 +5,4 @@
  */
 require("typeface-inter");
 require("typeface-inconsolata");
+require('firebase/analytics');
