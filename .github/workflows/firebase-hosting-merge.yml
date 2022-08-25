@@ -55,4 +55,5 @@ jobs:
           channelId: live
           projectId: loidolt-design
         env:
+          CI: false
           GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true

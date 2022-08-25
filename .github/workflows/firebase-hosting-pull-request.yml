@@ -52,4 +52,5 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOIDOLT_DESIGN }}"
           projectId: loidolt-design
         env:
+          CI: false
           GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true
