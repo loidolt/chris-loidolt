@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 
 export default function Navigation({ previousPath, previousLabel, nextPath, nextLabel }) {
-  if (!previousPath || !nextPath) {
+  if (!previousPath && !nextPath) {
     return null
   }
   return (
