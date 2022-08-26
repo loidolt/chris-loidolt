@@ -40,8 +40,6 @@ const Websites = () => {
   }
   `);
 
-  console.log(data)
-
   const websites = data.allAirtable.nodes;
 
   return (
