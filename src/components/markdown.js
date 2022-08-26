@@ -4,6 +4,6 @@ import remarkGfm from 'remark-gfm'
 
 export default function Markdown({ children }) {
     return (
-        <ReactMarkdown children={children} remarkPlugins={[remarkGfm]} />
+        <ReactMarkdown children={children} remarkPlugins={[remarkGfm]} linkTarget="_blank" />
     );
 }
