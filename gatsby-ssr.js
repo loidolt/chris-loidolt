@@ -6,3 +6,7 @@
 
 // You can delete this file if you're not using it
 require('firebase/analytics');
+require('firebase/firestore');
+require('firebase/functions');
+require('firebase/storage');
+require('firebase/performance');

@@ -83,8 +83,8 @@ export default function PostTemplate({ data, pageContext }) {
       <TabArea
         title={post.Title}
         about={post.Markdown}
-        images={post.Gallery}
-        models={post.models}
+        images={post.Gallery.localFiles}
+        models={post.Model}
         repository={post.Repository}
         attribution={post.Attribution}
         model_link={post.Model}
@@ -93,7 +93,7 @@ export default function PostTemplate({ data, pageContext }) {
       <Links
         repository={post.Repository}
         attribution={post.Attribution}
-        model_link={post.Model}
+        model_link={post.Model_URL}
       />
 
       <Navigation
@@ -107,44 +107,41 @@ export default function PostTemplate({ data, pageContext }) {
 }
 
 export const pageQuery = graphql`
-  query getPost($id: String) {
-    airtable(id: { eq: $id }) {
-      data {
-        Attribution
-        Cover_Image {
-          localFiles {
-            childImageSharp {
-              gatsbyImageData(width: 1024)
-            }
+query getPost($id: String) {
+  airtable(id: {eq: $id}) {
+    data {
+      Attribution
+      Cover_Image {
+        localFiles {
+          childImageSharp {
+            gatsbyImageData(width: 1024)
           }
-        }
-        Date(formatString: "DD MMMM YYYY")
-        Excerpt
-        Gallery {
-          url
-          height
-          width
-          thumbnails {
-            small {
-              height
-              url
-              width
-            }
-          }
-        }
-        Markdown
-        Repository
-        Model
-        Tags
-        Title
-        Path
-        models {
-          filename
-          url
-          type
         }
       }
-      id
+      Date(formatString: "DD MMMM YYYY")
+      Excerpt
+      Gallery {
+        localFiles {
+          childImageSharp {
+            gatsbyImageData
+          }
+          name
+          publicURL
+        }
+      }
+      Markdown
+      Repository
+      Model_URL
+      Tags
+      Title
+      Path
+      Model {
+        filename
+        url
+        type
+      }
     }
+    id
   }
+}
 `;

@@ -14,8 +14,6 @@ import Layout from "../components/layout";
 import Seo from "../components/seo";
 
 export default function Contact() {
-  const [open, setOpen] = React.useState(false);
-
   const FormSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().email("Please enter a valid email address").required('Email is required'),
@@ -43,12 +41,11 @@ export default function Contact() {
       const response = await saveDocumentGenerateID("mail", message)
       if (response) {
         resetForm({})
-        setOpen(false)
       }
     },
   });
 
-  const { errors, touched, isSubmitting, values, handleSubmit, getFieldProps, setFieldValue } = formik;
+  const { errors, touched, isSubmitting, handleSubmit, getFieldProps } = formik;
 
   return (
     <Layout>
