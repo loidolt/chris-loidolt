@@ -96,6 +96,13 @@ module.exports = {
           },
           {
             baseId: process.env.AIRTABLE_POSTS_BASEID,
+            tableName: process.env.AIRTABLE_SERVICES_TABLENAME,
+            mapping: {
+              Image: `fileNode`
+            },
+          },
+          {
+            baseId: process.env.AIRTABLE_POSTS_BASEID,
             tableName: process.env.AIRTABLE_QUALIFICATIONS_TABLENAME,
           },
         ],
