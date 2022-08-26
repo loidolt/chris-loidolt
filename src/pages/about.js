@@ -22,25 +22,27 @@ const About = () => {
           gatsbyImageData(width: 600, quality: 50)
         }
       }
-      allQualificationsJson {
+      allAirtable(filter: {table: {eq: "Qualifications"}}) {
         nodes {
-          level
-          more_info
-          name
-          type
-          id
-          category
+          data {
+            Name
+            Category
+            Level
+            Type
+            More_Info
+          }
         }
       }
     }
   `);
 
-  const qualifications = data.allQualificationsJson.nodes;
+  const qualifications = data.allAirtable.nodes;
+  //console.log(qualifications);
 
   // Get all types and filter unique values
   let allTypes = [];
   qualifications.map((qual) => {
-    return allTypes.push(qual.type);
+    return allTypes.push(qual.data.Type);
   });
   let types = [...new Set(allTypes)];
   //console.log(types);
@@ -48,11 +50,11 @@ const About = () => {
   // Filter By Type
   let items = function (type) {
     let filtered = qualifications.filter(
-      (qual) => qual.type === type
+      (qual) => qual.data.Type === type
     );
-    //console.log(filtered);
+    console.log(filtered);
     // Group By Category
-    let grouped = _.groupBy(filtered, (qual) => qual.category);
+    let grouped = _.groupBy(filtered, (qual) => qual.data.Category);
     //console.log(Object.entries(grouped));
     return Object.entries(grouped);
   };
@@ -133,19 +135,19 @@ const About = () => {
                 {category[1].map((item, index) => (
                   <ListItem key={index}>
                     <ListItemText
-                      primary={item.name}
-                      secondary={item.level || ""}
+                      primary={item.data.Name}
+                      secondary={item.data.Level || ""}
                       secondaryTypographyProps={{
                         style: { color: "rgba(255, 255, 255, 0.38)" },
                       }}
                     />
-                    {item.more_info && (
+                    {item.data.More_Info && (
                       <ListItemSecondaryAction>
                         <IconButton
                           color="primary"
                           edge="end"
                           aria-label="more-info"
-                          href={item.more_info}
+                          href={item.data.More_Info}
                           target="_blank"
                           rel="noreferrer"
                           size="large"
