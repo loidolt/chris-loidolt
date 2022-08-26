@@ -118,7 +118,7 @@ const Services = () => {
                         Learn More
                       </Button>
                     )}
-                    {service.url && (
+                    {service.data.URL && (
                       <Button
                         variant={"contained"}
                         target="_blank"
