@@ -36,7 +36,7 @@ export default function GalleryGrid({ photos }) {
   if (photos.length > 1) {
     return (
       <>
-        <ImageList variant="masonry" cols={setColumns(windowWidth)} gap={12}>
+        <ImageList cols={setColumns(windowWidth)} gap={12}>
           {photos.map(
             (image, index) =>
               <ImageListItem key={index} onClick={() => handleClickOpen(image)}>
