@@ -54,11 +54,11 @@ module.exports = {
         features: {
           auth: false,
           database: false,
-          firestore: false,
-          storage: false,
+          firestore: true,
+          storage: true,
           messaging: false,
-          functions: false,
-          performance: false,
+          functions: true,
+          performance: true,
           analytics: true,
         },
         credentials: {
