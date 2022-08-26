@@ -87,6 +87,17 @@ module.exports = {
               Gallery: `fileNode`,
             },
           },
+          {
+            baseId: process.env.AIRTABLE_POSTS_BASEID,
+            tableName: process.env.AIRTABLE_WEBSITES_TABLENAME,
+            mapping: {
+              Image: `fileNode`
+            },
+          },
+          {
+            baseId: process.env.AIRTABLE_POSTS_BASEID,
+            tableName: process.env.AIRTABLE_QUALIFICATIONS_TABLENAME,
+          },
         ],
       },
     },

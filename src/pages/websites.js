@@ -15,24 +15,34 @@ import Seo from "../components/seo";
 const Websites = () => {
   const data = useStaticQuery(graphql`
   query Websites {
-    allWebsitesJson {
+    allAirtable(
+      filter: {table: {eq: "Websites"}, data: {Status: {eq: "Published"}}}
+    ) {
       nodes {
-        id
-        name
-        summary
-        url
-        status_url
-        image {
-          childImageSharp {
-            gatsbyImageData(width: 1024, quality: 50)
+        data {
+          Name
+          Status_URL
+          URL
+          Summary
+          Image {
+            localFiles {
+              childImageSharp {
+                gatsbyImageData
+              }
+              name
+              publicURL
+            }
           }
+          Status
         }
       }
     }
   }
   `);
 
-  const websites = data.allWebsitesJson.nodes;
+  console.log(data)
+
+  const websites = data.allAirtable.nodes;
 
   return (
     <Layout>
@@ -54,20 +64,20 @@ const Websites = () => {
                 },
               }}
             >
-              <a target="_blank" rel="noreferrer" href={website.url}>
+              <a target="_blank" rel="noreferrer" href={website.data.URL}>
                 <GatsbyImage
                   sx={{
                     height: "100%",
                   }}
                   image={
-                    website.image.childImageSharp
+                    website.data.Image.localFiles[0].childImageSharp
                       .gatsbyImageData
                   }
-                  alt={website.name + " Screenshot"}
+                  alt={website.data.Name + " Screenshot"}
                   style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
                 />
               </a>
-              {website.summary && (
+              {website.data.Summary && (
                 <React.Fragment>
                   <CardContent>
                     <Typography
@@ -79,7 +89,7 @@ const Websites = () => {
                         fontWeight: 700,
                       }}
                     >
-                      {website.name}
+                      {website.data.Name}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -88,7 +98,7 @@ const Websites = () => {
                         color: "#c6c6c6",
                       }}
                     >
-                      {website.summary}
+                      {website.data.Summary}
                     </Typography>
                   </CardContent>
                   <Divider />
@@ -99,21 +109,21 @@ const Websites = () => {
                     spacing={2}
                     sx={{ padding: 2 }}
                   >
-                    {website.status_url &&
+                    {website.data.Status_URL &&
                       <Button
                         target="_blank"
                         rel="noreferrer"
-                        href={website.status_url}
+                        href={website.data.Status_URL}
                       >
                         Status
                       </Button>
                     }
-                    {website.url &&
+                    {website.data.URL &&
                       <Button
                         variant={"contained"}
                         target="_blank"
                         rel="noreferrer"
-                        href={website.url}
+                        href={website.data.URL}
                       >
                         Visit Website
                       </Button>
