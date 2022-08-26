@@ -57,18 +57,18 @@ export default function TabArea({
                     scrollButtons="auto"
                 >
                     <Tab label="About" {...a11yProps(0)} />
-                    {images && <Tab label="Images" {...a11yProps(1)} />}
+                    {images.localFiles && <Tab label="Images" {...a11yProps(1)} />}
                     {models && <Tab label="3D Viewer" {...a11yProps(2)} />}
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
                 <Markdown>{about}</Markdown>
             </TabPanel>
-            {images && (
+            {images.localFiles && (
                 <TabPanel value={value} index={1}>
                     <GalleryComponent
                         postName={title}
-                        photos={images}
+                        photos={images.localFiles}
                     />
                 </TabPanel>
             )}

@@ -83,7 +83,7 @@ export default function PostTemplate({ data, pageContext }) {
       <TabArea
         title={post.Title}
         about={post.Markdown}
-        images={post.Gallery.localFiles}
+        images={post.Gallery}
         models={post.Model}
         repository={post.Repository}
         attribution={post.Attribution}
