@@ -37,7 +37,7 @@ const Layout = ({ children }) => {
               <main>{children}</main>
             </Box>
           </Box>
-          <Footer githubUrl={data.site.siteMetadata.githubUrl} />
+          <Footer githubUrl={data.site.siteMetadata.githubUrl} donationLink={data.site.siteMetadata.donationLink} />
         </>
       )}
     />

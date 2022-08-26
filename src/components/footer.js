@@ -3,12 +3,14 @@ import { Link } from "gatsby";
 import Box from "@mui/material/Box";
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import EmailIcon from '@mui/icons-material/Email';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 
 import FooterChart from "./footerChart";
 
-export default function Footer({githubUrl}) {
+export default function Footer({ githubUrl, donationLink }) {
   return (
     <Box>
       <FooterChart />
@@ -30,12 +32,21 @@ export default function Footer({githubUrl}) {
               Loidolt Design © {new Date().getFullYear()}
             </Box>
             <Box>
-              <IconButton href={githubUrl}>
-                <GitHubIcon />
-              </IconButton>
-              <IconButton component={Link} to={"/contact"}>
-                <EmailIcon />
-              </IconButton>
+              <Tooltip title="Make A Donation">
+                <IconButton href={donationLink} target={"_blank"}>
+                  <CardGiftcardIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="My GitHub Profile">
+                <IconButton href={githubUrl} target={"_blank"}>
+                  <GitHubIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Contact Me">
+                <IconButton component={Link} to={"/contact"}>
+                  <EmailIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
           </Stack>
         </footer>

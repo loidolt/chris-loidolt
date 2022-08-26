@@ -12,6 +12,7 @@ module.exports = {
     author: `Chris Loidolt`,
     siteUrl: `https://loidolt.design`,
     githubUrl: `https://github.com/loidolt`,
+    donationLink: `https://www.paypal.com/donate/?hosted_button_id=5M29WMCGYLZTJ`,
   },
   plugins: [
     `gatsby-plugin-gatsby-cloud`,
