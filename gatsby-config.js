@@ -84,6 +84,7 @@ module.exports = {
             tableName: process.env.AIRTABLE_POSTS_TABLENAME,
             mapping: {
               Cover_Image: `fileNode`,
+              Gallery: `fileNode`,
             },
           },
         ],
