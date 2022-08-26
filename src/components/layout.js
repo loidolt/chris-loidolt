@@ -16,6 +16,7 @@ const Layout = ({ children }) => {
             siteMetadata {
               title
               githubUrl
+              donationLink
             }
           }
         }
