@@ -14,20 +14,32 @@ import Seo from "../components/seo";
 const Services = () => {
   const data = useStaticQuery(graphql`
   query Services {
-    allServicesJson {
+    allAirtable(
+      filter: {table: {eq: "Services"}, data: {Status: {eq: "Published"}}}
+    ) {
       nodes {
-        id
-        more_info
-        name
-        subtitle
-        summary
-        url
+        data {
+          Name
+          More_Info
+          Subtitle
+          Summary
+          URL
+          Image {
+            localFiles {
+              childImageSharp {
+                gatsbyImageData
+              }
+              name
+              publicURL
+            }
+          }
+        }
       }
     }
   }
 `);
 
-  const services = data.allServicesJson.nodes;
+  const services = data.allAirtable.nodes;
 
   return (
     <Layout>
@@ -61,7 +73,7 @@ const Services = () => {
                   alt={website.node.data.Name + " Screenshot"}
                 />
               </a> */}
-              {service.summary && (
+              {service.data.Summary && (
                 <React.Fragment>
                   <CardContent>
                     <Typography
@@ -72,7 +84,7 @@ const Services = () => {
                       }}
                       gutterBottom
                     >
-                      {service.name}
+                      {service.data.Name}
                     </Typography>
                     <Typography
                       sx={{
@@ -83,10 +95,10 @@ const Services = () => {
                       }}
                       gutterBottom
                     >
-                      {service.subtitle}
+                      {service.data.Subtitle}
                     </Typography>
                     <Typography gutterBottom>
-                      {service.summary}
+                      {service.data.Summary}
                     </Typography>
                   </CardContent>
                   <Divider />
@@ -97,11 +109,11 @@ const Services = () => {
                     spacing={2}
                     sx={{ padding: 2 }}
                   >
-                    {service.more_info && (
+                    {service.data.More_Info && (
                       <Button
                         target="_blank"
                         rel="noreferrer"
-                        href={service.more_info}
+                        href={service.data.More_Info}
                       >
                         Learn More
                       </Button>
@@ -111,7 +123,7 @@ const Services = () => {
                         variant={"contained"}
                         target="_blank"
                         rel="noreferrer"
-                        href={service.url}
+                        href={service.data.URL}
                       >
                         View Service
                       </Button>
