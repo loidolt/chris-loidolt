@@ -3,6 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
+import { getPerformance } from "firebase/performance";
 
 const firebaseConfig = {
     apiKey: process.env.GATSBY_FIREBASE_API_KEY,
@@ -28,29 +29,36 @@ export default function getFirebase() {
 }
 
 export function db() {
-    if (typeof window !== 'undefined') {
+    if (app) {
         const db = getAuth(app);
         return db;
     }
 }
 
 export function firebaseAuth() {
-    if (typeof window !== 'undefined') {
+    if (app) {
         const firebaseAuth = getStorage(app);
         return firebaseAuth;
     }
 }
 
 export function storage() {
-    if (typeof window !== 'undefined') {
+    if (app) {
         const storage = getFirestore(app);
         return storage;
     }
 }
 
 export function analytics() {
-    if (typeof window !== 'undefined') {
+    if (app) {
         const analytics = getAnalytics(app);
         return analytics;
+    }
+}
+
+export function perf() {
+    if (app) {
+        const perf = getPerformance(app);
+        return perf;
     }
 }
