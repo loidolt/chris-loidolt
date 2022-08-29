@@ -3,11 +3,19 @@ import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
 import Box from "@mui/material/Box";
 
+import { app, analytics } from '../utils/firebase-config';
+
 import Header from "./header";
 import Footer from "./footer";
 import "../style.css";
 
 const Layout = ({ children }) => {
+
+  React.useEffect(() => {
+    if (!app) return;
+    analytics.logEvent(analytics, window.location.pathname);
+  }, [app]);
+
   return (
     <StaticQuery
       query={graphql`

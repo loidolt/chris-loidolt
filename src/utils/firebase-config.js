@@ -1,7 +1,8 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/storage';
-import 'firebase/compat/firestore';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
     apiKey: process.env.GATSBY_FIREBASE_API_KEY,
@@ -13,12 +14,43 @@ const firebaseConfig = {
     measurementId: process.env.GATSBY_FIREBASE_MEASUREMENT_ID
 };
 
-// Use this to initialize the firebase App
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+let app;
 
-// Use these for db & auth
-const db = firebaseApp.firestore();
-const firebaseAuth = firebase.auth();
-const storage = firebase.storage();
+// Gatsby specific version for SSR
+export default function getFirebase() {
+    if (typeof window !== 'undefined') {
+        if (app) return app;
+        // Use this to initialize the firebase App
+        app = initializeApp(firebaseConfig);
+        return app;
+    }
+    return null;
+}
 
-export { firebaseAuth, db, storage };
+export function db() {
+    if (typeof window !== 'undefined') {
+        const db = getAuth(app);
+        return db;
+    }
+}
+
+export function firebaseAuth() {
+    if (typeof window !== 'undefined') {
+        const firebaseAuth = getStorage(app);
+        return firebaseAuth;
+    }
+}
+
+export function storage() {
+    if (typeof window !== 'undefined') {
+        const storage = getFirestore(app);
+        return storage;
+    }
+}
+
+export function analytics() {
+    if (typeof window !== 'undefined') {
+        const analytics = getAnalytics(app);
+        return analytics;
+    }
+}

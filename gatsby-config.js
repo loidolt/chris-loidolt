@@ -15,7 +15,6 @@ module.exports = {
     donationLink: `https://www.paypal.com/donate/?hosted_button_id=5M29WMCGYLZTJ`,
   },
   plugins: [
-    `gatsby-plugin-gatsby-cloud`,
     'gatsby-plugin-top-layout',
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-mui-emotion',
@@ -48,31 +47,6 @@ module.exports = {
         siteSpeedSampleRate: 10,
         cookieDomain: "loidolt.design",
       },
-    },
-    {
-      resolve: 'gatsby-plugin-firebase',
-      options: {
-        features: {
-          auth: false,
-          database: false,
-          firestore: true,
-          storage: true,
-          messaging: false,
-          functions: true,
-          performance: true,
-          analytics: true,
-        },
-        credentials: {
-          apiKey: process.env.GATSBY_FIREBASE_API_KEY,
-          authDomain: process.env.GATSBY_FIREBASE_AUTH_DOMAIN,
-          databaseURL: process.env.GATSBY_FIREBASE_DATABASE_URL,
-          projectId: process.env.GATSBY_FIREBASE_PROJECT_ID,
-          storageBucket: process.env.GATSBY_FIREBASE_STORAGE_BUCKET,
-          messagingSenderId: process.env.GATSBY_FIREBASE_MESSAGING_SENDER_ID,
-          appId: process.env.GATSBY_FIREBASE_APP_ID,
-          measurementId: process.env.GATSBY_FIREBASE_MEASUREMENT_ID,
-        },
-      }
     },
     {
       resolve: `gatsby-source-airtable`,
