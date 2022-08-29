@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
 
   React.useEffect(() => {
     if (!firebaseApp()) return;
-    analytics().logEvent(window.location.pathname);
+    analytics().logEvent('page_view', window.location.pathname);
   }, [firebaseApp()]);
 
   return (
