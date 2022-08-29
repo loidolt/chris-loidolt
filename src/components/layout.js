@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
 import Box from "@mui/material/Box";
 
-import { app, analytics, perf } from '../utils/firebase-config';
+import firebaseApp, { analytics } from '../utils/firebase-config';
 
 import Header from "./header";
 import Footer from "./footer";
@@ -12,10 +12,9 @@ import "../style.css";
 const Layout = ({ children }) => {
 
   React.useEffect(() => {
-    if (!app) return;
-    perf();
-    analytics.logEvent(analytics, window.location.pathname);
-  }, [app]);
+    if (!firebaseApp()) return;
+    analytics().logEvent(window.location.pathname);
+  }, [firebaseApp()]);
 
   return (
     <StaticQuery

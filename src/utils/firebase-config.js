@@ -1,9 +1,9 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getStorage } from "firebase/storage";
-import { getFirestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
-import { getPerformance } from "firebase/performance";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/storage';
+import 'firebase/compat/firestore';
+import "firebase/compat/performance";
+import "firebase/compat/analytics";
 
 const firebaseConfig = {
     apiKey: process.env.GATSBY_FIREBASE_API_KEY,
@@ -15,50 +15,39 @@ const firebaseConfig = {
     measurementId: process.env.GATSBY_FIREBASE_MEASUREMENT_ID
 };
 
-let app;
+let firebaseApp;
 
 // Gatsby specific version for SSR
 export default function getFirebase() {
-    if (typeof window !== 'undefined') {
-        if (app) return app;
-        // Use this to initialize the firebase App
-        app = initializeApp(firebaseConfig);
-        return app;
-    }
-    return null;
+    if (typeof window == 'undefined') return null;
+
+    if (firebaseApp) return firebaseApp;
+    // Use this to initialize the firebase App
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+    return firebaseApp;
 }
 
 export function db() {
-    if (app) {
-        const db = getAuth(app);
-        return db;
-    }
+    if (!firebaseApp) return null;
+    return firebase.firestore();
 }
 
 export function firebaseAuth() {
-    if (app) {
-        const firebaseAuth = getStorage(app);
-        return firebaseAuth;
-    }
+    if (!firebaseApp) return null;
+    return firebase.auth();
 }
 
 export function storage() {
-    if (app) {
-        const storage = getFirestore(app);
-        return storage;
-    }
+    if (!firebaseApp) return null;
+    return firebase.storage();
 }
 
 export function analytics() {
-    if (app) {
-        const analytics = getAnalytics(app);
-        return analytics;
-    }
+    if (!firebaseApp) return null;
+    return firebase.analytics();
 }
 
 export function perf() {
-    if (app) {
-        const perf = getPerformance(app);
-        return perf;
-    }
+    if (!firebaseApp) return null;
+    return firebase.performance();
 }

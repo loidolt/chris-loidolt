@@ -17,8 +17,6 @@ import { toKebabCase } from "../utils";
 export default function PostTemplate({ data, pageContext }) {
   const post = data.airtable.data;
 
-  console.log(post)
-
   return (
     <Layout>
       <Seo title={post.Title} description={post.Excerpt} />

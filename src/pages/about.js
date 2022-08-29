@@ -52,7 +52,7 @@ const About = () => {
     let filtered = qualifications.filter(
       (qual) => qual.data.Type === type
     );
-    console.log(filtered);
+    /* console.log(filtered); */
     // Group By Category
     let grouped = _.groupBy(filtered, (qual) => qual.data.Category);
     //console.log(Object.entries(grouped));
