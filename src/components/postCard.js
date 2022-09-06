@@ -46,16 +46,6 @@ export default function PostCard({
         )}
         <CardContent>
           <Typography
-            variant="subtitle1"
-            component="p"
-            sx={{
-              color: "#a9a9b3",
-              float: "right",
-            }}
-          >
-            {date}
-          </Typography>
-          <Typography
             gutterBottom
             variant="h5"
             component="h2"
@@ -76,9 +66,19 @@ export default function PostCard({
           >
             {excerpt}
           </Typography>
+          <Typography
+            variant="subtitle1"
+            component="p"
+            sx={{
+              color: "#a9a9b3",
+              float: "right",
+            }}
+          >
+            {date}
+          </Typography>
         </CardContent>
       </Link>
-      <Divider light />
+      <Divider light sx={{marginTop: 1}} />
       <CardActions>
         {tags.map((tag) => (
           <Chip
