@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
 import Box from "@mui/material/Box";
+import Container from '@mui/material/Container';
 
 import firebaseApp, { analytics } from '../utils/firebase-config';
 
@@ -33,18 +34,16 @@ const Layout = ({ children }) => {
         <>
           <Header siteTitle={data.site.siteMetadata.title} />
           <Box sx={{ backgroundColor: "#121212" }}>
-            <Box
+            <Container
+              maxWidth="md"
               sx={{
-                display: "flex",
                 minHeight: "88vh",
                 margin: `0 auto`,
-                maxWidth: 960,
                 padding: `0px 1.0875rem 1.45rem`,
                 paddingTop: 8,
-              }}
-            >
+              }}>
               <main>{children}</main>
-            </Box>
+            </Container>
           </Box>
           <Footer githubUrl={data.site.siteMetadata.githubUrl} donationLink={data.site.siteMetadata.donationLink} />
         </>
