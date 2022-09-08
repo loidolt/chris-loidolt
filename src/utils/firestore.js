@@ -1,15 +1,21 @@
 import { toast } from 'react-toastify';
-import { db } from './firebase-config';
-import { collection, addDoc } from "firebase/firestore";
+import app from './firebase-config';
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+
+const db = () => {
+    const firebaseApp = app();
+    if (!firebaseApp) return null;
+    return getFirestore(firebaseApp);
+}
 
 export async function saveDocumentGenerateID(col, data) {
-    const docRef = await addDoc(collection(db, col), data);
-    if (docRef) {
-        console.log("Document written with ID: ", docRef.id);
+    if (!db()) return null;
+    try {
+        const docRef = await addDoc(collection(db(), col), data);
         toast.success("Saved Successfully")
-        return docRef
-    } else {
-        toast.success("Error Saving")
-        return null
+        return docRef.id;
+    } catch (e) {
+        toast.error(e.message);
+        return null;
     }
 }

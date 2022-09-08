@@ -123,7 +123,5 @@ module.exports = {
         chunkSize: 10000, // default: 1000
       },
     },
-    `gatsby-plugin-webpack-bundle-analyser-v2`,
-    `gatsby-plugin-perf-budgets`,
   ],
 };
