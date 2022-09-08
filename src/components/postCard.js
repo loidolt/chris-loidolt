@@ -1,13 +1,8 @@
 import React from "react";
 import { navigate, Link } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
-import useTheme from '@mui/material/styles/useTheme';
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Chip from "@mui/material/Chip";
+import { useTheme } from '@mui/material/styles';
+import { Card, CardActions, CardContent, Typography, Divider, Chip } from "@mui/material";
 
 import { toKebabCase } from "../utils";
 

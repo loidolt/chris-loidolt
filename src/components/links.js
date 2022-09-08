@@ -1,15 +1,7 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import useTheme from '@mui/material/styles/useTheme';
+import React from 'react';
+import { Box, Typography, List, ListItem, ListItemText, ListItemButton, ListItemIcon } from '@mui/material';
+import { GitHub, Favorite, ViewInAr } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 export default function Links({
     repository,
@@ -34,7 +26,7 @@ export default function Links({
                     <ListItem sx={{ color: theme.palette.white.main }}>
                         <ListItemButton component="a" href={repository} target="__blank">
                             <ListItemIcon>
-                                <GitHubIcon />
+                                <GitHub />
                             </ ListItemIcon>
                             <ListItemText
                                 primary={'Git Repository'}
@@ -47,7 +39,7 @@ export default function Links({
                     <ListItem sx={{ color: theme.palette.white.main }}>
                         <ListItemButton component="a" href={model_link} target="__blank">
                             <ListItemIcon>
-                                <ViewInArIcon />
+                                <ViewInAr />
                             </ ListItemIcon>
                             <ListItemText
                                 primary={'Downloadable 3D Model'}
@@ -60,7 +52,7 @@ export default function Links({
                     <ListItem sx={{ color: theme.palette.white.main }}>
                         <ListItemButton component="a" href={attribution} target="__blank">
                             <ListItemIcon>
-                                <FavoriteIcon />
+                                <Favorite />
                             </ ListItemIcon>
                             <ListItemText
                                 primary={'Attribution'}

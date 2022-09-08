@@ -1,13 +1,7 @@
 import React from "react";
 import { useStaticQuery, graphql } from "gatsby";
-import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Divider from "@mui/material/Divider";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import useTheme from '@mui/material/styles/useTheme';
+import { Grid, Stack, Card, CardContent, Divider, Button, Typography } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";

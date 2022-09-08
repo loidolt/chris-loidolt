@@ -1,34 +1,18 @@
-import PropTypes from "prop-types";
 import React from "react";
+import PropTypes from "prop-types";
 import { Link } from "gatsby";
-import useTheme from '@mui/material/styles/useTheme';
-import Drawer from "@mui/material/Drawer";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import HomeIcon from "@mui/icons-material/Home";
-import InfoIcon from "@mui/icons-material/Info";
-import WebIcon from "@mui/icons-material/Web";
-import MailIcon from "@mui/icons-material/Mail";
-import PublicIcon from "@mui/icons-material/Public";
+import { useTheme } from '@mui/material/styles';
+import { Drawer, AppBar, Box, Toolbar, List, Typography, IconButton, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Menu, ChevronLeft, ChevronRight, Home, Info, Web, Mail, Public } from "@mui/icons-material";
 
 import Search from "./search";
 
 const menuList = [
-  { title: "Projects", link: "/", icon: <HomeIcon /> },
-  { title: "Websites", link: "/websites", icon: <WebIcon /> },
-  { title: "Services", link: "/services", icon: <PublicIcon /> },
-  { title: "About", link: "/about", icon: <InfoIcon /> },
-  { title: "Contact", link: "/contact", icon: <MailIcon /> },
+  { title: "Projects", link: "/", icon: <Home /> },
+  { title: "Websites", link: "/websites", icon: <Web /> },
+  { title: "Services", link: "/services", icon: <Public /> },
+  { title: "About", link: "/about", icon: <Info /> },
+  { title: "Contact", link: "/contact", icon: <Mail /> },
 ]
 
 const drawerWidth = 240;
@@ -68,7 +52,7 @@ const Header = ({ siteTitle }) => {
             onClick={handleDrawerOpen}
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            <Menu />
           </IconButton>
 
           <Typography
@@ -120,9 +104,9 @@ const Header = ({ siteTitle }) => {
             }}
           >
             {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
+              <ChevronLeft />
             ) : (
-              <ChevronRightIcon />
+              <ChevronRight />
             )}
           </IconButton>
         </Box>

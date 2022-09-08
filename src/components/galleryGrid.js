@@ -1,10 +1,7 @@
 import React from "react";
 import { GatsbyImage } from "gatsby-plugin-image";
-import Dialog from '@mui/material/Dialog';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
+import { Dialog, IconButton, ImageList, ImageListItem } from "@mui/material";
+import { Close } from '@mui/icons-material';
 
 import useWindowSize from "../hooks/useGatsbyWindowSize";
 
@@ -80,7 +77,7 @@ export default function GalleryGrid({ photos }) {
                 backgroundColor: "rgba(0, 0, 0, 0.5)"
               }}
             >
-              <CloseIcon />
+              <Close />
             </IconButton>
           </Dialog>
         }

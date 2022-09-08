@@ -1,8 +1,5 @@
-import * as React from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+import React from 'react';
+import { Tab, Tabs, Box, Paper } from '@mui/material';
 
 import Markdown from "./markdown"
 import GalleryComponent from "./galleryGrid";

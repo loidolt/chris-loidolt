@@ -2,6 +2,7 @@ import React from 'react';
 import { navigate } from 'gatsby';
 import { getAlgoliaResults } from '@algolia/autocomplete-js';
 import algoliasearch from 'algoliasearch';
+
 import '@algolia/autocomplete-theme-classic';
 import './algolia/autocomplete.css';
 

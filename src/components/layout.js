@@ -1,9 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
-import Box from "@mui/material/Box";
-import Container from '@mui/material/Container';
-import useTheme from '@mui/material/styles/useTheme';
+import { Box, Container } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 
 import firebaseApp, { analytics } from '../utils/firebase-config';
 

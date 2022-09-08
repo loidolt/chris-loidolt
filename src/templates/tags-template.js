@@ -1,9 +1,8 @@
 import React from "react";
 import { graphql } from "gatsby";
-import Layout from "../components/layout";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import { Grid, Typography } from "@mui/material";
 
+import Layout from "../components/layout";
 import PostCard from "../components/postCard";
 import Seo from "../components/seo";
 import Navigation from "../components/navigation";
@@ -19,7 +18,7 @@ const TagsPage = ({
   return (
     <Layout>
       <Seo title={tag + " Projects Loidolt Design"} />
-      <Typography variant="h3" component="h1" gutterBottom>
+      <Typography variant="h1" component="h1" gutterBottom>
         #{tag}
       </Typography>
       <Grid container spacing={3} justifyContent="center">

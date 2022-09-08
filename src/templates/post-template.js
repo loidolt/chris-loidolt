@@ -1,11 +1,8 @@
 import React from "react";
 import { graphql, navigate } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
-import useTheme from '@mui/material/styles/useTheme';
+import { Grid, Box, Typography, Chip } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
@@ -23,7 +20,7 @@ export default function PostTemplate({ data, pageContext }) {
   return (
     <Layout>
       <Seo title={post.Title} description={post.Excerpt} />
-      <Typography variant="h3" component="h1" gutterBottom>
+      <Typography variant="h1" component="h1" gutterBottom>
         {post.Title}
       </Typography>
       <Box

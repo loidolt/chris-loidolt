@@ -1,5 +1,5 @@
 import React from "react";
-import Box from "@mui/material/Box";
+import { Box } from "@mui/material";
 import { Canvas } from "@react-three/fiber";
 import { useLoader } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei'

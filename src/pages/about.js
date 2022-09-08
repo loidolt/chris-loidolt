@@ -2,15 +2,9 @@ import React from "react";
 import * as _ from "underscore";
 import { useStaticQuery, graphql } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import IconButton from "@mui/material/IconButton";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import InfoIcon from "@mui/icons-material/Info";
-import useTheme from '@mui/material/styles/useTheme';
+import { List, ListItem, ListItemText, ListItemSecondaryAction, Grid, Typography, IconButton } from "@mui/material";
+import { Info } from "@mui/icons-material";
+import { useTheme } from '@mui/material/styles';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
@@ -155,7 +149,7 @@ const About = () => {
                           size="large"
                           sx={{ color: theme.palette.primary.main }}
                         >
-                          <InfoIcon />
+                          <Info />
                         </IconButton>
                       </ListItemSecondaryAction>
                     )}

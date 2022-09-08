@@ -1,15 +1,12 @@
-import * as React from 'react';
+import React from 'react';
 import * as Yup from 'yup';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { saveDocumentGenerateID } from '../utils/firestore';
 
-import TextField from "@mui/material/TextField";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
-import FormControl from "@mui/material/FormControl";
-import Typography from "@mui/material/Typography";
-import LoadingButton from '@mui/lab/LoadingButton';
-import useTheme from '@mui/material/styles/useTheme';
+import { TextField, Paper, Grid, FormControl, Typography } from "@mui/material";
+import { LoadingButton } from '@mui/lab';
+import { useTheme } from '@mui/material/styles';
+//firebase
+import { saveDocumentGenerateID } from '../utils/firestore';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";

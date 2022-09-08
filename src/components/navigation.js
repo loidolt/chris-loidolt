@@ -1,9 +1,7 @@
 import React from "react";
 import { navigate } from "gatsby";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
+import { Grid, Button } from "@mui/material";
+import { NavigateNext, NavigateBefore } from "@mui/icons-material";
 
 export default function Navigation({ previousPath, previousLabel, nextPath, nextLabel }) {
   if (!previousPath && !nextPath) {
@@ -25,7 +23,7 @@ export default function Navigation({ previousPath, previousLabel, nextPath, next
           <Button
             variant="contained"
             fullWidth
-            startIcon={<NavigateBeforeIcon />}
+            startIcon={<NavigateBefore />}
             onClick={() => navigate(previousPath)}
           >
             {previousLabel}
@@ -37,7 +35,7 @@ export default function Navigation({ previousPath, previousLabel, nextPath, next
           <Button
             variant="contained"
             fullWidth
-            endIcon={<NavigateNextIcon />}
+            endIcon={<NavigateNext />}
             onClick={() => navigate(nextPath)}
           >
             {nextLabel}

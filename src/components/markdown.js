@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import Box from '@mui/material/Box'
+import { Box } from '@mui/material'
 import remarkGfm from 'remark-gfm'
 
 const LinkRenderer = props => {

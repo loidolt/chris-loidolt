@@ -1,13 +1,8 @@
 import React from "react";
 import { Link } from "gatsby";
-import Box from "@mui/material/Box";
-import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import EmailIcon from '@mui/icons-material/Email';
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
-import useTheme from '@mui/material/styles/useTheme';
+import { Box, Stack, IconButton, Tooltip } from "@mui/material";
+import { GitHub, Email, CardGiftcard } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 import FooterChart from "./footerChart";
 
@@ -37,17 +32,17 @@ export default function Footer({ githubUrl, donationLink }) {
             <Box>
               <Tooltip title="Make A Donation">
                 <IconButton href={donationLink} target={"_blank"}>
-                  <CardGiftcardIcon />
+                  <CardGiftcard />
                 </IconButton>
               </Tooltip>
               <Tooltip title="My GitHub Profile">
                 <IconButton href={githubUrl} target={"_blank"}>
-                  <GitHubIcon />
+                  <GitHub />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Contact Me">
                 <IconButton component={Link} to={"/contact"}>
-                  <EmailIcon />
+                  <Email />
                 </IconButton>
               </Tooltip>
             </Box>
