@@ -45,6 +45,7 @@
     "gatsby-transformer-json": "^4.18.0",
     "gatsby-transformer-remark": "^5.18.1",
     "gatsby-transformer-sharp": "^4.18.1",
+    "custom-mui-theme": "./plugins/custom-mui-theme",
     "marked": "^4.0.18",
     "node-fetch": "^3.2.8",
     "photoswipe": "^5.2.8",
