@@ -49,7 +49,7 @@ export default function Contact() {
 
   return (
     <Layout>
-      <Seo title="Contact Loidolt Design" />
+      <Seo title="Contact" />
       <Typography variant="h3" component="h1" gutterBottom>
         Contact
       </Typography>

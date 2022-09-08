@@ -59,7 +59,7 @@ const About = () => {
 
   return (
     <Layout>
-      <Seo title="About Loidolt Design" />
+      <Seo title="About" />
       <Typography variant="h3" component="h1" gutterBottom>
         Who Am I?
       </Typography>

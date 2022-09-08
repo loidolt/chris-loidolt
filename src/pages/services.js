@@ -40,7 +40,7 @@ const Services = () => {
 
   return (
     <Layout>
-      <Seo title="Loidolt Design Public Services" />
+      <Seo title="Public Services" />
       <Typography variant="h3" component="h1" gutterBottom>
         Public Services
       </Typography>

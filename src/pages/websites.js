@@ -41,7 +41,7 @@ const Websites = () => {
 
   return (
     <Layout>
-      <Seo title="Loidolt Design Websites" />
+      <Seo title="Websites" />
       <Typography variant="h3" component="h1" gutterBottom>
         Websites
       </Typography>
