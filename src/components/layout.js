@@ -3,19 +3,20 @@ import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
 import Box from "@mui/material/Box";
 import Container from '@mui/material/Container';
+import { useTheme } from '@mui/material/styles';
 
 import firebaseApp, { analytics } from '../utils/firebase-config';
 
 import Header from "./header";
 import Footer from "./footer";
-import "../style.css";
 
 const Layout = ({ children }) => {
+  const theme = useTheme();
 
   React.useEffect(() => {
     if (!firebaseApp()) return;
     analytics().logEvent('page_view', window.location.pathname);
-  }, [firebaseApp()]);
+  }, []);
 
   return (
     <StaticQuery
@@ -33,7 +34,7 @@ const Layout = ({ children }) => {
       render={(data) => (
         <>
           <Header siteTitle={data.site.siteMetadata.title} />
-          <Box sx={{ backgroundColor: "#121212" }}>
+          <Box sx={{ backgroundColor: theme.palette.background.default }}>
             <Container
               maxWidth="md"
               sx={{

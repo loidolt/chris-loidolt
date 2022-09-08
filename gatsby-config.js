@@ -15,39 +15,38 @@ module.exports = {
     donationLink: `https://www.paypal.com/donate/?hosted_button_id=5M29WMCGYLZTJ`,
   },
   plugins: [
-    'gatsby-plugin-top-layout',
     'gatsby-plugin-react-helmet',
-    'gatsby-plugin-mui-emotion',
+    `gatsby-plugin-robots-txt`,
     {
       resolve: "gatsby-plugin-sitemap",
       options: {
         output: "/sitemap.xml",
       },
     },
-    "gatsby-plugin-robots-txt",
     {
       resolve: `gatsby-plugin-google-analytics`,
       options: {
-        // The property ID; the tracking code won't be generated without it
         trackingId: "UA-77424366-1",
-        // Defines where to place the tracking script - `true` in the head and `false` in the body
         head: false,
-        // Setting this parameter is optional
         anonymize: true,
-        // Setting this parameter is also optional
         respectDNT: true,
-        // Avoids sending pageview hits from custom paths
         exclude: ["/preview/**", "/do-not-track/me/too/"],
-        // Delays sending pageview hits on route update (in milliseconds)
         pageTransitionDelay: 0,
-        // Defers execution of google analytics script after page load
         defer: false,
-        // Any additional optional fields
         sampleRate: 5,
         siteSpeedSampleRate: 10,
         cookieDomain: "loidolt.design",
       },
     },
+    {
+      resolve: `gatsby-plugin-material-ui`,
+      options: {
+        stylesProvider: {
+          injectFirst: true,
+        },
+      },
+    },
+    `custom-mui-theme`,
     {
       resolve: `gatsby-source-airtable`,
       options: {
@@ -146,18 +145,7 @@ module.exports = {
         chunkSize: 10000, // default: 1000
       },
     },
-    {
-      resolve: `gatsby-plugin-manifest`,
-      options: {
-        name: `loidolt-design`,
-        short_name: `loidolt-design`,
-        start_url: `/`,
-        background_color: `#212121`,
-        theme_color: `#212121`,
-        display: `minimal-ui`,
-        icon: `src/images/CLLightBulbBlue.png`, // This path is relative to the root of the site.
-      },
-    },
-    /* `gatsby-plugin-webpack-bundle-analyser-v2`, */
+    `gatsby-plugin-webpack-bundle-analyser-v2`,
+    `gatsby-plugin-perf-budgets`,
   ],
 };
