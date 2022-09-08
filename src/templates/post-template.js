@@ -23,16 +23,6 @@ export default function PostTemplate({ data, pageContext }) {
   return (
     <Layout>
       <Seo title={post.Title} description={post.Excerpt} />
-      <Typography
-        variant="subtitle1"
-        component="p"
-        sx={{
-          color: "rgba(255, 255, 255, 0.38)",
-          float: "right",
-        }}
-      >
-        {post.Date}
-      </Typography>
       <Typography variant="h3" component="h1" gutterBottom>
         {post.Title}
       </Typography>
@@ -58,6 +48,16 @@ export default function PostTemplate({ data, pageContext }) {
             onClick={() => navigate(`/tag/${toKebabCase(tag)}/`)}
           />
         ))}
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{
+            color: "rgba(255, 255, 255, 0.38)",
+            float: "right",
+          }}
+        >
+          {post.Date}
+        </Typography>
       </Box>
       {post.Cover_Image && (
         <Grid
