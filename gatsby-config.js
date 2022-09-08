@@ -24,23 +24,9 @@ module.exports = {
       },
     },
     {
-      resolve: `gatsby-plugin-google-analytics`,
-      options: {
-        trackingId: "UA-77424366-1",
-        head: false,
-        anonymize: true,
-        respectDNT: true,
-        exclude: ["/preview/**", "/do-not-track/me/too/"],
-        pageTransitionDelay: 0,
-        defer: false,
-        sampleRate: 5,
-        siteSpeedSampleRate: 10,
-        cookieDomain: "loidolt.design",
-      },
-    },
-    {
       resolve: `gatsby-plugin-material-ui`,
       options: {
+        pathToEmotionCacheProps: `plugins/custom-mui-theme/emotion-cache-props`,
         stylesProvider: {
           injectFirst: true,
         },
