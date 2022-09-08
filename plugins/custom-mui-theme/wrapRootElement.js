@@ -8,9 +8,10 @@ import theme from "./theme";
 import "./style.css";
 
 export const wrapRootElement = ({ element }) => {
-    console.info(`theme`, theme);
-    return <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {element}
-    </ThemeProvider>
+    return (
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {element}
+        </ThemeProvider>
+    )
 };
