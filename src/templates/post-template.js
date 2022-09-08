@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
+import useTheme from '@mui/material/styles/useTheme';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
@@ -15,6 +16,8 @@ import Links from "../components/links";
 import { toKebabCase } from "../utils";
 
 export default function PostTemplate({ data, pageContext }) {
+  const theme = useTheme();
+
   const post = data.airtable.data;
 
   return (
@@ -45,11 +48,11 @@ export default function PostTemplate({ data, pageContext }) {
             variant="outlined"
             sx={{
               marginRight: 1,
-              color: "rgba(255, 255, 255, 0.6)",
-              borderColor: "rgba(255, 255, 255, 0.38)",
-              backgroundColor: "#1d1d1d",
+              color: theme.palette.white.dark,
+              borderColor: theme.palette.white.dark,
+              backgroundColor: theme.palette.background.paper,
               "&:hover": {
-                backgroundColor: "#2c2c2c",
+                backgroundColor: theme.palette.background.default,
               },
             }}
             onClick={() => navigate(`/tag/${toKebabCase(tag)}/`)}

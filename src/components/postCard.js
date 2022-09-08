@@ -1,6 +1,7 @@
 import React from "react";
 import { navigate, Link } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
+import useTheme from '@mui/material/styles/useTheme';
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -18,10 +19,13 @@ export default function PostCard({
   excerpt,
   tags,
 }) {
+
+  const theme = useTheme();
+
   return (
     <Card
       sx={{
-        backgroundColor: "#1e1e1e",
+        backgroundColor: theme.palette.background.paper,
         boxShadow: "0 3px 10px rgba(0, 0, 0, 0.43)",
         borderRadius: "20px",
         "&:hover": {
@@ -50,7 +54,7 @@ export default function PostCard({
             variant="h5"
             component="h2"
             sx={{
-              color: "#c6c6c6",
+              color: theme.palette.white.dark,
               fontWeight: 700,
             }}
           >
@@ -61,7 +65,7 @@ export default function PostCard({
             variant="body2"
             component="p"
             sx={{
-              color: "#c6c6c6",
+              color: theme.palette.white.dark,
             }}
           >
             {excerpt}
@@ -70,7 +74,7 @@ export default function PostCard({
             variant="subtitle1"
             component="p"
             sx={{
-              color: "#a9a9b3",
+              color: theme.palette.white.dark,
               float: "right",
             }}
           >
@@ -78,7 +82,7 @@ export default function PostCard({
           </Typography>
         </CardContent>
       </Link>
-      <Divider light sx={{marginTop: 1}} />
+      <Divider light sx={{ marginTop: 1 }} />
       <CardActions>
         {tags.map((tag) => (
           <Chip
@@ -86,11 +90,10 @@ export default function PostCard({
             label={"#" + tag}
             variant="outlined"
             sx={{
-              color: "rgba(255, 255, 255, 0.6)",
-              borderColor: "rgba(255, 255, 255, 0.38)",
-              backgroundColor: "#2c2c2c",
+              color: theme.palette.white.dark,
+              borderColor: theme.palette.white.dark,
               "&:hover": {
-                backgroundColor: "#373737",
+                backgroundColor: theme.palette.white.main,
               },
             }}
             onClick={() => navigate(`/tag/${toKebabCase(tag)}/`)}

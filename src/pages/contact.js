@@ -8,12 +8,15 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import FormControl from "@mui/material/FormControl";
 import Typography from "@mui/material/Typography";
-import { LoadingButton } from '@mui/lab';
+import LoadingButton from '@mui/lab/LoadingButton';
+import useTheme from '@mui/material/styles/useTheme';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
 
 export default function Contact() {
+  const theme = useTheme();
+
   const FormSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().email("Please enter a valid email address").required('Email is required'),
@@ -56,7 +59,7 @@ export default function Contact() {
       <Paper
         sx={{
           padding: 4,
-          backgroundColor: "#1e1e1e",
+          backgroundColor: theme.palette.background.paper,
           borderRadius: "20px",
         }}
       >

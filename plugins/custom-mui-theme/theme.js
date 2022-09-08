@@ -6,8 +6,8 @@ const rawTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#a9d8f0",
-      light: "#ffffff",
+      main: "#A9D8F0",
+      light: "#A9D8F0",
       dark: "#056484",
     },
     secondary: {
@@ -17,12 +17,14 @@ const rawTheme = createTheme({
     },
     white: {
       main: "#fff",
+      dark: "#c6c6c6",
     },
     dark: {
       main: "#414042",
     },
     background: {
       default: "#121212",
+      header: "#1f1f1f",
       paper: "#1e1e1e",
     },
   },
@@ -67,15 +69,10 @@ const theme = {
     h1: {
       ...rawTheme.typography.h1,
       ...fontHeader,
-      fontSize: 40,
-      letterSpacing: 2,
-      fontWeight: 500,
+      fontSize: 46,
+      fontWeight: 400,
       fontFamily: rawTheme.typography.fontFamily,
-
-      [rawTheme.breakpoints.down("md")]: {
-        fontSize: 22,
-        letterSpacing: 1,
-      },
+      color: rawTheme.palette.white.main,
     },
     h2: {
       ...rawTheme.typography.h2,
@@ -85,36 +82,41 @@ const theme = {
       fontWeight: 400,
       letterSpacing: 2,
       lineHeight: 1.5,
+      color: rawTheme.palette.white.main,
     },
     h3: {
       ...rawTheme.typography.h3,
       ...fontHeader,
-      fontSize: 42,
+      fontFamily: rawTheme.typography.fontFamily,
+      color: rawTheme.palette.white.main,
     },
     h4: {
       ...rawTheme.typography.h4,
       ...fontHeader,
+      fontFamily: rawTheme.typography.fontFamily,
       fontSize: 36,
+      color: rawTheme.palette.white.main,
     },
     h5: {
       ...rawTheme.typography.h5,
+      fontFamily: rawTheme.typography.fontFamily,
       fontSize: 20,
       letterSpacing: 1.5,
-      fontWeight: 400,
-      textTransform: "uppercase",
+      color: rawTheme.palette.white.main,
     },
     h6: {
       ...rawTheme.typography.h6,
       ...fontHeader,
+      fontFamily: rawTheme.typography.fontFamily,
       fontSize: 18,
       letterSpacing: 1.5,
       fontWeight: 400,
-      textTransform: "uppercase",
+      color: rawTheme.palette.white.main,
     },
     subtitle1: {
       ...rawTheme.typography.subtitle1,
       fontFamily: rawTheme.typography.fontFamilySecondary,
-      fontSize: 20,
+      fontSize: "1rem",
       letterSpacing: 2,
       lineHeight: 1.6,
       color: rawTheme.palette.white.main,
@@ -143,7 +145,7 @@ const theme = {
       fontWeight: 300,
       letterSpacing: 1,
       color: rawTheme.palette.dark,
-      fontFamily: rawTheme.typography.fontFamilySecondary,
+      fontFamily: rawTheme.typography.fontFamily,
     },
     breakpoints: {
       values: {

@@ -9,12 +9,15 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
+import useTheme from '@mui/material/styles/useTheme';
 
 export default function Links({
     repository,
     attribution,
     model_link,
 }) {
+
+    const theme = useTheme();
 
     if (!repository && !attribution && !model_link) {
         return null
@@ -28,7 +31,7 @@ export default function Links({
 
             <List dense >
                 {repository && (
-                    <ListItem>
+                    <ListItem sx={{ color: theme.palette.white.main }}>
                         <ListItemButton component="a" href={repository} target="__blank">
                             <ListItemIcon>
                                 <GitHubIcon />
@@ -41,7 +44,7 @@ export default function Links({
                     </ListItem>
                 )}
                 {model_link && (
-                    <ListItem>
+                    <ListItem sx={{ color: theme.palette.white.main }}>
                         <ListItemButton component="a" href={model_link} target="__blank">
                             <ListItemIcon>
                                 <ViewInArIcon />
@@ -54,7 +57,7 @@ export default function Links({
                     </ListItem>
                 )}
                 {attribution && (
-                    <ListItem>
+                    <ListItem sx={{ color: theme.palette.white.main }}>
                         <ListItemButton component="a" href={attribution} target="__blank">
                             <ListItemIcon>
                                 <FavoriteIcon />

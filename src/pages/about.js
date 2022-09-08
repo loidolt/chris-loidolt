@@ -10,6 +10,7 @@ import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import InfoIcon from "@mui/icons-material/Info";
+import useTheme from '@mui/material/styles/useTheme';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
@@ -35,6 +36,8 @@ const About = () => {
       }
     }
   `);
+
+  const theme = useTheme();
 
   const qualifications = data.allAirtable.nodes;
   //console.log(qualifications);
@@ -70,7 +73,7 @@ const About = () => {
           <Typography
             variant="body1"
             sx={{
-              color: "rgba(255, 255, 255, 0.87)",
+              color: theme.palette.white.dark,
             }}
           >
             My name is Chris Loidolt.
@@ -120,15 +123,15 @@ const About = () => {
                 component="h3"
                 sx={{
                   textTransform: "uppercase",
-                  color: "rgba(255, 255, 255, 0.38)",
+                  color: theme.palette.white.dark,
                 }}
               >
                 {category[0]}
               </Typography>
               <List
                 sx={{
-                  backgroundColor: "#1e1e1e",
-                  color: "rgba(255, 255, 255, 0.87)",
+                  backgroundColor: theme.palette.background.paper,
+                  color: theme.palette.white.main,
                   borderRadius: "20px",
                 }}
               >
@@ -138,19 +141,19 @@ const About = () => {
                       primary={item.data.Name}
                       secondary={item.data.Level || ""}
                       secondaryTypographyProps={{
-                        style: { color: "rgba(255, 255, 255, 0.38)" },
+                        style: { color: theme.palette.white.dark },
                       }}
                     />
                     {item.data.More_Info && (
                       <ListItemSecondaryAction>
                         <IconButton
-                          color="primary"
                           edge="end"
                           aria-label="more-info"
                           href={item.data.More_Info}
                           target="_blank"
                           rel="noreferrer"
                           size="large"
+                          sx={{ color: theme.palette.primary.main }}
                         >
                           <InfoIcon />
                         </IconButton>

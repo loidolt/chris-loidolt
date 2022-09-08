@@ -20,7 +20,7 @@ const IndexPage = ({
   return (
     <Layout>
       <Seo title="Loidolt Design Projects" />
-      <Typography variant="h3" component="h1" gutterBottom>
+      <Typography variant="h1" gutterBottom>
         Projects
       </Typography>
       <Grid container spacing={3} justifyContent="center">

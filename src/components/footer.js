@@ -7,10 +7,13 @@ import Tooltip from '@mui/material/Tooltip';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import EmailIcon from '@mui/icons-material/Email';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import useTheme from '@mui/material/styles/useTheme';
 
 import FooterChart from "./footerChart";
 
 export default function Footer({ githubUrl, donationLink }) {
+  const theme = useTheme();
+
   return (
     <Box>
       <FooterChart />
@@ -18,7 +21,7 @@ export default function Footer({ githubUrl, donationLink }) {
         sx={{
           padding: 4,
           marginTop: -12,
-          color: "#ffffff",
+          color: theme.palette.white.main,
           fontFamily: '"Inconsolata", "Helvetica", "Arial", sans-serif',
         }}>
         <footer>

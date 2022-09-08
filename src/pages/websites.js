@@ -8,6 +8,7 @@ import CardContent from "@mui/material/CardContent";
 import Stack from '@mui/material/Stack';
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import useTheme from '@mui/material/styles/useTheme';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
@@ -40,6 +41,8 @@ const Websites = () => {
   }
   `);
 
+  const theme = useTheme();
+
   const websites = data.allAirtable.nodes;
 
   return (
@@ -53,7 +56,7 @@ const Websites = () => {
           <Grid item xs={12} md={6} key={index}>
             <Card
               sx={{
-                backgroundColor: "#1e1e1e",
+                backgroundColor: theme.palette.background.paper,
                 boxShadow: "0 3px 10px rgba(0, 0, 0, 0.87)",
                 borderRadius: "20px",
                 "&:hover": {
@@ -83,7 +86,7 @@ const Websites = () => {
                       variant="h6"
                       component="h3"
                       sx={{
-                        color: "#c6c6c6",
+                        color: theme.palette.white.dark,
                         fontWeight: 700,
                       }}
                     >
@@ -93,7 +96,7 @@ const Websites = () => {
                       variant="body2"
                       component="p"
                       sx={{
-                        color: "#c6c6c6",
+                        color: theme.palette.white.dark,
                       }}
                     >
                       {website.data.Summary}

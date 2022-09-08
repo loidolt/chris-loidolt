@@ -1,6 +1,8 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import Box from "@mui/material/Box";
+import useTheme from '@mui/material/styles/useTheme';
+
 import { useContributions } from '../hooks/useContributions';
 
 const placeholderData = [
@@ -35,6 +37,8 @@ const placeholderData = [
 ]
 
 export default function FooterChart() {
+    const theme = useTheme();
+
     const { data, isLoading, error } = useContributions();
 
     return (
@@ -52,13 +56,13 @@ export default function FooterChart() {
                 >
                     <defs>
                         <linearGradient id="colorContributions" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#056484" stopOpacity={0.8} />
-                            <stop offset="95%" stopColor="#056484" stopOpacity={0} />
+                            <stop offset="5%" stopColor={theme.palette.primary.dark} stopOpacity={0.8} />
+                            <stop offset="95%" stopColor={theme.palette.primary.dark} stopOpacity={0} />
                         </linearGradient>
                     </defs>
                     <XAxis dataKey="week" hide={true} />
                     <YAxis hide={true} />
-                    <Area type="monotone" name="Contributions" dataKey="contributions" stroke="#a9d8f0" fillOpacity={1} fill="url(#colorContributions)" />
+                    <Area type="monotone" name="Contributions" dataKey="contributions" stroke={theme.palette.primary.main} fillOpacity={1} fill="url(#colorContributions)" />
                 </AreaChart>
             </ResponsiveContainer>
         </Box>

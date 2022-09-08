@@ -7,6 +7,7 @@ import CardContent from "@mui/material/CardContent";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import useTheme from '@mui/material/styles/useTheme';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
@@ -39,6 +40,8 @@ const Services = () => {
   }
 `);
 
+  const theme = useTheme();
+
   const services = data.allAirtable.nodes;
 
   return (
@@ -52,7 +55,7 @@ const Services = () => {
           <Grid item xs={12} sm={6} key={index}>
             <Card
               sx={{
-                backgroundColor: "#1e1e1e",
+                backgroundColor: theme.palette.background.paper,
                 boxShadow: "0 3px 10px rgba(0, 0, 0, 0.43)",
                 borderRadius: "20px",
                 "&:hover": {
