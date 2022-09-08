@@ -16,7 +16,7 @@ const IndexPage = ({
 
   return (
     <Layout>
-      <Seo title="Loidolt Design Projects" />
+      <Seo title="Projects" />
       <Typography variant="h1" gutterBottom>
         Projects
       </Typography>
@@ -50,6 +50,10 @@ const IndexPage = ({
     </Layout>
   );
 };
+
+export const Head = () => (
+  <Seo />
+)
 
 IndexPage.propTypes = {
   data: PropTypes.object.isRequired,

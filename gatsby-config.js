@@ -11,11 +11,12 @@ module.exports = {
     copyrights: "Loidolt Design 2022",
     author: `Chris Loidolt`,
     siteUrl: `https://loidolt.design`,
+    image: `./src/images/CLLightBulbBlue.png`,
     githubUrl: `https://github.com/loidolt`,
     donationLink: `https://www.paypal.com/donate/?hosted_button_id=5M29WMCGYLZTJ`,
   },
+  trailingSlash: `never`,
   plugins: [
-    'gatsby-plugin-react-helmet',
     `gatsby-plugin-robots-txt`,
     {
       resolve: "gatsby-plugin-sitemap",
