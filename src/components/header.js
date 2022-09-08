@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "gatsby";
-import { useTheme } from "@mui/material/styles";
+import useTheme from '@mui/material/styles/useTheme';
 import Drawer from "@mui/material/Drawer";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -23,10 +23,19 @@ import PublicIcon from "@mui/icons-material/Public";
 
 import Search from "./search";
 
+const menuList = [
+  { title: "Projects", link: "/", icon: <HomeIcon /> },
+  { title: "Websites", link: "/websites", icon: <WebIcon /> },
+  { title: "Services", link: "/services", icon: <PublicIcon /> },
+  { title: "About", link: "/about", icon: <InfoIcon /> },
+  { title: "Contact", link: "/contact", icon: <MailIcon /> },
+]
+
 const drawerWidth = 240;
 
 const Header = ({ siteTitle }) => {
   const theme = useTheme();
+
   const [open, setOpen] = React.useState(false);
 
   function handleDrawerOpen() {
@@ -46,7 +55,7 @@ const Header = ({ siteTitle }) => {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),
-          background: "#1f1f1f",
+          background: theme.palette.background.header,
           borderRadius: 0,
         }}
       >
@@ -85,7 +94,7 @@ const Header = ({ siteTitle }) => {
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            backgroundColor: "#1f1f1f",
+            backgroundColor: theme.palette.background.header,
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0,
           },
@@ -107,7 +116,7 @@ const Header = ({ siteTitle }) => {
             onClick={handleDrawerClose}
             size="large"
             sx={{
-              color: "rgba(255, 255, 255, 0.87)",
+              color: theme.palette.white.dark,
             }}
           >
             {theme.direction === "ltr" ? (
@@ -118,71 +127,22 @@ const Header = ({ siteTitle }) => {
           </IconButton>
         </Box>
         <List>
-          <ListItem
-            button
-            component={Link}
-            to="/"
-            sx={{
-              color: "rgba(255, 255, 255, 0.87)",
-            }}
-          >
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText>Projects</ListItemText>
-          </ListItem>
-          <ListItem
-            button
-            component={Link}
-            to="/websites"
-            sx={{
-              color: "rgba(255, 255, 255, 0.87)",
-            }}
-          >
-            <ListItemIcon>
-              <WebIcon />
-            </ListItemIcon>
-            <ListItemText>Websites</ListItemText>
-          </ListItem>
-          <ListItem
-            button
-            component={Link}
-            to="/services"
-            sx={{
-              color: "rgba(255, 255, 255, 0.87)",
-            }}
-          >
-            <ListItemIcon>
-              <PublicIcon />
-            </ListItemIcon>
-            <ListItemText>Services</ListItemText>
-          </ListItem>
-          <ListItem
-            button
-            component={Link}
-            to="/about"
-            sx={{
-              color: "rgba(255, 255, 255, 0.87)",
-            }}
-          >
-            <ListItemIcon>
-              <InfoIcon />
-            </ListItemIcon>
-            <ListItemText>About</ListItemText>
-          </ListItem>
-          <ListItem
-            button
-            component={Link}
-            to="/contact"
-            sx={{
-              color: "rgba(255, 255, 255, 0.87)",
-            }}
-          >
-            <ListItemIcon>
-              <MailIcon />
-            </ListItemIcon>
-            <ListItemText>Contact</ListItemText>
-          </ListItem>
+          {menuList.map((item, index) => (
+            <ListItem
+              key={index}
+              button
+              component={Link}
+              to={item.link}
+              sx={{
+                color: theme.palette.white.main,
+              }}
+            >
+              <ListItemIcon>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText>{item.title}</ListItemText>
+            </ListItem>
+          ))}
         </List>
       </Drawer>
     </Box>
