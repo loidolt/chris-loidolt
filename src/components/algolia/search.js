@@ -4,10 +4,10 @@ import { getAlgoliaResults } from '@algolia/autocomplete-js';
 import algoliasearch from 'algoliasearch';
 
 import '@algolia/autocomplete-theme-classic';
-import './algolia/autocomplete.css';
+import './autocomplete.css';
 
-import Autocomplete from "./algolia/customAutocomplete";
-import PostItem from './algolia/postItem';
+import Autocomplete from "./customAutocomplete";
+import PostItem from './postItem';
 
 const searchClient = algoliasearch(
   process.env.GATSBY_ALGOLIA_APP_ID,

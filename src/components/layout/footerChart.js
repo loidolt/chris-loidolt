@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { Box } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 
-import { useContributions } from '../hooks/useContributions';
+import { useContributions } from '../../hooks';
 
 const placeholderData = [
     {

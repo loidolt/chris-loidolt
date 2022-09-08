@@ -3,8 +3,7 @@ import { useStaticQuery, graphql } from "gatsby";
 import { Grid, Stack, Card, CardContent, Divider, Button, Typography } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 
-import Layout from "../components/layout";
-import Seo from "../components/seo";
+import { Layout, Seo } from "../components/layout";
 
 const Services = () => {
   const data = useStaticQuery(graphql`

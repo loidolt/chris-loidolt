@@ -3,7 +3,7 @@ import { GatsbyImage } from "gatsby-plugin-image";
 import { Dialog, IconButton, ImageList, ImageListItem } from "@mui/material";
 import { Close } from '@mui/icons-material';
 
-import useWindowSize from "../hooks/useGatsbyWindowSize";
+import { useWindowSize } from "../../hooks";
 
 export default function GalleryGrid({ photos }) {
   const [open, setOpen] = React.useState(false);

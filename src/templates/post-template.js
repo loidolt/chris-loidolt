@@ -4,11 +4,8 @@ import { GatsbyImage } from "gatsby-plugin-image";
 import { Grid, Box, Typography, Chip } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 
-import Layout from "../components/layout";
-import Seo from "../components/seo";
-import TabArea from "../components/tabArea"
-import Navigation from "../components/navigation";
-import Links from "../components/links";
+import { Links, TabArea } from "../components/posts";
+import { Layout, Seo, Navigation } from "../components/layout";
 
 import { toKebabCase } from "../utils";
 

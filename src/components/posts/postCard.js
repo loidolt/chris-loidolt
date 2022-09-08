@@ -4,7 +4,7 @@ import { GatsbyImage } from "gatsby-plugin-image";
 import { useTheme } from '@mui/material/styles';
 import { Card, CardActions, CardContent, Typography, Divider, Chip } from "@mui/material";
 
-import { toKebabCase } from "../utils";
+import { toKebabCase } from "../../utils";
 
 export default function PostCard({
   title,

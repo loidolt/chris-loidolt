@@ -3,10 +3,8 @@ import PropTypes from "prop-types";
 import { graphql } from "gatsby";
 import { Grid, Typography } from "@mui/material";
 
-import Layout from "../components/layout";
-import PostCard from "../components/postCard";
-import Seo from "../components/seo";
-import Navigation from "../components/navigation";
+import { PostCard } from "../components/posts";
+import { Layout, Seo, Navigation } from "../components/layout";
 
 const IndexPage = ({
   data,

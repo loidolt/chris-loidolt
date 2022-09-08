@@ -8,8 +8,7 @@ import { useTheme } from '@mui/material/styles';
 //firebase
 import { saveDocumentGenerateID } from '../utils/firestore';
 
-import Layout from "../components/layout";
-import Seo from "../components/seo";
+import { Layout, Seo } from "../components/layout";
 
 export default function Contact() {
   const theme = useTheme();

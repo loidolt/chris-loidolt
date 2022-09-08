@@ -4,8 +4,7 @@ import { GatsbyImage } from "gatsby-plugin-image"
 import { Grid, Card, Divider, CardContent, Stack, Button, Typography } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 
-import Layout from "../components/layout";
-import Seo from "../components/seo";
+import { Layout, Seo } from "../components/layout";
 
 const Websites = () => {
   const data = useStaticQuery(graphql`

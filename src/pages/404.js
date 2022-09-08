@@ -1,8 +1,7 @@
 import React from "react";
 import { Typography } from "@mui/material";
 
-import Layout from "../components/layout";
-import Seo from "../components/seo";
+import { Layout, Seo } from "../components/layout";
 
 const NotFoundPage = () => (
   <Layout>

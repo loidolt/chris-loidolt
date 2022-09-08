@@ -4,7 +4,7 @@ import { StaticQuery, graphql } from "gatsby";
 import { Box, Container } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 //firebase
-import firebaseApp, { logAnalyticsEvent } from '../utils/firebase-config';
+import firebaseApp, { logAnalyticsEvent } from '../../utils/firebase-config';
 
 import Header from "./header";
 import Footer from "./footer";

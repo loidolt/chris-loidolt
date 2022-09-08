@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import { Drawer, AppBar, Box, Toolbar, List, Typography, IconButton, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { Menu, ChevronLeft, ChevronRight, Home, Info, Web, Mail, Public } from "@mui/icons-material";
 
-import Search from "./search";
+import { Search } from "../algolia";
 
 const menuList = [
   { title: "Projects", link: "/", icon: <Home /> },

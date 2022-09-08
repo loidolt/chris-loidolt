@@ -5,8 +5,7 @@ import { List, ListItem, ListItemText, ListItemSecondaryAction, Grid, Typography
 import { Info } from "@mui/icons-material";
 import { useTheme } from '@mui/material/styles';
 
-import Layout from "../components/layout";
-import Seo from "../components/seo";
+import { Layout, Seo } from "../components/layout";
 
 import { groupBy } from "../utils";
 
