@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getFirestore } from "firebase/firestore";
 import { getAnalytics, logEvent } from "firebase/analytics";
 import { getPerformance } from "firebase/performance";
 
@@ -22,6 +23,11 @@ export default function getFirebase() {
     // Use this to initialize the firebase App
     app = initializeApp(firebaseConfig);
     return app;
+}
+
+export function db() {
+    if (!app) return null;
+    return getFirestore(app);
 }
 
 export function analytics() {

@@ -23,15 +23,7 @@ module.exports = {
         output: "/sitemap.xml",
       },
     },
-    {
-      resolve: `gatsby-plugin-material-ui`,
-      options: {
-        pathToEmotionCacheProps: `plugins/custom-mui-theme/emotion-cache-props`,
-        stylesProvider: {
-          injectFirst: true,
-        },
-      },
-    },
+    `gatsby-plugin-material-ui`,
     `custom-mui-theme`,
     {
       resolve: `gatsby-source-airtable`,
