@@ -1,7 +1,1 @@
-/**
- * Implement Gatsby's Browser APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/browser-apis/
- */
-import "typeface-inter";
-import "typeface-inconsolata";
+export { wrapRootElement } from "./gatsby-ssr"

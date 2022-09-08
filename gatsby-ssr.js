@@ -1,7 +1,13 @@
-/**
- * Implement Gatsby's SSR (Server Side Rendering) APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/ssr-apis/
- */
+import React from "react"
+import { ThemeProvider } from "@mui/material"
+import "typeface-inter";
+import "typeface-inconsolata";
 
-// You can delete this file if you're not using it
+import theme from "./src/theme"
+import "./src/style.css"
+
+export const wrapRootElement = ({ element }) => (
+    <ThemeProvider theme={theme}>
+        {element}
+    </ThemeProvider>
+)
