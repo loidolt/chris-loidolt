@@ -1,5 +1,4 @@
 import React from "react";
-import * as _ from "underscore";
 import { useStaticQuery, graphql } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
 import { List, ListItem, ListItemText, ListItemSecondaryAction, Grid, Typography, IconButton } from "@mui/material";
@@ -8,6 +7,8 @@ import { useTheme } from '@mui/material/styles';
 
 import Layout from "../components/layout";
 import Seo from "../components/seo";
+
+import { groupBy } from "../utils";
 
 const About = () => {
   const data = useStaticQuery(graphql`
@@ -51,8 +52,8 @@ const About = () => {
     );
     /* console.log(filtered); */
     // Group By Category
-    let grouped = _.groupBy(filtered, (qual) => qual.data.Category);
-    //console.log(Object.entries(grouped));
+    let grouped = groupBy(filtered, (qual) => qual.data.Category);
+    /* console.log(Object.entries(grouped)); */
     return Object.entries(grouped);
   };
 
