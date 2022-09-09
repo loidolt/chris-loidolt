@@ -18,7 +18,6 @@
     "algoliasearch": "^4.9.1",
     "axios": "^0.27.2",
     "browser-monads": "^1.0.0",
-    "custom-mui-theme": "./plugins/custom-mui-theme",
     "dotenv": "^16.0.1",
     "firebase": "^9.9.1",
     "formik": "^2.2.9",

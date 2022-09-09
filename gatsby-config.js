@@ -25,7 +25,6 @@ module.exports = {
       },
     },
     `gatsby-plugin-material-ui`,
-    `custom-mui-theme`,
     {
       resolve: `gatsby-source-airtable`,
       options: {

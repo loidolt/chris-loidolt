@@ -4,8 +4,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import "typeface-inter";
 import "typeface-inconsolata";
 
-import theme from "./theme";
-import "./style.css";
+import theme from "./src/theme/theme";
+import "./src/theme/style.css";
 
 export const wrapRootElement = ({ element }) => {
     return (
