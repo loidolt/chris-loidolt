@@ -58,7 +58,6 @@ const About = () => {
 
   return (
     <Layout>
-      <Seo title="About" />
       <Typography variant="h3" component="h1" gutterBottom>
         Who Am I?
       </Typography>
@@ -163,5 +162,9 @@ const About = () => {
     </Layout>
   );
 };
+
+export const Head = () => (
+  <Seo title="About" />
+)
 
 export default About;

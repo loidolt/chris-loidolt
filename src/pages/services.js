@@ -39,7 +39,6 @@ const Services = () => {
 
   return (
     <Layout>
-      <Seo title="Public Services" />
       <Typography variant="h3" component="h1" gutterBottom>
         Public Services
       </Typography>
@@ -134,5 +133,9 @@ const Services = () => {
     </Layout>
   );
 };
+
+export const Head = () => (
+  <Seo title="Public Services" />
+)
 
 export default Services;

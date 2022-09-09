@@ -1,5 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+/* import PropTypes from 'prop-types' */
 
 import { useSiteMetadata } from '../../hooks'
 
@@ -35,12 +35,13 @@ function Seo({ title, description, pathname, children }) {
       {children}
     </>
   )
+
 }
 
-Seo.propTypes = {
+/* Seo.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
   pathname: PropTypes.arrayOf(PropTypes.object),
-}
+} */
 
 export default Seo

@@ -51,6 +51,10 @@ const TagsPage = ({
   );
 };
 
+export const Head = ({ tag }) => (
+  <Seo title={tag + " Projects Loidolt Design"} />
+)
+
 export const postsQuery = graphql`
   query AllPostsbyTag($skip: Int!, $limit: Int!, $tag: String) {
     allAirtable(

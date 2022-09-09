@@ -40,7 +40,6 @@ const Websites = () => {
 
   return (
     <Layout>
-      <Seo title="Websites" />
       <Typography variant="h3" component="h1" gutterBottom>
         Websites
       </Typography>
@@ -132,5 +131,9 @@ const Websites = () => {
     </Layout>
   );
 };
+
+export const Head = () => (
+  <Seo title="Websites" />
+)
 
 export default Websites;

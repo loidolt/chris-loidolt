@@ -16,7 +16,6 @@ export default function PostTemplate({ data, pageContext }) {
 
   return (
     <Layout>
-      <Seo title={post.Title} description={post.Excerpt} />
       <Typography variant="h1" component="h1" gutterBottom>
         {post.Title}
       </Typography>
@@ -100,6 +99,10 @@ export default function PostTemplate({ data, pageContext }) {
     </Layout >
   );
 }
+
+export const Head = ({ data }) => (
+  <Seo title={data.airtable.data.Title} description={data.airtable.data.Excerpt} />
+)
 
 export const pageQuery = graphql`
 query getPost($id: String) {

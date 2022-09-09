@@ -5,7 +5,6 @@ import { Layout, Seo } from "../components/layout";
 
 const NotFoundPage = () => (
   <Layout>
-    <Seo title="404: Not found" />
     <Typography variant="h3" component="h1" gutterBottom>
       NOT FOUND
     </Typography>
@@ -14,5 +13,9 @@ const NotFoundPage = () => (
     </Typography>
   </Layout>
 );
+
+export const Head = () => (
+  <Seo title="404: Not found" />
+)
 
 export default NotFoundPage;
