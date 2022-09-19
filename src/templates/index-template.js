@@ -25,19 +25,21 @@ const IndexPage = ({
             id,
             data: { Title, Date, Cover_Image, Tags, Excerpt, Path },
           } = node;
-
-          return (
-            <Grid item xs={12} sm={6} key={id}>
-              <PostCard
-                title={Title}
-                date={Date}
-                path={Path}
-                coverImage={Cover_Image.localFiles[0]}
-                tags={Tags}
-                excerpt={Excerpt}
-              />
-            </Grid>
-          );
+          if (Title, Date, Cover_Image, Tags, Excerpt, Path) {
+            return (
+              <Grid item xs={12} sm={6} key={id}>
+                <PostCard
+                  title={Title}
+                  date={Date}
+                  path={Path}
+                  coverImage={Cover_Image.localFiles[0]}
+                  tags={Tags}
+                  excerpt={Excerpt}
+                />
+              </Grid>
+            );
+          }
+          return null;
         })}
       </Grid>
       <Navigation
