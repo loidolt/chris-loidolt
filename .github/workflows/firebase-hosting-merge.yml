@@ -38,6 +38,19 @@ jobs:
         with:
           node-version: 14.x
 
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Cache Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+
       - name: Caching Gatsby
         id: gatsby-cache-build
         uses: actions/cache@v2
@@ -49,9 +62,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gatsby-build-
 
-      - uses: actions/checkout@v2
-      - run: npm ci && npm run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOIDOLT_DESIGN }}"
