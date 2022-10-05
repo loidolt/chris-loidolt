@@ -18,10 +18,13 @@ module.exports = {
   trailingSlash: `never`,
   plugins: [
     `gatsby-plugin-robots-txt`,
+    `gatsby-plugin-sitemap`,
     {
-      resolve: "gatsby-plugin-sitemap",
+      resolve: "gatsby-plugin-robots-txt",
       options: {
-        output: "/sitemap.xml",
+        host: "https://loidolt.design",
+        sitemap: "https://loidolt.design/sitemap.xml",
+        policy: [{ userAgent: "*", allow: "/" }],
       },
     },
     `gatsby-plugin-material-ui`,
