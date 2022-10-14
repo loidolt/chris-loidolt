@@ -47,7 +47,6 @@ export default function Contact() {
     }
     const response = await saveDocumentGenerateID("mail", message)
     if (response) {
-      toast.success("Message sent successfully");
       reset();
     }
   };
