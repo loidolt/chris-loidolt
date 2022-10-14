@@ -19,6 +19,7 @@
     "algoliasearch": "^4.9.1",
     "axios": "^0.27.2",
     "browser-monads": "^1.0.0",
+    "deepmerge": "^4.2.2",
     "dotenv": "^16.0.1",
     "firebase": "^9.9.1",
     "gatsby": "^4.22.1",
@@ -68,6 +69,7 @@
     "start": "npm run develop",
     "emulator-start": "firebase emulators:start --only functions",
     "serve": "gatsby serve",
+    "clean": "gatsby clean && rimraf ./node_modules",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
   "repository": {
