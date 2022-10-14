@@ -25,7 +25,7 @@ const IndexPage = ({
             id,
             data: { Title, Date, Cover_Image, Tags, Excerpt, Path },
           } = node;
-          if (Title, Date, Cover_Image, Tags, Excerpt, Path) {
+          if (Title || Date || Cover_Image || Tags || Excerpt || Path) {
             return (
               <Grid item xs={12} sm={6} key={id}>
                 <PostCard
