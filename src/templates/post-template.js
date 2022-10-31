@@ -53,25 +53,20 @@ export default function PostTemplate({ data, pageContext }) {
         </Typography>
       </Box>
       {post.Cover_Image && (
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Grid item sx={{
+        <Box
+          sx={{
             marginBottom: 2,
             borderRadius: "20px"
-          }}>
-            <GatsbyImage
-              image={
-                post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData
-              }
-              alt={post.Title + " Featured Image"}
-              style={{ borderRadius: "20px" }}
-            />
-          </Grid>
-        </Grid>
+          }}
+        >
+          <GatsbyImage
+            image={
+              post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData
+            }
+            alt={post.Title + " Featured Image"}
+            style={{ borderRadius: "20px" }}
+          />
+        </Box>
       )}
 
       <TabArea
