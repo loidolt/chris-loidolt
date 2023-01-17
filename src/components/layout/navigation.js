@@ -1,11 +1,16 @@
-import React from "react";
-import { navigate } from "gatsby";
-import { Grid, Button } from "@mui/material";
-import { NavigateNext, NavigateBefore } from "@mui/icons-material";
+import { NavigateBefore, NavigateNext } from '@mui/icons-material';
+import { Button, Grid } from '@mui/material';
+import { navigate } from 'gatsby';
+import React from 'react';
 
-export default function Navigation({ previousPath, previousLabel, nextPath, nextLabel }) {
+export default function Navigation({
+  previousPath,
+  previousLabel,
+  nextPath,
+  nextLabel,
+}) {
   if (!previousPath && !nextPath) {
-    return null
+    return null;
   }
   return (
     <Grid

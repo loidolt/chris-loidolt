@@ -27,7 +27,7 @@ const query = ` {
 }
 `;
 
-const flatten = (arr) =>
+const flatten = arr =>
   arr.map(({ data, ...rest }) => ({
     ...data,
     ...rest,
@@ -35,12 +35,11 @@ const flatten = (arr) =>
 
 const settings = {
   attributesToSnippet: [`Markdown:20`, `Excerpt:20`],
-  searchableAttributes: ["Title", "Excerpt, Markdown", "Tags", "Date"],
-  attributesForFaceting: ["filterOnly(Tags)"],
-  attributesToHighlight: ["Title", "Excerpt", "Tags", "Date"],
-  customRanking: ["asc(Title)", "desc(Date)", "asc(Excerpt)"],
+  searchableAttributes: ['Title', 'Excerpt, Markdown', 'Tags', 'Date'],
+  attributesForFaceting: ['filterOnly(Tags)'],
+  attributesToHighlight: ['Title', 'Excerpt', 'Tags', 'Date'],
+  customRanking: ['asc(Title)', 'desc(Date)', 'asc(Excerpt)'],
 };
-
 
 const queries = [
   {

@@ -1,10 +1,9 @@
-import React from "react";
-import { graphql } from "gatsby";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography } from '@mui/material';
+import { graphql } from 'gatsby';
+import React from 'react';
 
-import { Layout, Seo, Navigation } from "../components/layout";
-import { PostCard } from "../components/posts";
-
+import { Layout, Navigation, Seo } from '../components/layout';
+import { PostCard } from '../components/posts';
 
 const TagsPage = ({
   data,
@@ -16,7 +15,7 @@ const TagsPage = ({
 
   return (
     <Layout>
-      <Seo title={tag + " Projects Loidolt Design"} />
+      <Seo title={tag + ' Projects Loidolt Design'} />
       <Typography variant="h1" component="h1" gutterBottom>
         #{tag}
       </Typography>
@@ -55,8 +54,8 @@ const TagsPage = ({
 };
 
 export const Head = ({ tag }) => (
-  <Seo title={tag + " Projects Loidolt Design"} />
-)
+  <Seo title={tag + ' Projects Loidolt Design'} />
+);
 
 export const postsQuery = graphql`
   query AllPostsbyTag($skip: Int!, $limit: Int!, $tag: String) {

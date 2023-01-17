@@ -1,6 +1,6 @@
-const queries = require("./src/components/algolia/algolia-queries");
+const queries = require('./src/components/algolia/algolia-queries');
 
-require("dotenv").config({
+require('dotenv').config({
   path: `.env.${process.env.NODE_ENV}`,
 });
 
@@ -8,7 +8,7 @@ module.exports = {
   siteMetadata: {
     title: `Loidolt Design`,
     description: `I like learning and creating. I strongly believe the world needs more of that.`,
-    copyrights: "Loidolt Design 2022",
+    copyrights: 'Loidolt Design 2022',
     author: `Chris Loidolt`,
     siteUrl: `https://loidolt.design`,
     image: `./src/images/CLLightBulbBlue.png`,
@@ -20,11 +20,11 @@ module.exports = {
     `gatsby-plugin-robots-txt`,
     `gatsby-plugin-sitemap`,
     {
-      resolve: "gatsby-plugin-robots-txt",
+      resolve: 'gatsby-plugin-robots-txt',
       options: {
-        host: "https://loidolt.design",
-        sitemap: "https://loidolt.design/sitemap.xml",
-        policy: [{ userAgent: "*", allow: "/" }],
+        host: 'https://loidolt.design',
+        sitemap: 'https://loidolt.design/sitemap.xml',
+        policy: [{ userAgent: '*', allow: '/' }],
       },
     },
     `gatsby-plugin-material-ui`,
@@ -46,14 +46,14 @@ module.exports = {
             baseId: process.env.AIRTABLE_POSTS_BASEID,
             tableName: process.env.AIRTABLE_WEBSITES_TABLENAME,
             mapping: {
-              Image: `fileNode`
+              Image: `fileNode`,
             },
           },
           {
             baseId: process.env.AIRTABLE_POSTS_BASEID,
             tableName: process.env.AIRTABLE_SERVICES_TABLENAME,
             mapping: {
-              Image: `fileNode`
+              Image: `fileNode`,
             },
           },
           {
@@ -91,7 +91,7 @@ module.exports = {
       options: {
         plugins: [
           {
-            resolve: "gatsby-remark-embed-video",
+            resolve: 'gatsby-remark-embed-video',
             options: {
               related: false,
               noIframeBorder: true,
@@ -107,7 +107,7 @@ module.exports = {
           {
             resolve: `gatsby-remark-prismjs`,
             options: {
-              classPrefix: "language-",
+              classPrefix: 'language-',
               inlineCodeMarker: null,
               aliases: {},
               showLineNumbers: false,

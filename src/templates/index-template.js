@@ -1,10 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { graphql } from "gatsby";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography } from '@mui/material';
+import { graphql } from 'gatsby';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import { PostCard } from "../components/posts";
-import { Layout, Seo, Navigation } from "../components/layout";
+import { Layout, Navigation, Seo } from '../components/layout';
+import { PostCard } from '../components/posts';
 
 const IndexPage = ({
   data,
@@ -52,9 +52,7 @@ const IndexPage = ({
   );
 };
 
-export const Head = () => (
-  <Seo title="Projects" />
-)
+export const Head = () => <Seo title="Projects" />;
 
 IndexPage.propTypes = {
   data: PropTypes.object.isRequired,

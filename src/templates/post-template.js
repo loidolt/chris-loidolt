@@ -1,13 +1,12 @@
-import React from "react";
-import { graphql, navigate } from "gatsby";
-import { GatsbyImage } from "gatsby-plugin-image";
-import { Grid, Box, Typography, Chip } from "@mui/material";
+import { Box, Chip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { graphql, navigate } from 'gatsby';
+import { GatsbyImage } from 'gatsby-plugin-image';
+import React from 'react';
 
-import { Links, TabArea } from "../components/posts";
-import { Layout, Seo, Navigation } from "../components/layout";
-
-import { toKebabCase } from "../utils";
+import { Layout, Navigation, Seo } from '../components/layout';
+import { Links, TabArea } from '../components/posts';
+import { toKebabCase } from '../utils';
 
 export default function PostTemplate({ data, pageContext }) {
   const theme = useTheme();
@@ -27,14 +26,14 @@ export default function PostTemplate({ data, pageContext }) {
         {post.Tags.map((tag, index) => (
           <Chip
             key={index}
-            label={"#" + tag}
+            label={'#' + tag}
             variant="outlined"
             sx={{
               marginRight: 1,
               color: theme.palette.white.dark,
               borderColor: theme.palette.white.dark,
               backgroundColor: theme.palette.background.paper,
-              "&:hover": {
+              '&:hover': {
                 backgroundColor: theme.palette.background.default,
               },
             }}
@@ -45,8 +44,8 @@ export default function PostTemplate({ data, pageContext }) {
           variant="subtitle1"
           component="p"
           sx={{
-            color: "rgba(255, 255, 255, 0.38)",
-            float: "right",
+            color: 'rgba(255, 255, 255, 0.38)',
+            float: 'right',
           }}
         >
           {post.Date}
@@ -56,15 +55,15 @@ export default function PostTemplate({ data, pageContext }) {
         <Box
           sx={{
             marginBottom: 2,
-            borderRadius: "20px"
+            borderRadius: '20px',
           }}
         >
           <GatsbyImage
             image={
               post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData
             }
-            alt={post.Title + " Featured Image"}
-            style={{ borderRadius: "20px" }}
+            alt={post.Title + ' Featured Image'}
+            style={{ borderRadius: '20px' }}
           />
         </Box>
       )}
@@ -91,50 +90,53 @@ export default function PostTemplate({ data, pageContext }) {
         nextPath={pageContext.nextPostPath}
         nextLabel={pageContext.nextPostTitle}
       />
-    </Layout >
+    </Layout>
   );
 }
 
 export const Head = ({ data }) => (
-  <Seo title={data.airtable.data.Title} description={data.airtable.data.Excerpt} />
-)
+  <Seo
+    title={data.airtable.data.Title}
+    description={data.airtable.data.Excerpt}
+  />
+);
 
 export const pageQuery = graphql`
-query getPost($id: String) {
-  airtable(id: {eq: $id}) {
-    data {
-      Attribution
-      Cover_Image {
-        localFiles {
-          childImageSharp {
-            gatsbyImageData(width: 1024)
+  query getPost($id: String) {
+    airtable(id: { eq: $id }) {
+      data {
+        Attribution
+        Cover_Image {
+          localFiles {
+            childImageSharp {
+              gatsbyImageData(width: 1024)
+            }
           }
         }
-      }
-      Date(formatString: "DD MMMM YYYY")
-      Excerpt
-      Gallery {
-        localFiles {
-          childImageSharp {
-            gatsbyImageData
+        Date(formatString: "DD MMMM YYYY")
+        Excerpt
+        Gallery {
+          localFiles {
+            childImageSharp {
+              gatsbyImageData
+            }
+            name
+            publicURL
           }
-          name
-          publicURL
+        }
+        Markdown
+        Repository
+        Model_URL
+        Tags
+        Title
+        Path
+        Model {
+          filename
+          url
+          type
         }
       }
-      Markdown
-      Repository
-      Model_URL
-      Tags
-      Title
-      Path
-      Model {
-        filename
-        url
-        type
-      }
+      id
     }
-    id
   }
-}
 `;

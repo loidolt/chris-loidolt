@@ -1,37 +1,48 @@
-import React from "react";
-import { useStaticQuery, graphql } from "gatsby";
-import { Grid, Stack, Card, CardContent, Divider, Button, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { graphql, useStaticQuery } from 'gatsby';
+import React from 'react';
 
-import { Layout, Seo } from "../components/layout";
+import { Layout, Seo } from '../components/layout';
 
 const Services = () => {
   const data = useStaticQuery(graphql`
-  query Services {
-    allAirtable(
-      filter: {table: {eq: "Services"}, data: {Status: {eq: "Published"}}}
-    ) {
-      nodes {
-        data {
-          Name
-          More_Info
-          Subtitle
-          Summary
-          URL
-          Image {
-            localFiles {
-              childImageSharp {
-                gatsbyImageData
+    query Services {
+      allAirtable(
+        filter: {
+          table: { eq: "Services" }
+          data: { Status: { eq: "Published" } }
+        }
+      ) {
+        nodes {
+          data {
+            Name
+            More_Info
+            Subtitle
+            Summary
+            URL
+            Image {
+              localFiles {
+                childImageSharp {
+                  gatsbyImageData
+                }
+                name
+                publicURL
               }
-              name
-              publicURL
             }
           }
         }
       }
     }
-  }
-`);
+  `);
 
   const theme = useTheme();
 
@@ -48,11 +59,11 @@ const Services = () => {
             <Card
               sx={{
                 backgroundColor: theme.palette.background.paper,
-                boxShadow: "0 3px 10px rgba(0, 0, 0, 0.43)",
-                borderRadius: "20px",
-                "&:hover": {
-                  boxShadow: "0 15px 35px 0 rgba(0, 0, 0, 0.41)",
-                  transition: "all 0.55s ease-in-out",
+                boxShadow: '0 3px 10px rgba(0, 0, 0, 0.43)',
+                borderRadius: '20px',
+                '&:hover': {
+                  boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
+                  transition: 'all 0.55s ease-in-out',
                 },
               }}
             >
@@ -73,9 +84,9 @@ const Services = () => {
                   <CardContent>
                     <Typography
                       sx={{
-                        fontSize: "1.6em",
-                        fontWeight: "bold",
-                        color: "rgba(255, 255, 255, 0.87)",
+                        fontSize: '1.6em',
+                        fontWeight: 'bold',
+                        color: 'rgba(255, 255, 255, 0.87)',
                       }}
                       gutterBottom
                     >
@@ -83,18 +94,16 @@ const Services = () => {
                     </Typography>
                     <Typography
                       sx={{
-                        fontSize: "1em",
-                        fontWeight: "bold",
-                        color: "rgba(255, 255, 255, 0.38)",
-                        textTransform: "uppercase",
+                        fontSize: '1em',
+                        fontWeight: 'bold',
+                        color: 'rgba(255, 255, 255, 0.38)',
+                        textTransform: 'uppercase',
                       }}
                       gutterBottom
                     >
                       {service.data.Subtitle}
                     </Typography>
-                    <Typography gutterBottom>
-                      {service.data.Summary}
-                    </Typography>
+                    <Typography gutterBottom>{service.data.Summary}</Typography>
                   </CardContent>
                   <Divider />
                   <Stack
@@ -115,7 +124,7 @@ const Services = () => {
                     )}
                     {service.data.URL && (
                       <Button
-                        variant={"contained"}
+                        variant={'contained'}
                         target="_blank"
                         rel="noreferrer"
                         href={service.data.URL}
@@ -134,8 +143,6 @@ const Services = () => {
   );
 };
 
-export const Head = () => (
-  <Seo title="Public Services" />
-)
+export const Head = () => <Seo title="Public Services" />;
 
 export default Services;

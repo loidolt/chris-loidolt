@@ -1,13 +1,17 @@
-import React from 'react'
+import React from 'react';
+
 /* import PropTypes from 'prop-types' */
-
-import { useSiteMetadata } from '../../hooks'
-
-import icon from "../../images/CLLightBulbBlue.png"
+import { useSiteMetadata } from '../../hooks';
+import icon from '../../images/CLLightBulbBlue.png';
 
 function Seo({ title, description, pathname, children }) {
-
-  const { title: defaultTitle, description: defaultDescription, image, siteUrl, author } = useSiteMetadata();
+  const {
+    title: defaultTitle,
+    description: defaultDescription,
+    image,
+    siteUrl,
+    author,
+  } = useSiteMetadata();
 
   const seo = {
     title: title || defaultTitle,
@@ -15,7 +19,7 @@ function Seo({ title, description, pathname, children }) {
     image: `${siteUrl}${image}`,
     url: `${siteUrl}${pathname || ``}`,
     author,
-  }
+  };
 
   return (
     <>
@@ -24,7 +28,7 @@ function Seo({ title, description, pathname, children }) {
       <meta name="image" content={seo.image} />
       <meta name="og:title" content={seo.title} />
       <meta name="og:description" content={seo.description} />
-      <meta name="og:type" content={"website"} />
+      <meta name="og:type" content={'website'} />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:title" content={seo.title} />
       <meta name="twitter:url" content={seo.url} />
@@ -34,8 +38,7 @@ function Seo({ title, description, pathname, children }) {
       <link id="favicon-icon" rel="icon" href={icon} />
       {children}
     </>
-  )
-
+  );
 }
 
 /* Seo.propTypes = {
@@ -44,4 +47,4 @@ function Seo({ title, description, pathname, children }) {
   pathname: PropTypes.arrayOf(PropTypes.object),
 } */
 
-export default Seo
+export default Seo;

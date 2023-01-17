@@ -1,31 +1,31 @@
-import { createTheme } from "@mui/material/styles";
-import { grey } from "@mui/material/colors"
+import { grey } from '@mui/material/colors';
+import { createTheme } from '@mui/material/styles';
 
 // A custom theme for this app
 const rawTheme = createTheme({
   palette: {
-    mode: "dark",
+    mode: 'dark',
     primary: {
-      main: "#A9D8F0",
-      light: "#A9D8F0",
-      dark: "#056484",
+      main: '#A9D8F0',
+      light: '#A9D8F0',
+      dark: '#056484',
     },
     secondary: {
-      main: "#058464",
-      light: "#b1ddd1",
-      dark: "#006448",
+      main: '#058464',
+      light: '#b1ddd1',
+      dark: '#006448',
     },
     white: {
-      main: "#fff",
-      dark: "#c6c6c6",
+      main: '#fff',
+      dark: '#c6c6c6',
     },
     dark: {
-      main: "#414042",
+      main: '#414042',
     },
     background: {
-      default: "#121212",
-      header: "#1f1f1f",
-      paper: "#1e1e1e",
+      default: '#121212',
+      header: '#1f1f1f',
+      paper: '#1e1e1e',
     },
   },
   typography: {
@@ -51,7 +51,7 @@ const fontHeader = {
   color: rawTheme.palette.text.primary.main,
   fontWeight: rawTheme.typography.fontWeightMedium,
   fontFamily: rawTheme.typography.fontFamily,
-}
+};
 
 const theme = {
   ...rawTheme,
@@ -116,12 +116,12 @@ const theme = {
     subtitle1: {
       ...rawTheme.typography.subtitle1,
       fontFamily: rawTheme.typography.fontFamilySecondary,
-      fontSize: "1rem",
+      fontSize: '1rem',
       letterSpacing: 2,
       lineHeight: 1.6,
       color: rawTheme.palette.white.main,
       fontWeight: 400,
-      [rawTheme.breakpoints.down("md")]: {
+      [rawTheme.breakpoints.down('md')]: {
         fontSize: 14,
         letterSpacing: 1,
       },
@@ -129,14 +129,14 @@ const theme = {
     subtitle2: {
       ...rawTheme.typography.body1,
       fontSize: 15,
-      textTransform: "uppercase",
+      textTransform: 'uppercase',
       letterSpacing: 2,
     },
     subtitle3: {
       ...rawTheme.typography.body1,
       fontFamily: rawTheme.typography.fontFamilySecondary,
       fontSize: 15,
-      textTransform: "uppercase",
+      textTransform: 'uppercase',
       letterSpacing: 1,
     },
     body1: {
@@ -157,6 +157,6 @@ const theme = {
       },
     },
   },
-}
+};
 
 export default theme;

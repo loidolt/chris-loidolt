@@ -1,13 +1,20 @@
-import React from "react";
-import { useStaticQuery, graphql } from "gatsby";
-import { GatsbyImage } from "gatsby-plugin-image";
-import { List, ListItem, ListItemText, ListItemSecondaryAction, Grid, Typography, IconButton } from "@mui/material";
-import { Info } from "@mui/icons-material";
+import { Info } from '@mui/icons-material';
+import {
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { graphql, useStaticQuery } from 'gatsby';
+import { GatsbyImage } from 'gatsby-plugin-image';
+import React from 'react';
 
-import { Layout, Seo } from "../components/layout";
-
-import { groupBy } from "../utils";
+import { Layout, Seo } from '../components/layout';
+import { groupBy } from '../utils';
 
 const About = () => {
   const data = useStaticQuery(graphql`
@@ -17,7 +24,7 @@ const About = () => {
           gatsbyImageData(width: 600, quality: 50)
         }
       }
-      allAirtable(filter: {table: {eq: "Qualifications"}}) {
+      allAirtable(filter: { table: { eq: "Qualifications" } }) {
         nodes {
           data {
             Name
@@ -38,7 +45,7 @@ const About = () => {
 
   // Get all types and filter unique values
   let allTypes = [];
-  qualifications.map((qual) => {
+  qualifications.map(qual => {
     return allTypes.push(qual.data.Type);
   });
   let types = [...new Set(allTypes)];
@@ -46,12 +53,10 @@ const About = () => {
 
   // Filter By Type
   let items = function (type) {
-    let filtered = qualifications.filter(
-      (qual) => qual.data.Type === type
-    );
+    let filtered = qualifications.filter(qual => qual.data.Type === type);
     /* console.log(filtered); */
     // Group By Category
-    let grouped = groupBy(filtered, (qual) => qual.data.Category);
+    let grouped = groupBy(filtered, qual => qual.data.Category);
     /* console.log(Object.entries(grouped)); */
     return Object.entries(grouped);
   };
@@ -90,8 +95,8 @@ const About = () => {
         <Grid item xs={12} sm={6}>
           <GatsbyImage
             image={data.placeholderImage.childImageSharp.gatsbyImageData}
-            alt={"Chris Loidolt Profile Picture"}
-            style={{ borderRadius: "20px" }}
+            alt={'Chris Loidolt Profile Picture'}
+            style={{ borderRadius: '20px' }}
           />
         </Grid>
       </Grid>
@@ -103,7 +108,7 @@ const About = () => {
               component="h2"
               sx={{
                 marginTop: 4,
-                color: "rgba(255, 255, 255, 0.87)",
+                color: 'rgba(255, 255, 255, 0.87)',
               }}
             >
               {type}
@@ -115,7 +120,7 @@ const About = () => {
                 variant="h6"
                 component="h3"
                 sx={{
-                  textTransform: "uppercase",
+                  textTransform: 'uppercase',
                   color: theme.palette.white.dark,
                 }}
               >
@@ -125,14 +130,14 @@ const About = () => {
                 sx={{
                   backgroundColor: theme.palette.background.paper,
                   color: theme.palette.white.main,
-                  borderRadius: "20px",
+                  borderRadius: '20px',
                 }}
               >
                 {category[1].map((item, index) => (
                   <ListItem key={index}>
                     <ListItemText
                       primary={item.data.Name}
-                      secondary={item.data.Level || ""}
+                      secondary={item.data.Level || ''}
                       secondaryTypographyProps={{
                         style: { color: theme.palette.white.dark },
                       }}
@@ -163,8 +168,6 @@ const About = () => {
   );
 };
 
-export const Head = () => (
-  <Seo title="About" />
-)
+export const Head = () => <Seo title="About" />;
 
 export default About;

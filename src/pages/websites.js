@@ -1,37 +1,48 @@
-import React from "react";
-import { useStaticQuery, graphql } from "gatsby";
-import { GatsbyImage } from "gatsby-plugin-image"
-import { Grid, Card, Divider, CardContent, Stack, Button, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { graphql, useStaticQuery } from 'gatsby';
+import { GatsbyImage } from 'gatsby-plugin-image';
+import React from 'react';
 
-import { Layout, Seo } from "../components/layout";
+import { Layout, Seo } from '../components/layout';
 
 const Websites = () => {
   const data = useStaticQuery(graphql`
-  query Websites {
-    allAirtable(
-      filter: {table: {eq: "Websites"}, data: {Status: {eq: "Published"}}}
-    ) {
-      nodes {
-        data {
-          Name
-          Status_URL
-          URL
-          Summary
-          Image {
-            localFiles {
-              childImageSharp {
-                gatsbyImageData
+    query Websites {
+      allAirtable(
+        filter: {
+          table: { eq: "Websites" }
+          data: { Status: { eq: "Published" } }
+        }
+      ) {
+        nodes {
+          data {
+            Name
+            Status_URL
+            URL
+            Summary
+            Image {
+              localFiles {
+                childImageSharp {
+                  gatsbyImageData
+                }
+                name
+                publicURL
               }
-              name
-              publicURL
             }
+            Status
           }
-          Status
         }
       }
     }
-  }
   `);
 
   const theme = useTheme();
@@ -49,24 +60,24 @@ const Websites = () => {
             <Card
               sx={{
                 backgroundColor: theme.palette.background.paper,
-                boxShadow: "0 3px 10px rgba(0, 0, 0, 0.87)",
-                borderRadius: "20px",
-                "&:hover": {
-                  boxShadow: "0 15px 35px 0 rgba(0, 0, 0, 0.41)",
-                  transition: "all 0.55s ease-in-out",
+                boxShadow: '0 3px 10px rgba(0, 0, 0, 0.87)',
+                borderRadius: '20px',
+                '&:hover': {
+                  boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
+                  transition: 'all 0.55s ease-in-out',
                 },
               }}
             >
               <a target="_blank" rel="noreferrer" href={website.data.URL}>
                 <GatsbyImage
                   sx={{
-                    height: "100%",
+                    height: '100%',
                   }}
                   image={
                     website.data.Image.localFiles[0].childImageSharp
                       .gatsbyImageData
                   }
-                  alt={website.data.Name + " Screenshot"}
+                  alt={website.data.Name + ' Screenshot'}
                   style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
                 />
               </a>
@@ -102,7 +113,7 @@ const Websites = () => {
                     spacing={2}
                     sx={{ padding: 2 }}
                   >
-                    {website.data.Status_URL &&
+                    {website.data.Status_URL && (
                       <Button
                         target="_blank"
                         rel="noreferrer"
@@ -110,17 +121,17 @@ const Websites = () => {
                       >
                         Status
                       </Button>
-                    }
-                    {website.data.URL &&
+                    )}
+                    {website.data.URL && (
                       <Button
-                        variant={"contained"}
+                        variant={'contained'}
                         target="_blank"
                         rel="noreferrer"
                         href={website.data.URL}
                       >
                         Visit Website
                       </Button>
-                    }
+                    )}
                   </Stack>
                 </React.Fragment>
               )}
@@ -132,8 +143,6 @@ const Websites = () => {
   );
 };
 
-export const Head = () => (
-  <Seo title="Websites" />
-)
+export const Head = () => <Seo title="Websites" />;
 
 export default Websites;

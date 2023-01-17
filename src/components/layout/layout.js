@@ -1,13 +1,13 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { StaticQuery, graphql } from "gatsby";
-import { Box, Container } from "@mui/material";
+import { Box, Container } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { StaticQuery, graphql } from 'gatsby';
+import PropTypes from 'prop-types';
+import React from 'react';
+
 //firebase
 import firebaseApp, { logAnalyticsEvent } from '../../utils/firebase-config';
-
-import Header from "./header";
-import Footer from "./footer";
+import Footer from './footer';
+import Header from './header';
 
 const Layout = ({ children }) => {
   const theme = useTheme();
@@ -30,22 +30,26 @@ const Layout = ({ children }) => {
           }
         }
       `}
-      render={(data) => (
+      render={data => (
         <>
           <Header siteTitle={data.site.siteMetadata.title} />
           <Box sx={{ backgroundColor: theme.palette.background.default }}>
             <Container
               maxWidth="md"
               sx={{
-                minHeight: "74vh",
+                minHeight: '74vh',
                 margin: `0 auto`,
                 padding: `0px 1.0875rem 1.45rem`,
                 paddingTop: 8,
-              }}>
+              }}
+            >
               <main>{children}</main>
             </Container>
           </Box>
-          <Footer githubUrl={data.site.siteMetadata.githubUrl} donationLink={data.site.siteMetadata.donationLink} />
+          <Footer
+            githubUrl={data.site.siteMetadata.githubUrl}
+            donationLink={data.site.siteMetadata.donationLink}
+          />
         </>
       )}
     />

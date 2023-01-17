@@ -1,21 +1,19 @@
-import React from 'react';
-import { navigate } from 'gatsby';
 import { getAlgoliaResults } from '@algolia/autocomplete-js';
-import algoliasearch from 'algoliasearch';
-
 import '@algolia/autocomplete-theme-classic';
-import './autocomplete.css';
+import algoliasearch from 'algoliasearch';
+import { navigate } from 'gatsby';
+import React from 'react';
 
-import Autocomplete from "./customAutocomplete";
+import './autocomplete.css';
+import Autocomplete from './customAutocomplete';
 import PostItem from './postItem';
 
 const searchClient = algoliasearch(
   process.env.GATSBY_ALGOLIA_APP_ID,
-  process.env.GATSBY_ALGOLIA_ADMIN_KEY
-)
+  process.env.GATSBY_ALGOLIA_ADMIN_KEY,
+);
 
 export default function Search() {
-
   return (
     <Autocomplete
       openOnFocus={true}
@@ -67,5 +65,5 @@ export default function Search() {
         },
       ]}
     />
-  )
+  );
 }

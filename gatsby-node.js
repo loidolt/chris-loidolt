@@ -1,11 +1,11 @@
-const { paginate } = require("gatsby-awesome-pagination");
-const path = require("path");
-const { toKebabCase } = require("./src/utils");
-const util = require("util");
-const child_process = require("child_process");
+const { paginate } = require('gatsby-awesome-pagination');
+const path = require('path');
+const { toKebabCase } = require('./src/utils');
+const util = require('util');
+const child_process = require('child_process');
 const exec = util.promisify(child_process.exec);
 
-exports.createPages = async (gatsbyUtilities) => {
+exports.createPages = async gatsbyUtilities => {
   const { createPage } = gatsbyUtilities.actions;
 
   // Query posts from the GraphQL server
@@ -18,7 +18,7 @@ exports.createPages = async (gatsbyUtilities) => {
     items: posts,
     component: path.resolve(`./src/templates/index-template.js`),
     itemsPerPage: 12,
-    pathPrefix: "/",
+    pathPrefix: '/',
   });
 
   // Create tag pages
@@ -26,7 +26,7 @@ exports.createPages = async (gatsbyUtilities) => {
   // Get all tags and filter unique falues
   let allTags = [];
   posts.map(({ post }) => {
-    post.data.Tags.map((tag) => {
+    post.data.Tags.map(tag => {
       //console.log(tag);
       let tagString = String(tag);
       allTags.push(tagString);
@@ -36,9 +36,9 @@ exports.createPages = async (gatsbyUtilities) => {
   let tags = [...new Set(allTags)];
   //console.log(tags);
 
-  tags.forEach((tag) => {
+  tags.forEach(tag => {
     const postsWithTag = posts.filter(
-      ({ post }) => post.data.Tags && post.data.Tags.indexOf(tag) !== -1
+      ({ post }) => post.data.Tags && post.data.Tags.indexOf(tag) !== -1,
     );
 
     paginate({
@@ -80,8 +80,8 @@ const createIndividualPostPages = async ({ posts, gatsbyUtilities }) =>
           nextPostPath: next ? next.data.Path : null,
           nextPostTitle: next ? next.data.Title : null,
         },
-      })
-    )
+      }),
+    ),
   );
 
 /**
@@ -100,7 +100,7 @@ async function getPosts({ graphql, reporter }) {
           data: { Status: { eq: "Published" } }
           table: { eq: "Posts" }
         }
-        sort: {fields: data___Date, order: DESC}
+        sort: { fields: data___Date, order: DESC }
       ) {
         edges {
           next {
@@ -133,7 +133,7 @@ async function getPosts({ graphql, reporter }) {
   if (graphqlResult.errors) {
     reporter.panicOnBuild(
       `There was an error loading your posts`,
-      graphqlResult.errors
+      graphqlResult.errors,
     );
     return;
   }

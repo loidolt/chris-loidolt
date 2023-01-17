@@ -1,9 +1,9 @@
-import React from "react";
-import { GatsbyImage } from "gatsby-plugin-image";
-import { Dialog, IconButton, ImageList, ImageListItem } from "@mui/material";
 import { Close } from '@mui/icons-material';
+import { Dialog, IconButton, ImageList, ImageListItem } from '@mui/material';
+import { GatsbyImage } from 'gatsby-plugin-image';
+import React from 'react';
 
-import { useWindowSize } from "../../hooks";
+import { useWindowSize } from '../../hooks';
 
 export default function GalleryGrid({ photos }) {
   const [open, setOpen] = React.useState(false);
@@ -11,7 +11,7 @@ export default function GalleryGrid({ photos }) {
 
   const { windowWidth } = useWindowSize();
 
-  const handleClickOpen = (value) => {
+  const handleClickOpen = value => {
     setSelectedImage(value);
     setOpen(true);
   };
@@ -20,51 +20,46 @@ export default function GalleryGrid({ photos }) {
     setOpen(false);
   };
 
-  const setColumns = (width) => {
+  const setColumns = width => {
     if (width < 700) {
-      return 1
+      return 1;
     } else if (width < 1000) {
-      return 2
+      return 2;
     } else {
-      return 4
+      return 4;
     }
-  }
+  };
 
   if (photos.length > 1) {
     return (
       <>
         <ImageList cols={setColumns(windowWidth)} gap={12}>
-          {photos.map(
-            (image, index) =>
-              <ImageListItem key={index} onClick={() => handleClickOpen(image)}>
-                <GatsbyImage
-                  image={
-                    image.childImageSharp.gatsbyImageData
-                  }
-                  alt={image.name}
-                  style={{
-                    cursor: 'pointer',
-                    objectFit: 'cover',
-                    width: '100%',
-                    maxHeight: '100%',
-                    borderRadius: "10px",
-                  }}
-                />
-              </ImageListItem>
-          )}
+          {photos.map((image, index) => (
+            <ImageListItem key={index} onClick={() => handleClickOpen(image)}>
+              <GatsbyImage
+                image={image.childImageSharp.gatsbyImageData}
+                alt={image.name}
+                style={{
+                  cursor: 'pointer',
+                  objectFit: 'cover',
+                  width: '100%',
+                  maxHeight: '100%',
+                  borderRadius: '10px',
+                }}
+              />
+            </ImageListItem>
+          ))}
         </ImageList>
-        {selectedImage &&
+        {selectedImage && (
           <Dialog onClose={handleClose} open={open}>
             <GatsbyImage
-              image={
-                selectedImage.childImageSharp.gatsbyImageData
-              }
+              image={selectedImage.childImageSharp.gatsbyImageData}
               alt={selectedImage.name}
               style={{
                 objectFit: 'cover',
                 width: '100%',
                 maxHeight: '100%',
-                borderRadius: "10px",
+                borderRadius: '10px',
               }}
             />
             <IconButton
@@ -74,13 +69,13 @@ export default function GalleryGrid({ photos }) {
                 position: 'absolute',
                 right: 2,
                 top: 2,
-                backgroundColor: "rgba(0, 0, 0, 0.5)"
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
               }}
             >
               <Close />
             </IconButton>
           </Dialog>
-        }
+        )}
       </>
     );
   } else {

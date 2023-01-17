@@ -1,19 +1,39 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Link } from "gatsby";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  Info,
+  Mail,
+  Menu,
+  Public,
+  Web,
+} from '@mui/icons-material';
+import {
+  AppBar,
+  Box,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Drawer, AppBar, Box, Toolbar, List, Typography, IconButton, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import { Menu, ChevronLeft, ChevronRight, Home, Info, Web, Mail, Public } from "@mui/icons-material";
+import { Link } from 'gatsby';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import { Search } from "../algolia";
+import { Search } from '../algolia';
 
 const menuList = [
-  { title: "Projects", link: "/", icon: <Home /> },
-  { title: "Websites", link: "/websites", icon: <Web /> },
-  { title: "Services", link: "/services", icon: <Public /> },
-  { title: "About", link: "/about", icon: <Info /> },
-  { title: "Contact", link: "/contact", icon: <Mail /> },
-]
+  { title: 'Projects', link: '/', icon: <Home /> },
+  { title: 'Websites', link: '/websites', icon: <Web /> },
+  { title: 'Services', link: '/services', icon: <Public /> },
+  { title: 'About', link: '/about', icon: <Info /> },
+  { title: 'Contact', link: '/contact', icon: <Mail /> },
+];
 
 const drawerWidth = 240;
 
@@ -35,7 +55,7 @@ const Header = ({ siteTitle }) => {
       <AppBar
         position="static"
         sx={{
-          transition: theme.transitions.create(["margin", "width"], {
+          transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),
@@ -43,7 +63,7 @@ const Header = ({ siteTitle }) => {
           borderRadius: 0,
         }}
       >
-        <Toolbar sx={{ alignItems: "center" }}>
+        <Toolbar sx={{ alignItems: 'center' }}>
           <IconButton
             size="large"
             edge="start"
@@ -59,11 +79,11 @@ const Header = ({ siteTitle }) => {
             variant="h6"
             noWrap
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "block", sm: "block" } }}
+            sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' } }}
           >
             <Link
               to="/"
-              style={{ color: "inherit", textDecoration: "inherit" }}
+              style={{ color: 'inherit', textDecoration: 'inherit' }}
             >
               {siteTitle}
             </Link>
@@ -76,7 +96,7 @@ const Header = ({ siteTitle }) => {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          "& .MuiDrawer-paper": {
+          '& .MuiDrawer-paper': {
             width: drawerWidth,
             backgroundColor: theme.palette.background.header,
             borderTopLeftRadius: 0,
@@ -89,11 +109,11 @@ const Header = ({ siteTitle }) => {
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            padding: "0 8px",
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 8px',
             ...theme.mixins.toolbar,
-            justifyContent: "flex-end",
+            justifyContent: 'flex-end',
           }}
         >
           <IconButton
@@ -103,11 +123,7 @@ const Header = ({ siteTitle }) => {
               color: theme.palette.white.dark,
             }}
           >
-            {theme.direction === "ltr" ? (
-              <ChevronLeft />
-            ) : (
-              <ChevronRight />
-            )}
+            {theme.direction === 'ltr' ? <ChevronLeft /> : <ChevronRight />}
           </IconButton>
         </Box>
         <List>
@@ -121,9 +137,7 @@ const Header = ({ siteTitle }) => {
                 color: theme.palette.white.main,
               }}
             >
-              <ListItemIcon>
-                {item.icon}
-              </ListItemIcon>
+              <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText>{item.title}</ListItemText>
             </ListItem>
           ))}

@@ -1,7 +1,7 @@
-import React from "react";
-import { Typography } from "@mui/material";
+import { Typography } from '@mui/material';
+import React from 'react';
 
-import { Layout, Seo } from "../components/layout";
+import { Layout, Seo } from '../components/layout';
 
 const NotFoundPage = () => (
   <Layout>
@@ -14,8 +14,6 @@ const NotFoundPage = () => (
   </Layout>
 );
 
-export const Head = () => (
-  <Seo title="404: Not found" />
-)
+export const Head = () => <Seo title="404: Not found" />;
 
 export default NotFoundPage;

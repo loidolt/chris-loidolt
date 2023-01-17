@@ -1,17 +1,20 @@
-import React from 'react';
-import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useTheme, TextField, Paper, Grid, Typography } from "@mui/material";
 import { LoadingButton } from '@mui/lab';
+import { Grid, Paper, TextField, Typography, useTheme } from '@mui/material';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+
+import { Layout, Seo } from '../components/layout';
 //firebase
 import { saveDocumentGenerateID } from '../utils/firestore';
 
-import { Layout, Seo } from "../components/layout";
-
 const schema = yup.object().shape({
   name: yup.string().required('Name is required'),
-  email: yup.string().email("Please enter a valid email address").required('Email is required'),
+  email: yup
+    .string()
+    .email('Please enter a valid email address')
+    .required('Email is required'),
   message: yup.string().required('Message is required'),
 });
 
@@ -23,18 +26,18 @@ export default function Contact() {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: "",
-      email: "",
-      message: "",
-    }
+      name: '',
+      email: '',
+      message: '',
+    },
   });
 
-  const onSubmit = async (data) => {
-    console.log(data)
+  const onSubmit = async data => {
+    console.log(data);
     const message = {
       to: 'loidolt@gmail.com',
       replyTo: `${data.email}`,
@@ -42,9 +45,9 @@ export default function Contact() {
         subject: `${data.name} | Loidolt Design Contact Form`,
         text: `${data.message}`,
         html: `${data.message}`,
-      }
-    }
-    const response = await saveDocumentGenerateID("mail", message)
+      },
+    };
+    const response = await saveDocumentGenerateID('mail', message);
     if (response) {
       reset();
     }
@@ -59,7 +62,7 @@ export default function Contact() {
         sx={{
           padding: 4,
           backgroundColor: theme.palette.background.paper,
-          borderRadius: "20px",
+          borderRadius: '20px',
         }}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -70,8 +73,8 @@ export default function Contact() {
                 id="name"
                 name="name"
                 control={control}
-                {...register("name", { required: true })}
-                render={({ field }) =>
+                {...register('name', { required: true })}
+                render={({ field }) => (
                   <TextField
                     {...field}
                     label="Name"
@@ -80,7 +83,7 @@ export default function Contact() {
                     error={Boolean(errors.name?.message)}
                     helperText={errors.name?.message}
                   />
-                }
+                )}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -88,8 +91,8 @@ export default function Contact() {
                 id="email"
                 name="email"
                 control={control}
-                {...register("email", { required: true })}
-                render={({ field }) =>
+                {...register('email', { required: true })}
+                render={({ field }) => (
                   <TextField
                     {...field}
                     label="Email"
@@ -98,7 +101,7 @@ export default function Contact() {
                     error={Boolean(errors.email?.message)}
                     helperText={errors.email?.message}
                   />
-                }
+                )}
               />
             </Grid>
             <Grid item xs={12}>
@@ -106,8 +109,8 @@ export default function Contact() {
                 id="message"
                 name="message"
                 control={control}
-                {...register("message", { required: true })}
-                render={({ field }) =>
+                {...register('message', { required: true })}
+                render={({ field }) => (
                   <TextField
                     {...field}
                     label="Message"
@@ -118,11 +121,16 @@ export default function Contact() {
                     error={Boolean(errors.message?.message)}
                     helperText={errors.message?.message}
                   />
-                }
+                )}
               />
             </Grid>
             <Grid item xs={12}>
-              <LoadingButton size="large" type="submit" variant="contained" loading={isSubmitting}>
+              <LoadingButton
+                size="large"
+                type="submit"
+                variant="contained"
+                loading={isSubmitting}
+              >
                 Submit
               </LoadingButton>
             </Grid>
@@ -131,8 +139,6 @@ export default function Contact() {
       </Paper>
     </Layout>
   );
-};
+}
 
-export const Head = () => (
-  <Seo title="Contact" />
-)
+export const Head = () => <Seo title="Contact" />;
