@@ -34,7 +34,7 @@ jobs:
       - name: Set Node.js
         uses: actions/setup-node@master
         with:
-          node-version: 14.x
+          node-version: 18.x
 
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Caching Gatsby
         id: gatsby-cache-build
