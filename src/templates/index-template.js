@@ -65,8 +65,8 @@ IndexPage.propTypes = {
 export const postsQuery = graphql`
   query AllPosts($skip: Int!, $limit: Int!) {
     allAirtable(
-      filter: { data: { Status: { eq: "Published" } }, table: { eq: "Posts" } }
-      sort: { fields: data___Date, order: DESC }
+      filter: {data: {Status: {eq: "Published"}}, table: {eq: "Posts"}}
+      sort: {data: {Date: DESC}}
       skip: $skip
       limit: $limit
     ) {

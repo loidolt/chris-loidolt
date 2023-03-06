@@ -60,11 +60,8 @@ export const Head = ({ tag }) => (
 export const postsQuery = graphql`
   query AllPostsbyTag($skip: Int!, $limit: Int!, $tag: String) {
     allAirtable(
-      filter: {
-        data: { Status: { eq: "Published" }, Tags: { eq: $tag } }
-        table: { eq: "Posts" }
-      }
-      sort: { fields: data___Date, order: DESC }
+      filter: {data: {Status: {eq: "Published"}, Tags: {eq: $tag}}, table: {eq: "Posts"}}
+      sort: {data: {Date: DESC}}
       skip: $skip
       limit: $limit
     ) {

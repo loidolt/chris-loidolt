@@ -27,7 +27,6 @@ module.exports = {
         policy: [{ userAgent: '*', allow: '/' }],
       },
     },
-    `gatsby-plugin-material-ui`,
     {
       resolve: `gatsby-source-airtable`,
       options: {
