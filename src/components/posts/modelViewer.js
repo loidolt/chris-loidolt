@@ -13,11 +13,16 @@ function Loader() {
 }
 
 const Model = ({ file }) => {
-  const gltf = useLoader(GLTFLoader, file);
-  return <primitive object={gltf.scene} scale={8} />;
+  try {
+    const gltf = useLoader(GLTFLoader, file);
+    return <primitive object={gltf.scene} scale={8} />;
+  } catch {
+    return null;
+  }
 };
 
 export default function ModelViewer({ file }) {
+
   return (
     <Box sx={{ height: 600 }}>
       <Canvas camera={{ position: [10, 10, 10] }}>
