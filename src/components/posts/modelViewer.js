@@ -1,73 +1,50 @@
-import { Box } from '@mui/material';
-import { OrbitControls } from '@react-three/drei';
-import { Html, useProgress } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
-import { useLoader } from '@react-three/fiber';
-import React from 'react';
-import { Suspense } from 'react';
+import React, { Suspense, useRef } from 'react';
+import { Box, CircularProgress } from '@mui/material';
+import { Html, useProgress, Stage, OrbitControls, Environment } from '@react-three/drei';
+import { Canvas, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+
 
 function Loader() {
   const { progress } = useProgress();
-  return <Html center>{progress} % loaded</Html>;
+  return <Html center><CircularProgress variant="determinate" value={progress} /></Html>;
 }
 
-const Model = ({ file }) => {
-  try {
-    const gltf = useLoader(GLTFLoader, file);
-    return <primitive object={gltf.scene} scale={8} />;
-  } catch {
-    return null;
-  }
-};
+/* const Model = ({ file }) => {
+  const gltf = useLoader(GLTFLoader, file);
+  return <primitive object={gltf.scene} scale={8} />;
+}; */
+
+export function Model({ file }, props) {
+  const group = useRef()
+  const gltf = useLoader(GLTFLoader, file);
+  return (
+    <group ref={group} {...props} dispose={null}>
+      <mesh receiveShadow castShadow>
+        <primitive object={gltf.scene} scale={8} />
+        <meshStandardMaterial envMapIntensity={0.25} />
+      </mesh>
+    </group>
+  )
+}
 
 export default function ModelViewer({ file }) {
-
   return (
     <Box sx={{ height: 600 }}>
-      <Canvas camera={{ position: [10, 10, 10] }}>
-        <color attach="background" args={['#252530']} />
-        <spotLight
-          castShadow
-          color="white"
-          intensity={2}
-          position={[-50, 50, 40]}
-          angle={0.25}
-          penumbra={1}
-          shadow-mapSize={[128, 128]}
-          shadow-bias={0.00005}
-        />
-        <spotLight
-          castShadow
-          color="white"
-          intensity={0.5}
-          position={[50, -50, -40]}
-          angle={0.25}
-          penumbra={1}
-          shadow-mapSize={[128, 128]}
-          shadow-bias={0.00005}
-        />
+      <Canvas shadows camera={{ position: [-15, 10, 15], fov: 35, zoom: 0.8, near: 1, far: 1000 }}>
         <Suspense fallback={<Loader />}>
-          <ambientLight intensity={0.75} />
-          <Model file={file} />
+          <Stage preset="rembrandt" intensity={1} environment="city">
+            <color attach="background" args={['#252530']} />
+            <ambientLight intensity={0.5} />
+            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+            <pointLight position={[-10, -10, -10]} />
+            <OrbitControls />
+
+            <Model file={file} />
+            <Environment preset="sunset" />
+          </Stage>
         </Suspense>
-
-        <OrbitControls />
-
-        <gridHelper
-          args={[1000, 200, '#151515', '#020202']}
-          position={[0, -1, 0]}
-        />
-        <mesh
-          scale={200}
-          rotation={[-Math.PI / 2, 0, 0]}
-          position={[0, -1, 0]}
-          receiveShadow
-        >
-          <planeGeometry />
-          <shadowMaterial transparent opacity={0.3} />
-        </mesh>
       </Canvas>
-    </Box>
+    </Box >
   );
 }
