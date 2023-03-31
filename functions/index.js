@@ -29,7 +29,7 @@ getUserContributions = async (req, res) => {
   await axios
     .get(url)
     .then(response => {
-      functions.logger.info(response.data, { structuredData: true });
+      /* functions.logger.info(response.data, { structuredData: true }); */
       res.send(response.data);
     })
     .catch(error => {
