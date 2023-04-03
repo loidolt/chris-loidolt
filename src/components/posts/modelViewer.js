@@ -10,11 +10,6 @@ function Loader() {
   return <Html center><CircularProgress variant="determinate" value={progress} /></Html>;
 }
 
-/* const Model = ({ file }) => {
-  const gltf = useLoader(GLTFLoader, file);
-  return <primitive object={gltf.scene} scale={8} />;
-}; */
-
 export function Model({ file }, props) {
   const group = useRef()
   const gltf = useLoader(GLTFLoader, file);
@@ -29,6 +24,8 @@ export function Model({ file }, props) {
 }
 
 export default function ModelViewer({ file }) {
+  console.log(file);
+
   return (
     <Box sx={{ height: 600 }}>
       <Canvas shadows camera={{ position: [-15, 10, 15], fov: 35, zoom: 0.8, near: 1, far: 1000 }}>

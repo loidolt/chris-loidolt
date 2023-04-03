@@ -72,10 +72,7 @@ export default function PostTemplate({ data, pageContext }) {
         title={post.Title}
         about={post.Markdown}
         images={post.Gallery}
-        models={post.Model}
-        repository={post.Repository}
-        attribution={post.Attribution}
-        model_link={post.Model}
+        model={post.ModelPath}
       />
 
       <Links
@@ -130,6 +127,7 @@ export const pageQuery = graphql`
         Tags
         Title
         Path
+        ModelPath
         Model {
           filename
           url

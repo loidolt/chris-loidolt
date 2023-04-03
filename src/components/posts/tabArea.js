@@ -25,7 +25,7 @@ function a11yProps(index) {
   };
 }
 
-export default function TabArea({ title, about, images, models }) {
+export default function TabArea({ title, about, images, model }) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -46,7 +46,7 @@ export default function TabArea({ title, about, images, models }) {
           {images && images.localFiles && (
             <Tab label="Images" {...a11yProps(1)} />
           )}
-          {models && <Tab label="3D Viewer" {...a11yProps(2)} />}
+          {model && <Tab label="3D Viewer" {...a11yProps(2)} />}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -57,9 +57,9 @@ export default function TabArea({ title, about, images, models }) {
           <GalleryComponent postName={title} photos={images.localFiles} />
         </TabPanel>
       )}
-      {models && (
+      {model && (
         <TabPanel value={value} index={2}>
-          <ModelViewer file={models[0].url} />
+          <ModelViewer file={model} />
         </TabPanel>
       )}
     </Paper>
