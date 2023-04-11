@@ -128,11 +128,6 @@ export const pageQuery = graphql`
         Title
         Path
         ModelPath
-        Model {
-          filename
-          url
-          type
-        }
       }
       id
     }
