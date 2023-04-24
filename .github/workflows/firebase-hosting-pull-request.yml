@@ -71,10 +71,6 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           GATSBY_GITHUB_USERNAME: "${{ secrets.GATSBY_GITHUB_USERNAME }}"
 
-  deploy-firebase:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
