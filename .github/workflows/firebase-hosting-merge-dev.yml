@@ -30,7 +30,7 @@ env:
   GATSBY_GITHUB_USERNAME: "${{ secrets.GATSBY_GITHUB_USERNAME }}"
 
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
     steps:
       - name: Set Node.js
@@ -51,6 +51,10 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
 
+  build:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
       - name: Caching Gatsby
         id: gatsby-cache-build
         uses: actions/cache@v2
