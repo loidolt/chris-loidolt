@@ -7,6 +7,10 @@ name: Deploy to Firebase Hosting on PR
     branches:
       - dev
 
+concurrency:
+  group: ci-tests-${{ github.ref }}-1
+  cancel-in-progress: true
+
 env:
   GATSBY_FIREBASE_API_KEY: "${{ secrets.GATSBY_FIREBASE_API_KEY }}"
   GATSBY_FIREBASE_AUTH_DOMAIN: "${{ secrets.GATSBY_FIREBASE_AUTH_DOMAIN }}"
