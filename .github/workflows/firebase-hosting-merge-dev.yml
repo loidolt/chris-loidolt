@@ -51,10 +51,28 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
 
+      - name: Upload Install Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: install-dist
+          path: |
+            dist
+          retention-days: 1
+
   build:
     needs: install
     runs-on: ubuntu-latest
     steps:
+      - name: Set Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: 18.x
+
+      - name: Download Install Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: install-dist
+
       - name: Caching Gatsby
         id: gatsby-cache-build
         uses: actions/cache@v2
@@ -69,10 +87,28 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-dist
+          path: |
+            dist
+          retention-days: 1
+
   deploy-firebase:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Set Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: 18.x
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-dist
+
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
