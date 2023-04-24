@@ -46,10 +46,9 @@ jobs:
             ${{ runner.os }}-gatsby-build
 
       - name: Build
-        if: steps.gatsby-cache.cache-hit != 'true'
-        run: npm run build
+        run: npm run build --log-pages
         env:
-          CI: false
+          CI: true
           GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true
           GATSBY_FIREBASE_API_KEY: "${{ secrets.GATSBY_FIREBASE_API_KEY }}"
           GATSBY_FIREBASE_AUTH_DOMAIN: "${{ secrets.GATSBY_FIREBASE_AUTH_DOMAIN }}"
