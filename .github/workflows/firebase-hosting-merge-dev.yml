@@ -7,27 +7,9 @@ name: Deploy to Firebase Hosting on merge
     branches:
       - dev
 
-env:
-  GATSBY_FIREBASE_API_KEY: "${{ secrets.GATSBY_FIREBASE_API_KEY }}"
-  GATSBY_FIREBASE_AUTH_DOMAIN: "${{ secrets.GATSBY_FIREBASE_AUTH_DOMAIN }}"
-  GATSBY_FIREBASE_PROJECT_ID: "${{ secrets.GATSBY_FIREBASE_PROJECT_ID }}"
-  GATSBY_FIREBASE_STORAGE_BUCKET: "${{ secrets.GATSBY_FIREBASE_STORAGE_BUCKET }}"
-  GATSBY_FIREBASE_MESSAGING_SENDERID: "${{ secrets.GATSBY_FIREBASE_MESSAGING_SENDERID }}"
-  GATSBY_FIREBASE_APP_ID: "${{ secrets.GATSBY_FIREBASE_APP_ID }}"
-  GATSBY_FIREBASE_MEASUREMENT_ID: "${{ secrets.GATSBY_FIREBASE_MEASUREMENT_ID }}"
-  GATSBY_FIREBASE_FUNCTIONS_URL: "${{ secrets.GATSBY_FIREBASE_FUNCTIONS_URL }}"
-  GATSBY_ALGOLIA_APP_ID: "${{ secrets.GATSBY_ALGOLIA_APP_ID }}"
-  GATSBY_ALGOLIA_INDEX_NAME: "${{ secrets.GATSBY_ALGOLIA_INDEX_NAME }}"
-  GATSBY_ALGOLIA_SEARCH_KEY: "${{ secrets.GATSBY_ALGOLIA_SEARCH_KEY }}"
-  GATSBY_ALGOLIA_ADMIN_KEY: "${{ secrets.GATSBY_ALGOLIA_ADMIN_KEY }}"
-  AIRTABLE_API_KEY: "${{ secrets.AIRTABLE_API_KEY }}"
-  AIRTABLE_POSTS_BASEID: "${{ secrets.AIRTABLE_POSTS_BASEID }}"
-  AIRTABLE_POSTS_TABLENAME: "${{ secrets.AIRTABLE_POSTS_TABLENAME }}"
-  AIRTABLE_QUALIFICATIONS_TABLENAME: "${{ secrets.AIRTABLE_QUALIFICATIONS_TABLENAME }}"
-  AIRTABLE_SERVICES_TABLENAME: "${{ secrets.AIRTABLE_SERVICES_TABLENAME }}"
-  AIRTABLE_WEBSITES_TABLENAME: "${{ secrets.AIRTABLE_WEBSITES_TABLENAME }}"
-  GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-  GATSBY_GITHUB_USERNAME: "${{ secrets.GATSBY_GITHUB_USERNAME }}"
+concurrency:
+  group: ci-tests-${{ github.ref }}-1
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -59,13 +41,39 @@ jobs:
           path: |
             public
             .cache
-          key: ${{ runner.os }}-gatsby-build-${{ github.run_id }}
+            firebase.json
+            functions
+            .firebaserc
+          key: ${{ runner.os }}-gatsby-build
           restore-keys: |
-            ${{ runner.os }}-gatsby-build-
+            ${{ runner.os }}-gatsby-build
 
       - name: Build
         if: steps.gatsby-cache.cache-hit != 'true'
         run: npm run build
+        env:
+          CI: false
+          GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true
+          GATSBY_FIREBASE_API_KEY: "${{ secrets.GATSBY_FIREBASE_API_KEY }}"
+          GATSBY_FIREBASE_AUTH_DOMAIN: "${{ secrets.GATSBY_FIREBASE_AUTH_DOMAIN }}"
+          GATSBY_FIREBASE_PROJECT_ID: "${{ secrets.GATSBY_FIREBASE_PROJECT_ID }}"
+          GATSBY_FIREBASE_STORAGE_BUCKET: "${{ secrets.GATSBY_FIREBASE_STORAGE_BUCKET }}"
+          GATSBY_FIREBASE_MESSAGING_SENDERID: "${{ secrets.GATSBY_FIREBASE_MESSAGING_SENDERID }}"
+          GATSBY_FIREBASE_APP_ID: "${{ secrets.GATSBY_FIREBASE_APP_ID }}"
+          GATSBY_FIREBASE_MEASUREMENT_ID: "${{ secrets.GATSBY_FIREBASE_MEASUREMENT_ID }}"
+          GATSBY_FIREBASE_FUNCTIONS_URL: "${{ secrets.GATSBY_FIREBASE_FUNCTIONS_URL }}"
+          GATSBY_ALGOLIA_APP_ID: "${{ secrets.GATSBY_ALGOLIA_APP_ID }}"
+          GATSBY_ALGOLIA_INDEX_NAME: "${{ secrets.GATSBY_ALGOLIA_INDEX_NAME }}"
+          GATSBY_ALGOLIA_SEARCH_KEY: "${{ secrets.GATSBY_ALGOLIA_SEARCH_KEY }}"
+          GATSBY_ALGOLIA_ADMIN_KEY: "${{ secrets.GATSBY_ALGOLIA_ADMIN_KEY }}"
+          AIRTABLE_API_KEY: "${{ secrets.AIRTABLE_API_KEY }}"
+          AIRTABLE_POSTS_BASEID: "${{ secrets.AIRTABLE_POSTS_BASEID }}"
+          AIRTABLE_POSTS_TABLENAME: "${{ secrets.AIRTABLE_POSTS_TABLENAME }}"
+          AIRTABLE_QUALIFICATIONS_TABLENAME: "${{ secrets.AIRTABLE_QUALIFICATIONS_TABLENAME }}"
+          AIRTABLE_SERVICES_TABLENAME: "${{ secrets.AIRTABLE_SERVICES_TABLENAME }}"
+          AIRTABLE_WEBSITES_TABLENAME: "${{ secrets.AIRTABLE_WEBSITES_TABLENAME }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GATSBY_GITHUB_USERNAME: "${{ secrets.GATSBY_GITHUB_USERNAME }}"
 
   deploy-firebase:
     needs: build
@@ -78,9 +86,9 @@ jobs:
           path: |
             public
             .cache
-          key: ${{ runner.os }}-gatsby-build-${{ github.run_id }}
+          key: ${{ runner.os }}-gatsby-build
           restore-keys: |
-            ${{ runner.os }}-gatsby-build-
+            ${{ runner.os }}-gatsby-build
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -89,6 +97,3 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOIDOLT_DESIGN }}"
           projectId: loidolt-design
           target: dev
-        env:
-          CI: false
-          GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true
