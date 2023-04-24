@@ -5,6 +5,11 @@ const query = ` {
   ) {
     nodes {
       id
+      internal {
+        contentDigest
+        type
+        owner
+      }
       data {
         Tags
         Title
