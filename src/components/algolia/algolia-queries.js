@@ -41,13 +41,15 @@ const settings = {
   customRanking: ['asc(Title)', 'desc(Date)', 'asc(Excerpt)'],
 };
 
-const queries = [
-  {
-    query: query,
-    transformer: ({ data }) => flatten(data.allAirtable.nodes),
-    indexName: `posts`,
-    settings: settings,
-  },
-];
+const queries = (indexName) => {
+  return [
+    {
+      query: query,
+      transformer: ({ data }) => flatten(data.allAirtable.nodes),
+      indexName: indexName,
+      settings: settings,
+    },
+  ]
+};
 
 module.exports = queries;
