@@ -1,5 +1,28 @@
 {
   "projects": {
     "default": "loidolt-design"
-  }
+  },
+  "targets": {
+    "hummingbird-hammocks": {
+      "hosting": {
+        "dev": [
+          "dev-loidolt-design"
+        ],
+        "prod": [
+          "loidolt-design"
+        ]
+      }
+    },
+    "loidolt-design": {
+      "hosting": {
+        "prod": [
+          "loidolt-design"
+        ],
+        "dev": [
+          "dev-loidolt-design"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

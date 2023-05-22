@@ -5,7 +5,7 @@ name: Deploy to Firebase Hosting on merge
 "on":
   push:
     branches:
-      - main
+      - dev
 
 concurrency:
   group: ci-tests-${{ github.ref }}-1
@@ -78,7 +78,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOIDOLT_DESIGN }}"
           channelId: live
           projectId: loidolt-design
-          target: prod
-        env:
-          CI: false
-          GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true
+          target: dev

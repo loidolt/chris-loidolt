@@ -1,10 +1,15 @@
 const query = ` {
   allAirtable(
     filter: {data: {Status: {eq: "Published"}}, table: {eq: "Posts"}}
-    sort: {fields: data___Date, order: DESC}
+    sort: {data: {Date: DESC}}
   ) {
     nodes {
       id
+      internal {
+        contentDigest
+        type
+        owner
+      }
       data {
         Tags
         Title
