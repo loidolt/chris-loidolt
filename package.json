@@ -66,7 +66,7 @@
     "emulator-start": "firebase emulators:start --only functions",
     "serve": "gatsby serve",
     "clean": "gatsby clean && rimraf ./node_modules",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -76,10 +76,19 @@
     "url": "https://github.com/loidolt/loidolt-design/issues"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "babel-jest": "^29.5.0",
+    "babel-preset-gatsby": "^3.10.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-prettier": "^4.2.1",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0",
     "prettier": "^2.8.8"
   }
 }
