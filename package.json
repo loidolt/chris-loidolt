@@ -66,7 +66,10 @@
     "emulator-start": "firebase emulators:start --only functions",
     "serve": "gatsby serve",
     "clean": "gatsby clean && rimraf ./node_modules",
-    "test": "jest"
+    "test": "jest",
+    "update:functions": "cd ./functions/ && npm install --save firebase-functions@latest",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting"
   },
   "repository": {
     "type": "git",
