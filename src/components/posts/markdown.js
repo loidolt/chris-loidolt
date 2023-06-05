@@ -17,7 +17,8 @@ const LinkRenderer = (props) => {
           textOverflow: 'ellipsis',
           whiteSpace: 'pre-wrap',
           wordWrap: 'break-word'
-        }}>
+        }}
+      >
         {props.href}
       </a>
     </div>

@@ -1,5 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+
 import { useSiteMetadata } from '../../hooks';
 import icon from '../../images/CLLightBulbBlue.png';
 

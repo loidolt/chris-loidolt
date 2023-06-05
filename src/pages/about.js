@@ -72,7 +72,8 @@ const About = () => {
             variant="body1"
             sx={{
               color: theme.palette.white.dark
-            }}>
+            }}
+          >
             My name is Chris Loidolt.
             <br />
             <br />
@@ -106,7 +107,8 @@ const About = () => {
               sx={{
                 marginTop: 4,
                 color: 'rgba(255, 255, 255, 0.87)'
-              }}>
+              }}
+            >
               {type}
             </Typography>
           </Grid>
@@ -118,7 +120,8 @@ const About = () => {
                 sx={{
                   textTransform: 'uppercase',
                   color: theme.palette.white.dark
-                }}>
+                }}
+              >
                 {category[0]}
               </Typography>
               <List
@@ -126,7 +129,8 @@ const About = () => {
                   backgroundColor: theme.palette.background.paper,
                   color: theme.palette.white.main,
                   borderRadius: '20px'
-                }}>
+                }}
+              >
                 {category[1].map((item, index) => (
                   <ListItem key={index}>
                     <ListItemText
@@ -145,7 +149,8 @@ const About = () => {
                           target="_blank"
                           rel="noreferrer"
                           size="large"
-                          sx={{ color: theme.palette.primary.main }}>
+                          sx={{ color: theme.palette.primary.main }}
+                        >
                           <Info />
                         </IconButton>
                       </ListItemSecondaryAction>

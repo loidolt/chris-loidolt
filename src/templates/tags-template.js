@@ -56,10 +56,8 @@ TagsPage.propTypes = {
   pageContext: PropTypes.any
 };
 
-export const Head = ({ tag }) => <Seo title={tag + ' Projects Loidolt Design'} />;
-
-Head.propTypes = {
-  tag: PropTypes.string
+export function Head({ tag }) {
+  return (<Seo title={tag + ' Projects Loidolt Design'} />)
 };
 
 export const postsQuery = graphql`

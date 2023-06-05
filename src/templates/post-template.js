@@ -22,7 +22,8 @@ export default function PostTemplate({ data, pageContext }) {
       <Box
         sx={{
           paddingBottom: 2
-        }}>
+        }}
+      >
         {post.Tags.map((tag, index) => (
           <Chip
             key={index}
@@ -46,7 +47,8 @@ export default function PostTemplate({ data, pageContext }) {
           sx={{
             color: 'rgba(255, 255, 255, 0.38)',
             float: 'right'
-          }}>
+          }}
+        >
           {post.Date}
         </Typography>
       </Box>
@@ -55,7 +57,8 @@ export default function PostTemplate({ data, pageContext }) {
           sx={{
             marginBottom: 2,
             borderRadius: '20px'
-          }}>
+          }}
+        >
           <GatsbyImage
             image={post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData}
             alt={post.Title + ' Featured Image'}
@@ -92,12 +95,10 @@ PostTemplate.propTypes = {
   pageContext: PropTypes.object.isRequired
 };
 
-export const Head = ({ data }) => (
-  <Seo title={data.airtable.data.Title} description={data.airtable.data.Excerpt} />
-);
-
-Head.propTypes = {
-  data: PropTypes.object.isRequired
+export function Head({ data }) {
+  return (
+    <Seo title={data.airtable.data.Title} description={data.airtable.data.Excerpt} />
+  )
 };
 
 export const pageQuery = graphql`

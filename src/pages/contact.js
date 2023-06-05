@@ -60,7 +60,8 @@ export default function Contact() {
           padding: 4,
           backgroundColor: theme.palette.background.paper,
           borderRadius: '20px'
-        }}>
+        }}
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" name="form-name" value="contact" />
           <Grid container spacing={2}>

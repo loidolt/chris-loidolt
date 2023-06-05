@@ -61,7 +61,8 @@ const Header = ({ siteTitle }) => {
           }),
           background: theme.palette.background.header,
           borderRadius: 0
-        }}>
+        }}
+      >
         <Toolbar sx={{ alignItems: 'center' }}>
           <IconButton
             size="large"
@@ -69,7 +70,8 @@ const Header = ({ siteTitle }) => {
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
-            sx={{ mr: 2 }}>
+            sx={{ mr: 2 }}
+          >
             <Menu />
           </IconButton>
 
@@ -83,7 +85,8 @@ const Header = ({ siteTitle }) => {
               color: 'inherit',
               textDecoration: 'inherit',
               fontSize: '1.5rem'
-            }}>
+            }}
+          >
             {siteTitle}
           </Typography>
 
@@ -103,7 +106,8 @@ const Header = ({ siteTitle }) => {
         }}
         variant="persistent"
         anchor="left"
-        open={open}>
+        open={open}
+      >
         <Box
           sx={{
             display: 'flex',
@@ -111,13 +115,15 @@ const Header = ({ siteTitle }) => {
             padding: '0 8px',
             ...theme.mixins.toolbar,
             justifyContent: 'flex-end'
-          }}>
+          }}
+        >
           <IconButton
             onClick={handleDrawerClose}
             size="large"
             sx={{
               color: theme.palette.white.dark
-            }}>
+            }}
+          >
             {theme.direction === 'ltr' ? <ChevronLeft /> : <ChevronRight />}
           </IconButton>
         </Box>
@@ -130,7 +136,8 @@ const Header = ({ siteTitle }) => {
               to={item.link}
               sx={{
                 color: theme.palette.white.main
-              }}>
+              }}
+            >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText>{item.title}</ListItemText>
             </ListItem>

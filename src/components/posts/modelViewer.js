@@ -1,8 +1,8 @@
-import React, { Suspense, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { Box, CircularProgress } from '@mui/material';
-import { Html, useProgress, Stage, OrbitControls, Environment } from '@react-three/drei';
+import { Environment, Html, OrbitControls, Stage, useProgress } from '@react-three/drei';
 import { Canvas, useLoader } from '@react-three/fiber';
+import PropTypes from 'prop-types';
+import React, { Suspense, useRef } from 'react';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 function Loader() {

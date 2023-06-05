@@ -8,8 +8,8 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
-import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default function Links({ repository, attribution, model_link }) {

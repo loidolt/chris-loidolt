@@ -1,6 +1,6 @@
 import { Link } from 'gatsby';
-import PropTypes from 'prop-types';
 import { GatsbyImage, getImage } from 'gatsby-plugin-image';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default function PostItem({ hit, components }) {

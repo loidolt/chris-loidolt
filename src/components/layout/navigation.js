@@ -1,7 +1,7 @@
 import { NavigateBefore, NavigateNext } from '@mui/icons-material';
-import PropTypes from 'prop-types';
 import { Button, Grid } from '@mui/material';
 import { navigate } from 'gatsby';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default function Navigation({ previousPath, previousLabel, nextPath, nextLabel }) {
@@ -17,14 +17,16 @@ export default function Navigation({ previousPath, previousLabel, nextPath, next
         paddingBottom: 10
       }}
       justifyContent="center"
-      alignItems="center">
+      alignItems="center"
+    >
       <Grid item xs={6}>
         {previousPath && (
           <Button
             variant="contained"
             fullWidth
             startIcon={<NavigateBefore />}
-            onClick={() => navigate(previousPath)}>
+            onClick={() => navigate(previousPath)}
+          >
             {previousLabel}
           </Button>
         )}
@@ -35,7 +37,8 @@ export default function Navigation({ previousPath, previousLabel, nextPath, next
             variant="contained"
             fullWidth
             endIcon={<NavigateNext />}
-            onClick={() => navigate(nextPath)}>
+            onClick={() => navigate(nextPath)}
+          >
             {nextLabel}
           </Button>
         )}

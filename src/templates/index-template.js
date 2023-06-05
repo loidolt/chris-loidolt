@@ -49,7 +49,10 @@ const IndexPage = ({ data, pageContext: { nextPagePath, previousPagePath } }) =>
   );
 };
 
-export const Head = () => <Seo title="Projects" />;
+export function Head() {
+  return (<Seo title="Projects" />
+  )
+};
 
 IndexPage.propTypes = {
   data: PropTypes.object.isRequired,
