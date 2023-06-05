@@ -1,5 +1,5 @@
-import { Close } from '@mui/icons-material';
-import { Dialog, IconButton, ImageList, ImageListItem } from '@mui/material';
+import { Close, ArrowBack, ArrowForward } from '@mui/icons-material';
+import { Dialog, Stack, IconButton, ImageList, ImageListItem } from '@mui/material';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import React from 'react';
 
@@ -7,17 +7,27 @@ import { useWindowSize } from '../../hooks';
 
 export default function GalleryGrid({ photos }) {
   const [open, setOpen] = React.useState(false);
-  const [selectedImage, setSelectedImage] = React.useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = React.useState(null);
 
   const { windowWidth } = useWindowSize();
 
-  const handleClickOpen = value => {
-    setSelectedImage(value);
+  const handleClickOpen = index => {
+    setSelectedImageIndex(index);
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleNext = () => {
+    setSelectedImageIndex((selectedImageIndex + 1) % photos.length);
+  };
+
+  const handlePrev = () => {
+    setSelectedImageIndex(
+      (selectedImageIndex + photos.length - 1) % photos.length
+    );
   };
 
   const setColumns = width => {
@@ -35,33 +45,55 @@ export default function GalleryGrid({ photos }) {
       <>
         <ImageList cols={setColumns(windowWidth)} gap={12}>
           {photos.map((image, index) => (
-            <ImageListItem key={index} onClick={() => handleClickOpen(image)}>
+            <ImageListItem key={index} onClick={() => handleClickOpen(index)}>
               <GatsbyImage
                 image={image.childImageSharp.gatsbyImageData}
                 alt={image.name}
                 style={{
                   cursor: 'pointer',
-                  objectFit: 'cover',
-                  width: '100%',
-                  maxHeight: '100%',
                   borderRadius: '10px',
+                  maxWidth: '100%',
+                  height: 'auto',
                 }}
               />
             </ImageListItem>
           ))}
         </ImageList>
-        {selectedImage && (
+        {photos[selectedImageIndex] && (
           <Dialog onClose={handleClose} open={open}>
             <GatsbyImage
-              image={selectedImage.childImageSharp.gatsbyImageData}
-              alt={selectedImage.name}
+              image={photos[selectedImageIndex].childImageSharp.gatsbyImageData}
+              alt={photos[selectedImageIndex].name}
               style={{
-                objectFit: 'cover',
-                width: '100%',
-                maxHeight: '100%',
                 borderRadius: '10px',
+                maxWidth: '100%',
+                height: 'auto',
               }}
             />
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                position: 'absolute',
+                left: 2,
+                top: 2,
+              }}
+            >
+              <IconButton
+                aria-label="previous"
+                onClick={handlePrev}
+                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+              >
+                <ArrowBack />
+              </IconButton>
+              <IconButton
+                aria-label="next"
+                onClick={handleNext}
+                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+              >
+                <ArrowForward />
+              </IconButton>
+            </Stack>
             <IconButton
               aria-label="close"
               onClick={handleClose}
