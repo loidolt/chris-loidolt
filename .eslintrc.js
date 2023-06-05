@@ -7,16 +7,14 @@ module.exports = {
     node: true,
     es2021: true
   },
-  extends: [
-    'prettier',
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:prettier/recommended'
-  ],
+  extends: ['eslint:recommended', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
+    ecmaVersion: 2018,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true
+    }
   },
   plugins: ['react', 'prettier'],
   rules: {
@@ -24,5 +22,10 @@ module.exports = {
     'object-curly-newline': 'off',
     'prefer-const': 'error',
     'jest/prefer-expect-assertions': 'off'
+  },
+  settings: {
+    react: {
+      version: 'detect'
+    }
   }
 };

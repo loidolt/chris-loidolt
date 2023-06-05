@@ -27,7 +27,7 @@ export default function useContributions() {
         }
       );
       if (data.contributions) {
-        let contributionData = [];
+        const contributionData = [];
         data.contributions.forEach((wk) => {
           let count = 0;
           wk.days.forEach((day) => {

@@ -44,19 +44,19 @@ const About = () => {
   //console.log(qualifications);
 
   // Get all types and filter unique values
-  let allTypes = [];
+  const allTypes = [];
   qualifications.map((qual) => {
     return allTypes.push(qual.data.Type);
   });
-  let types = [...new Set(allTypes)];
+  const types = [...new Set(allTypes)];
   //console.log(types);
 
   // Filter By Type
-  let items = function (type) {
-    let filtered = qualifications.filter((qual) => qual.data.Type === type);
+  const items = function (type) {
+    const filtered = qualifications.filter((qual) => qual.data.Type === type);
     /* console.log(filtered); */
     // Group By Category
-    let grouped = groupBy(filtered, (qual) => qual.data.Category);
+    const grouped = groupBy(filtered, (qual) => qual.data.Category);
     /* console.log(Object.entries(grouped)); */
     return Object.entries(grouped);
   };
