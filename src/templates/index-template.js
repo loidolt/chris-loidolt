@@ -50,9 +50,8 @@ const IndexPage = ({ data, pageContext: { nextPagePath, previousPagePath } }) =>
 };
 
 export function Head() {
-  return (<Seo title="Projects" />
-  )
-};
+  return <Seo title="Projects" />;
+}
 
 IndexPage.propTypes = {
   data: PropTypes.object.isRequired,

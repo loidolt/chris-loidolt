@@ -13,8 +13,7 @@ function TabPanel({ children, value, index, ...other }) {
       hidden={value !== index}
       id={`post-tabpanel-${index}`}
       aria-labelledby={`post-tab-${index}`}
-      {...other}
-    >
+      {...other}>
       {value === index && <Box sx={{ p: 3, minHeight: 240 }}>{children}</Box>}
     </div>
   );
@@ -52,8 +51,7 @@ export default function TabArea({ title, about, images, model }) {
           onChange={handleChange}
           aria-label="post tabs"
           variant="fullWidth"
-          scrollButtons="auto"
-        >
+          scrollButtons="auto">
           <Tab label="About" {...a11yProps(0)} />
           {images && images.localFiles && <Tab label="Images" {...a11yProps(1)} />}
           {model && <Tab label="3D Viewer" {...a11yProps(2)} />}

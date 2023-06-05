@@ -20,8 +20,7 @@ export default function PostCard({ title, date, path, coverImage, excerpt, tags 
           boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
           transition: 'all 0.55s ease-in-out'
         }
-      }}
-    >
+      }}>
       <Link to={path} style={{ color: 'inherit', textDecoration: 'inherit' }}>
         {coverImage && (
           <GatsbyImage
@@ -41,8 +40,7 @@ export default function PostCard({ title, date, path, coverImage, excerpt, tags 
             sx={{
               color: theme.palette.white.dark,
               fontWeight: 700
-            }}
-          >
+            }}>
             {title}
           </Typography>
 
@@ -51,8 +49,7 @@ export default function PostCard({ title, date, path, coverImage, excerpt, tags 
             component="p"
             sx={{
               color: theme.palette.white.dark
-            }}
-          >
+            }}>
             {excerpt}
           </Typography>
           <Typography
@@ -61,8 +58,7 @@ export default function PostCard({ title, date, path, coverImage, excerpt, tags 
             sx={{
               color: theme.palette.white.dark,
               float: 'right'
-            }}
-          >
+            }}>
             {date}
           </Typography>
         </CardContent>

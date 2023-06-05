@@ -52,8 +52,7 @@ export default function FooterChart() {
             right: 0,
             left: 0,
             bottom: 0
-          }}
-        >
+          }}>
           <defs>
             <linearGradient id="colorContributions" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={theme.palette.primary.dark} stopOpacity={0.8} />

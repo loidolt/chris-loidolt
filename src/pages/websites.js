@@ -53,8 +53,7 @@ const Websites = () => {
                   boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
                   transition: 'all 0.55s ease-in-out'
                 }
-              }}
-            >
+              }}>
               <a target="_blank" rel="noreferrer" href={website.data.URL}>
                 <GatsbyImage
                   sx={{
@@ -75,8 +74,7 @@ const Websites = () => {
                       sx={{
                         color: theme.palette.white.dark,
                         fontWeight: 700
-                      }}
-                    >
+                      }}>
                       {website.data.Name}
                     </Typography>
                     <Typography
@@ -84,8 +82,7 @@ const Websites = () => {
                       component="p"
                       sx={{
                         color: theme.palette.white.dark
-                      }}
-                    >
+                      }}>
                       {website.data.Summary}
                     </Typography>
                   </CardContent>
@@ -95,8 +92,7 @@ const Websites = () => {
                     justifyContent="space-between"
                     alignItems="flex-end"
                     spacing={2}
-                    sx={{ padding: 2 }}
-                  >
+                    sx={{ padding: 2 }}>
                     {website.data.Status_URL && (
                       <Button target="_blank" rel="noreferrer" href={website.data.Status_URL}>
                         Status
@@ -107,8 +103,7 @@ const Websites = () => {
                         variant={'contained'}
                         target="_blank"
                         rel="noreferrer"
-                        href={website.data.URL}
-                      >
+                        href={website.data.URL}>
                         Visit Website
                       </Button>
                     )}

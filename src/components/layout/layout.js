@@ -41,8 +41,7 @@ const Layout = ({ children }) => {
                 margin: `0 auto`,
                 padding: `0px 1.0875rem 1.45rem`,
                 paddingTop: 8
-              }}
-            >
+              }}>
               <main>{children}</main>
             </Container>
           </Box>

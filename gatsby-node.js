@@ -21,16 +21,16 @@ exports.createPages = async (gatsbyUtilities) => {
   // Create tag pages
 
   // Get all tags and filter unique falues
-  let allTags = [];
+  const allTags = [];
   posts.map(({ post }) => {
     post.data.Tags.map((tag) => {
       //console.log(tag);
-      let tagString = String(tag);
+      const tagString = String(tag);
       allTags.push(tagString);
     });
   });
   //console.log(allTags);
-  let tags = [...new Set(allTags)];
+  const tags = [...new Set(allTags)];
   //console.log(tags);
 
   tags.forEach((tag) => {

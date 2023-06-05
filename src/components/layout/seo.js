@@ -44,7 +44,8 @@ function Seo({ title, description, pathname, children }) {
 Seo.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
-  pathname: PropTypes.arrayOf(PropTypes.object)
+  pathname: PropTypes.arrayOf(PropTypes.object),
+  children: PropTypes.node
 };
 
 export default Seo;

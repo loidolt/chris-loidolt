@@ -57,8 +57,8 @@ TagsPage.propTypes = {
 };
 
 export function Head({ tag }) {
-  return (<Seo title={tag + ' Projects Loidolt Design'} />)
-};
+  return <Seo title={tag + ' Projects Loidolt Design'} />;
+}
 
 export const postsQuery = graphql`
   query AllPostsbyTag($skip: Int!, $limit: Int!, $tag: String) {

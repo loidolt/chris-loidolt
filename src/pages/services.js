@@ -52,8 +52,7 @@ const Services = () => {
                   boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
                   transition: 'all 0.55s ease-in-out'
                 }
-              }}
-            >
+              }}>
               {/* <a target="_blank" rel="noreferrer" href={service.node.data.URL}>
                 <GatsbyImage
                   sx={{
@@ -75,8 +74,7 @@ const Services = () => {
                         fontWeight: 'bold',
                         color: 'rgba(255, 255, 255, 0.87)'
                       }}
-                      gutterBottom
-                    >
+                      gutterBottom>
                       {service.data.Name}
                     </Typography>
                     <Typography
@@ -86,8 +84,7 @@ const Services = () => {
                         color: 'rgba(255, 255, 255, 0.38)',
                         textTransform: 'uppercase'
                       }}
-                      gutterBottom
-                    >
+                      gutterBottom>
                       {service.data.Subtitle}
                     </Typography>
                     <Typography gutterBottom>{service.data.Summary}</Typography>
@@ -98,8 +95,7 @@ const Services = () => {
                     justifyContent="space-between"
                     alignItems="flex-end"
                     spacing={2}
-                    sx={{ padding: 2 }}
-                  >
+                    sx={{ padding: 2 }}>
                     {service.data.More_Info && (
                       <Button target="_blank" rel="noreferrer" href={service.data.More_Info}>
                         Learn More
@@ -110,8 +106,7 @@ const Services = () => {
                         variant={'contained'}
                         target="_blank"
                         rel="noreferrer"
-                        href={service.data.URL}
-                      >
+                        href={service.data.URL}>
                         View Service
                       </Button>
                     )}

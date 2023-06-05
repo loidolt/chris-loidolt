@@ -8,17 +8,19 @@ module.exports = {
     es2021: true
   },
   extends: [
+    'prettier',
     'eslint:recommended',
     'plugin:react/recommended',
-    'plugin:prettier/recommended',
-    'plugin:jest/all'
+    'plugin:prettier/recommended'
   ],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module'
   },
-  plugins: ['react'],
+  plugins: ['react', 'prettier'],
   rules: {
+    'prettier/prettier': 'error',
     'object-curly-newline': 'off',
     'prefer-const': 'error',
     'jest/prefer-expect-assertions': 'off'

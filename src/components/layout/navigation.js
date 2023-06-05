@@ -17,16 +17,14 @@ export default function Navigation({ previousPath, previousLabel, nextPath, next
         paddingBottom: 10
       }}
       justifyContent="center"
-      alignItems="center"
-    >
+      alignItems="center">
       <Grid item xs={6}>
         {previousPath && (
           <Button
             variant="contained"
             fullWidth
             startIcon={<NavigateBefore />}
-            onClick={() => navigate(previousPath)}
-          >
+            onClick={() => navigate(previousPath)}>
             {previousLabel}
           </Button>
         )}
@@ -37,8 +35,7 @@ export default function Navigation({ previousPath, previousLabel, nextPath, next
             variant="contained"
             fullWidth
             endIcon={<NavigateNext />}
-            onClick={() => navigate(nextPath)}
-          >
+            onClick={() => navigate(nextPath)}>
             {nextLabel}
           </Button>
         )}

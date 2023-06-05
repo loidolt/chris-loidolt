@@ -76,20 +76,17 @@ export default function GalleryGrid({ photos }) {
                 position: 'absolute',
                 left: 2,
                 top: 2
-              }}
-            >
+              }}>
               <IconButton
                 aria-label="previous"
                 onClick={handlePrev}
-                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-              >
+                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                 <ArrowBack />
               </IconButton>
               <IconButton
                 aria-label="next"
                 onClick={handleNext}
-                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-              >
+                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                 <ArrowForward />
               </IconButton>
             </Stack>
@@ -101,8 +98,7 @@ export default function GalleryGrid({ photos }) {
                 right: 2,
                 top: 2,
                 backgroundColor: 'rgba(0, 0, 0, 0.5)'
-              }}
-            >
+              }}>
               <Close />
             </IconButton>
           </Dialog>

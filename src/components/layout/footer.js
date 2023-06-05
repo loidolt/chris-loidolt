@@ -19,8 +19,7 @@ export default function Footer({ githubUrl, donationLink }) {
           marginTop: -12,
           color: theme.palette.white.main,
           fontFamily: '"Inconsolata", "Helvetica", "Arial", sans-serif'
-        }}
-      >
+        }}>
         <footer>
           <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <Box>Loidolt Design © {new Date().getFullYear()}</Box>

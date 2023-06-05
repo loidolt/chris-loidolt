@@ -5,3 +5,4 @@ dist
 jest.config.js
 jest-preprocess.js
 loadershim.js
+__tests__

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -17,8 +18,7 @@ const LinkRenderer = (props) => {
           textOverflow: 'ellipsis',
           whiteSpace: 'pre-wrap',
           wordWrap: 'break-word'
-        }}
-      >
+        }}>
         {props.href}
       </a>
     </div>

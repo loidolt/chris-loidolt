@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { Box, CircularProgress } from '@mui/material';
 import { Environment, Html, OrbitControls, Stage, useProgress } from '@react-three/drei';
 import { Canvas, useLoader } from '@react-three/fiber';
