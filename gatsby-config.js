@@ -1,7 +1,7 @@
 const queries = require('./src/components/algolia/algolia-queries');
 
 require('dotenv').config({
-  path: `.env.${process.env.NODE_ENV}`,
+  path: `.env.${process.env.NODE_ENV}`
 });
 
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
     siteUrl: `https://loidolt.design`,
     image: `./src/images/CLLightBulbBlue.png`,
     githubUrl: `https://github.com/loidolt`,
-    donationLink: `https://www.paypal.com/donate/?hosted_button_id=5M29WMCGYLZTJ`,
+    donationLink: `https://www.paypal.com/donate/?hosted_button_id=5M29WMCGYLZTJ`
   },
   trailingSlash: `never`,
   plugins: [
@@ -24,8 +24,8 @@ module.exports = {
       options: {
         host: 'https://loidolt.design',
         sitemap: 'https://loidolt.design/sitemap.xml',
-        policy: [{ userAgent: '*', allow: '/' }],
-      },
+        policy: [{ userAgent: '*', allow: '/' }]
+      }
     },
     {
       resolve: `gatsby-source-airtable`,
@@ -38,43 +38,43 @@ module.exports = {
             tableName: process.env.AIRTABLE_POSTS_TABLENAME,
             mapping: {
               Cover_Image: `fileNode`,
-              Gallery: `fileNode`,
-            },
+              Gallery: `fileNode`
+            }
           },
           {
             baseId: process.env.AIRTABLE_POSTS_BASEID,
             tableName: process.env.AIRTABLE_WEBSITES_TABLENAME,
             mapping: {
-              Image: `fileNode`,
-            },
+              Image: `fileNode`
+            }
           },
           {
             baseId: process.env.AIRTABLE_POSTS_BASEID,
             tableName: process.env.AIRTABLE_SERVICES_TABLENAME,
             mapping: {
-              Image: `fileNode`,
-            },
+              Image: `fileNode`
+            }
           },
           {
             baseId: process.env.AIRTABLE_POSTS_BASEID,
-            tableName: process.env.AIRTABLE_QUALIFICATIONS_TABLENAME,
-          },
-        ],
-      },
+            tableName: process.env.AIRTABLE_QUALIFICATIONS_TABLENAME
+          }
+        ]
+      }
     },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `images`,
-        path: `${__dirname}/src/images`,
-      },
+        path: `${__dirname}/src/images`
+      }
     },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `pages`,
-        path: `${__dirname}/src/pages`,
-      },
+        path: `${__dirname}/src/pages`
+      }
     },
     `gatsby-plugin-image`,
     `gatsby-transformer-sharp`,
@@ -82,8 +82,8 @@ module.exports = {
       resolve: `gatsby-plugin-sharp`,
       options: {
         stripMetadata: true,
-        defaultQuality: 80,
-      },
+        defaultQuality: 80
+      }
     },
     {
       resolve: `gatsby-transformer-remark`,
@@ -93,15 +93,15 @@ module.exports = {
             resolve: 'gatsby-remark-embed-video',
             options: {
               related: false,
-              noIframeBorder: true,
-            },
+              noIframeBorder: true
+            }
           },
           {
             resolve: `gatsby-remark-images`,
             options: {
               maxWidth: 800,
-              quality: 100,
-            },
+              quality: 100
+            }
           },
           {
             resolve: `gatsby-remark-prismjs`,
@@ -110,11 +110,11 @@ module.exports = {
               inlineCodeMarker: null,
               aliases: {},
               showLineNumbers: false,
-              noInlineHighlight: false,
-            },
-          },
-        ],
-      },
+              noInlineHighlight: false
+            }
+          }
+        ]
+      }
     },
     {
       resolve: `gatsby-plugin-algolia`,
@@ -122,8 +122,8 @@ module.exports = {
         appId: process.env.GATSBY_ALGOLIA_APP_ID,
         apiKey: process.env.GATSBY_ALGOLIA_ADMIN_KEY,
         queries,
-        chunkSize: 10000, // default: 1000
-      },
-    },
-  ],
+        chunkSize: 10000 // default: 1000
+      }
+    }
+  ]
 };

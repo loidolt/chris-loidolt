@@ -1,12 +1,4 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { graphql, useStaticQuery } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
@@ -17,12 +9,7 @@ import { Layout, Seo } from '../components/layout';
 const Websites = () => {
   const data = useStaticQuery(graphql`
     query Websites {
-      allAirtable(
-        filter: {
-          table: { eq: "Websites" }
-          data: { Status: { eq: "Published" } }
-        }
-      ) {
+      allAirtable(filter: { table: { eq: "Websites" }, data: { Status: { eq: "Published" } } }) {
         nodes {
           data {
             Name
@@ -64,19 +51,15 @@ const Websites = () => {
                 borderRadius: '20px',
                 '&:hover': {
                   boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
-                  transition: 'all 0.55s ease-in-out',
-                },
-              }}
-            >
+                  transition: 'all 0.55s ease-in-out'
+                }
+              }}>
               <a target="_blank" rel="noreferrer" href={website.data.URL}>
                 <GatsbyImage
                   sx={{
-                    height: '100%',
+                    height: '100%'
                   }}
-                  image={
-                    website.data.Image.localFiles[0].childImageSharp
-                      .gatsbyImageData
-                  }
+                  image={website.data.Image.localFiles[0].childImageSharp.gatsbyImageData}
                   alt={website.data.Name + ' Screenshot'}
                   style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
                 />
@@ -90,18 +73,16 @@ const Websites = () => {
                       component="h3"
                       sx={{
                         color: theme.palette.white.dark,
-                        fontWeight: 700,
-                      }}
-                    >
+                        fontWeight: 700
+                      }}>
                       {website.data.Name}
                     </Typography>
                     <Typography
                       variant="body2"
                       component="p"
                       sx={{
-                        color: theme.palette.white.dark,
-                      }}
-                    >
+                        color: theme.palette.white.dark
+                      }}>
                       {website.data.Summary}
                     </Typography>
                   </CardContent>
@@ -111,14 +92,9 @@ const Websites = () => {
                     justifyContent="space-between"
                     alignItems="flex-end"
                     spacing={2}
-                    sx={{ padding: 2 }}
-                  >
+                    sx={{ padding: 2 }}>
                     {website.data.Status_URL && (
-                      <Button
-                        target="_blank"
-                        rel="noreferrer"
-                        href={website.data.Status_URL}
-                      >
+                      <Button target="_blank" rel="noreferrer" href={website.data.Status_URL}>
                         Status
                       </Button>
                     )}
@@ -127,8 +103,7 @@ const Websites = () => {
                         variant={'contained'}
                         target="_blank"
                         rel="noreferrer"
-                        href={website.data.URL}
-                      >
+                        href={website.data.URL}>
                         Visit Website
                       </Button>
                     )}

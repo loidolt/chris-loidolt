@@ -1,4 +1,5 @@
 import { CardGiftcard, Email, GitHub } from '@mui/icons-material';
+import PropTypes from 'prop-types';
 import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Link } from 'gatsby';
@@ -17,16 +18,10 @@ export default function Footer({ githubUrl, donationLink }) {
           padding: 4,
           marginTop: -12,
           color: theme.palette.white.main,
-          fontFamily: '"Inconsolata", "Helvetica", "Arial", sans-serif',
-        }}
-      >
+          fontFamily: '"Inconsolata", "Helvetica", "Arial", sans-serif'
+        }}>
         <footer>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={2}
-          >
+          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <Box>Loidolt Design © {new Date().getFullYear()}</Box>
             <Box>
               <Tooltip title="Make A Donation">
@@ -51,3 +46,8 @@ export default function Footer({ githubUrl, donationLink }) {
     </Box>
   );
 }
+
+Footer.propTypes = {
+  githubUrl: PropTypes.string.isRequired,
+  donationLink: PropTypes.string.isRequired
+};

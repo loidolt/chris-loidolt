@@ -32,10 +32,10 @@ const query = ` {
 }
 `;
 
-const flatten = arr =>
+const flatten = (arr) =>
   arr.map(({ data, ...rest }) => ({
     ...data,
-    ...rest,
+    ...rest
   }));
 
 const settings = {
@@ -43,7 +43,7 @@ const settings = {
   searchableAttributes: ['Title', 'Excerpt, Markdown', 'Tags', 'Date'],
   attributesForFaceting: ['filterOnly(Tags)'],
   attributesToHighlight: ['Title', 'Excerpt', 'Tags', 'Date'],
-  customRanking: ['asc(Title)', 'desc(Date)', 'asc(Excerpt)'],
+  customRanking: ['asc(Title)', 'desc(Date)', 'asc(Excerpt)']
 };
 
 const queries = [
@@ -51,8 +51,8 @@ const queries = [
     query: query,
     transformer: ({ data }) => flatten(data.allAirtable.nodes),
     indexName: `posts`,
-    settings: settings,
-  },
+    settings: settings
+  }
 ];
 
 module.exports = queries;

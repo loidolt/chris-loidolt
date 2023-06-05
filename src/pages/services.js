@@ -1,12 +1,4 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { graphql, useStaticQuery } from 'gatsby';
 import React from 'react';
@@ -16,12 +8,7 @@ import { Layout, Seo } from '../components/layout';
 const Services = () => {
   const data = useStaticQuery(graphql`
     query Services {
-      allAirtable(
-        filter: {
-          table: { eq: "Services" }
-          data: { Status: { eq: "Published" } }
-        }
-      ) {
+      allAirtable(filter: { table: { eq: "Services" }, data: { Status: { eq: "Published" } } }) {
         nodes {
           data {
             Name
@@ -63,10 +50,9 @@ const Services = () => {
                 borderRadius: '20px',
                 '&:hover': {
                   boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
-                  transition: 'all 0.55s ease-in-out',
-                },
-              }}
-            >
+                  transition: 'all 0.55s ease-in-out'
+                }
+              }}>
               {/* <a target="_blank" rel="noreferrer" href={service.node.data.URL}>
                 <GatsbyImage
                   sx={{
@@ -86,10 +72,9 @@ const Services = () => {
                       sx={{
                         fontSize: '1.6em',
                         fontWeight: 'bold',
-                        color: 'rgba(255, 255, 255, 0.87)',
+                        color: 'rgba(255, 255, 255, 0.87)'
                       }}
-                      gutterBottom
-                    >
+                      gutterBottom>
                       {service.data.Name}
                     </Typography>
                     <Typography
@@ -97,10 +82,9 @@ const Services = () => {
                         fontSize: '1em',
                         fontWeight: 'bold',
                         color: 'rgba(255, 255, 255, 0.38)',
-                        textTransform: 'uppercase',
+                        textTransform: 'uppercase'
                       }}
-                      gutterBottom
-                    >
+                      gutterBottom>
                       {service.data.Subtitle}
                     </Typography>
                     <Typography gutterBottom>{service.data.Summary}</Typography>
@@ -111,14 +95,9 @@ const Services = () => {
                     justifyContent="space-between"
                     alignItems="flex-end"
                     spacing={2}
-                    sx={{ padding: 2 }}
-                  >
+                    sx={{ padding: 2 }}>
                     {service.data.More_Info && (
-                      <Button
-                        target="_blank"
-                        rel="noreferrer"
-                        href={service.data.More_Info}
-                      >
+                      <Button target="_blank" rel="noreferrer" href={service.data.More_Info}>
                         Learn More
                       </Button>
                     )}
@@ -127,8 +106,7 @@ const Services = () => {
                         variant={'contained'}
                         target="_blank"
                         rel="noreferrer"
-                        href={service.data.URL}
-                      >
+                        href={service.data.URL}>
                         View Service
                       </Button>
                     )}

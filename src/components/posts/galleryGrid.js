@@ -1,6 +1,7 @@
 import { Close, ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Dialog, Stack, IconButton, ImageList, ImageListItem } from '@mui/material';
 import { GatsbyImage } from 'gatsby-plugin-image';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { useWindowSize } from '../../hooks';
@@ -11,7 +12,7 @@ export default function GalleryGrid({ photos }) {
 
   const { windowWidth } = useWindowSize();
 
-  const handleClickOpen = index => {
+  const handleClickOpen = (index) => {
     setSelectedImageIndex(index);
     setOpen(true);
   };
@@ -25,12 +26,10 @@ export default function GalleryGrid({ photos }) {
   };
 
   const handlePrev = () => {
-    setSelectedImageIndex(
-      (selectedImageIndex + photos.length - 1) % photos.length
-    );
+    setSelectedImageIndex((selectedImageIndex + photos.length - 1) % photos.length);
   };
 
-  const setColumns = width => {
+  const setColumns = (width) => {
     if (width < 700) {
       return 1;
     } else if (width < 1000) {
@@ -53,7 +52,7 @@ export default function GalleryGrid({ photos }) {
                   cursor: 'pointer',
                   borderRadius: '10px',
                   maxWidth: '100%',
-                  height: 'auto',
+                  height: 'auto'
                 }}
               />
             </ImageListItem>
@@ -67,7 +66,7 @@ export default function GalleryGrid({ photos }) {
               style={{
                 borderRadius: '10px',
                 maxWidth: '100%',
-                height: 'auto',
+                height: 'auto'
               }}
             />
             <Stack
@@ -76,21 +75,18 @@ export default function GalleryGrid({ photos }) {
               sx={{
                 position: 'absolute',
                 left: 2,
-                top: 2,
-              }}
-            >
+                top: 2
+              }}>
               <IconButton
                 aria-label="previous"
                 onClick={handlePrev}
-                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-              >
+                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                 <ArrowBack />
               </IconButton>
               <IconButton
                 aria-label="next"
                 onClick={handleNext}
-                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-              >
+                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                 <ArrowForward />
               </IconButton>
             </Stack>
@@ -101,9 +97,8 @@ export default function GalleryGrid({ photos }) {
                 position: 'absolute',
                 right: 2,
                 top: 2,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              }}
-            >
+                backgroundColor: 'rgba(0, 0, 0, 0.5)'
+              }}>
               <Close />
             </IconButton>
           </Dialog>
@@ -114,3 +109,7 @@ export default function GalleryGrid({ photos }) {
     return null;
   }
 }
+
+GalleryGrid.propTypes = {
+  photos: PropTypes.array.isRequired
+};

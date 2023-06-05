@@ -6,8 +6,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Typography,
+  Typography
 } from '@mui/material';
+import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import React from 'react';
 
@@ -41,10 +42,7 @@ export default function Links({ repository, attribution, model_link }) {
               <ListItemIcon>
                 <ViewInAr />
               </ListItemIcon>
-              <ListItemText
-                primary={'Downloadable 3D Model'}
-                secondary={model_link}
-              />
+              <ListItemText primary={'Downloadable 3D Model'} secondary={model_link} />
             </ListItemButton>
           </ListItem>
         )}
@@ -62,3 +60,9 @@ export default function Links({ repository, attribution, model_link }) {
     </Box>
   );
 }
+
+Links.propTypes = {
+  repository: PropTypes.string,
+  attribution: PropTypes.string,
+  model_link: PropTypes.string
+};

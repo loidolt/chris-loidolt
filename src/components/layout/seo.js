@@ -1,6 +1,5 @@
 import React from 'react';
-
-/* import PropTypes from 'prop-types' */
+import PropTypes from 'prop-types';
 import { useSiteMetadata } from '../../hooks';
 import icon from '../../images/CLLightBulbBlue.png';
 
@@ -10,7 +9,7 @@ function Seo({ title, description, pathname, children }) {
     description: defaultDescription,
     image,
     siteUrl,
-    author,
+    author
   } = useSiteMetadata();
 
   const seo = {
@@ -18,7 +17,7 @@ function Seo({ title, description, pathname, children }) {
     description: description || defaultDescription,
     image: `${siteUrl}${image}`,
     url: `${siteUrl}${pathname || ``}`,
-    author,
+    author
   };
 
   return (
@@ -41,10 +40,10 @@ function Seo({ title, description, pathname, children }) {
   );
 }
 
-/* Seo.propTypes = {
+Seo.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
-  pathname: PropTypes.arrayOf(PropTypes.object),
-} */
+  pathname: PropTypes.arrayOf(PropTypes.object)
+};
 
 export default Seo;

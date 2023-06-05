@@ -6,7 +6,7 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  Typography,
+  Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { graphql, useStaticQuery } from 'gatsby';
@@ -45,7 +45,7 @@ const About = () => {
 
   // Get all types and filter unique values
   let allTypes = [];
-  qualifications.map(qual => {
+  qualifications.map((qual) => {
     return allTypes.push(qual.data.Type);
   });
   let types = [...new Set(allTypes)];
@@ -53,10 +53,10 @@ const About = () => {
 
   // Filter By Type
   let items = function (type) {
-    let filtered = qualifications.filter(qual => qual.data.Type === type);
+    let filtered = qualifications.filter((qual) => qual.data.Type === type);
     /* console.log(filtered); */
     // Group By Category
-    let grouped = groupBy(filtered, qual => qual.data.Category);
+    let grouped = groupBy(filtered, (qual) => qual.data.Category);
     /* console.log(Object.entries(grouped)); */
     return Object.entries(grouped);
   };
@@ -71,25 +71,22 @@ const About = () => {
           <Typography
             variant="body1"
             sx={{
-              color: theme.palette.white.dark,
-            }}
-          >
+              color: theme.palette.white.dark
+            }}>
             My name is Chris Loidolt.
             <br />
             <br />
-            I like learning and creating. I strongly believe the world needs
-            more of that.
+            I like learning and creating. I strongly believe the world needs more of that.
             <br />
             <br />
-            Born and raised in Colorado, I now live in Monument and enjoy taking
-            advantage of what this beautiful place has to offer. I have been
-            building, drawing, designing, carving, modeling, programming,
-            soldering, sewing, capturing, and flying for as long as I can
+            Born and raised in Colorado, I now live in Monument and enjoy taking advantage of what
+            this beautiful place has to offer. I have been building, drawing, designing, carving,
+            modeling, programming, soldering, sewing, capturing, and flying for as long as I can
             remember.
             <br />
             <br />
-            My personality can be best defined by my level of creativity and
-            quality in work. Speak softly and carry an impressive portfolio.
+            My personality can be best defined by my level of creativity and quality in work. Speak
+            softly and carry an impressive portfolio.
           </Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -108,9 +105,8 @@ const About = () => {
               component="h2"
               sx={{
                 marginTop: 4,
-                color: 'rgba(255, 255, 255, 0.87)',
-              }}
-            >
+                color: 'rgba(255, 255, 255, 0.87)'
+              }}>
               {type}
             </Typography>
           </Grid>
@@ -121,25 +117,23 @@ const About = () => {
                 component="h3"
                 sx={{
                   textTransform: 'uppercase',
-                  color: theme.palette.white.dark,
-                }}
-              >
+                  color: theme.palette.white.dark
+                }}>
                 {category[0]}
               </Typography>
               <List
                 sx={{
                   backgroundColor: theme.palette.background.paper,
                   color: theme.palette.white.main,
-                  borderRadius: '20px',
-                }}
-              >
+                  borderRadius: '20px'
+                }}>
                 {category[1].map((item, index) => (
                   <ListItem key={index}>
                     <ListItemText
                       primary={item.data.Name}
                       secondary={item.data.Level || ''}
                       secondaryTypographyProps={{
-                        style: { color: theme.palette.white.dark },
+                        style: { color: theme.palette.white.dark }
                       }}
                     />
                     {item.data.More_Info && (
@@ -151,8 +145,7 @@ const About = () => {
                           target="_blank"
                           rel="noreferrer"
                           size="large"
-                          sx={{ color: theme.palette.primary.main }}
-                        >
+                          sx={{ color: theme.palette.primary.main }}>
                           <Info />
                         </IconButton>
                       </ListItemSecondaryAction>

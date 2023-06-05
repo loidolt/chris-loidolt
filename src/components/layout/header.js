@@ -6,7 +6,7 @@ import {
   Mail,
   Menu,
   Public,
-  Web,
+  Web
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -18,7 +18,7 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
+  Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Link } from 'gatsby';
@@ -32,7 +32,7 @@ const menuList = [
   { title: 'Websites', link: '/websites', icon: <Web /> },
   { title: 'Services', link: '/services', icon: <Public /> },
   { title: 'About', link: '/about', icon: <Info /> },
-  { title: 'Contact', link: '/contact', icon: <Mail /> },
+  { title: 'Contact', link: '/contact', icon: <Mail /> }
 ];
 
 const drawerWidth = 240;
@@ -57,12 +57,11 @@ const Header = ({ siteTitle }) => {
         sx={{
           transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
+            duration: theme.transitions.duration.leavingScreen
           }),
           background: theme.palette.background.header,
-          borderRadius: 0,
-        }}
-      >
+          borderRadius: 0
+        }}>
         <Toolbar sx={{ alignItems: 'center' }}>
           <IconButton
             size="large"
@@ -70,8 +69,7 @@ const Header = ({ siteTitle }) => {
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
-            sx={{ mr: 2 }}
-          >
+            sx={{ mr: 2 }}>
             <Menu />
           </IconButton>
 
@@ -81,11 +79,11 @@ const Header = ({ siteTitle }) => {
             to="/"
             sx={{
               flexGrow: 1,
-              display: { xs: 'block', sm: 'block' }, color: 'inherit',
+              display: { xs: 'block', sm: 'block' },
+              color: 'inherit',
               textDecoration: 'inherit',
               fontSize: '1.5rem'
-            }}
-          >
+            }}>
             {siteTitle}
           </Typography>
 
@@ -100,29 +98,26 @@ const Header = ({ siteTitle }) => {
             width: drawerWidth,
             backgroundColor: theme.palette.background.header,
             borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-          },
+            borderBottomLeftRadius: 0
+          }
         }}
         variant="persistent"
         anchor="left"
-        open={open}
-      >
+        open={open}>
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
             padding: '0 8px',
             ...theme.mixins.toolbar,
-            justifyContent: 'flex-end',
-          }}
-        >
+            justifyContent: 'flex-end'
+          }}>
           <IconButton
             onClick={handleDrawerClose}
             size="large"
             sx={{
-              color: theme.palette.white.dark,
-            }}
-          >
+              color: theme.palette.white.dark
+            }}>
             {theme.direction === 'ltr' ? <ChevronLeft /> : <ChevronRight />}
           </IconButton>
         </Box>
@@ -134,9 +129,8 @@ const Header = ({ siteTitle }) => {
               component={Link}
               to={item.link}
               sx={{
-                color: theme.palette.white.main,
-              }}
-            >
+                color: theme.palette.white.main
+              }}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText>{item.title}</ListItemText>
             </ListItem>
@@ -148,11 +142,11 @@ const Header = ({ siteTitle }) => {
 };
 
 Header.propTypes = {
-  siteTitle: PropTypes.string,
+  siteTitle: PropTypes.string
 };
 
 Header.defaultProps = {
-  siteTitle: ``,
+  siteTitle: ``
 };
 
 export default Header;

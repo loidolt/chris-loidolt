@@ -25,7 +25,7 @@ export default function Autocomplete(props) {
 
         panelRootRef.current.render(children);
       },
-      ...props,
+      ...props
     });
 
     return () => {

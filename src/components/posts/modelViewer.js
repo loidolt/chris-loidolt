@@ -1,4 +1,5 @@
 import React, { Suspense, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Box, CircularProgress } from '@mui/material';
 import { Html, useProgress, Stage, OrbitControls, Environment } from '@react-three/drei';
 import { Canvas, useLoader } from '@react-three/fiber';
@@ -6,11 +7,15 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 function Loader() {
   const { progress } = useProgress();
-  return <Html center><CircularProgress variant="determinate" value={progress} /></Html>;
+  return (
+    <Html center>
+      <CircularProgress variant="determinate" value={progress} />
+    </Html>
+  );
 }
 
 export function Model({ file }, props) {
-  const group = useRef()
+  const group = useRef();
   const gltf = useLoader(GLTFLoader, file);
   return (
     <group ref={group} {...props} dispose={null}>
@@ -19,15 +24,19 @@ export function Model({ file }, props) {
         <meshStandardMaterial envMapIntensity={0.25} />
       </mesh>
     </group>
-  )
+  );
 }
+
+Model.propTypes = {
+  file: PropTypes.any
+};
 
 export default function ModelViewer({ file }) {
   return (
     <Box sx={{ height: 600 }}>
       <Canvas shadows camera={{ position: [-15, 10, 15], fov: 35, zoom: 0.8, near: 1, far: 1000 }}>
         <Suspense fallback={<Loader />}>
-          <Stage intensity={1} >
+          <Stage intensity={1}>
             <color attach="background" args={['#252530']} />
             <ambientLight intensity={0.5} />
             <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
@@ -39,6 +48,10 @@ export default function ModelViewer({ file }) {
           </Stage>
         </Suspense>
       </Canvas>
-    </Box >
+    </Box>
   );
 }
+
+ModelViewer.propTypes = {
+  file: PropTypes.any
+};

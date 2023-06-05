@@ -9,7 +9,7 @@ const firebaseConfig = {
   storageBucket: process.env.GATSBY_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.GATSBY_FIREBASE_MESSAGING_SENDERID,
   appId: process.env.GATSBY_FIREBASE_APP_ID,
-  measurementId: process.env.GATSBY_FIREBASE_MEASUREMENT_ID,
+  measurementId: process.env.GATSBY_FIREBASE_MEASUREMENT_ID
 };
 
 let app;

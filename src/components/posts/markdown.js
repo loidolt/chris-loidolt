@@ -1,9 +1,10 @@
 import { Box } from '@mui/material';
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const LinkRenderer = props => {
+const LinkRenderer = (props) => {
   //console.log(props);
   return (
     <div>
@@ -15,18 +16,21 @@ const LinkRenderer = props => {
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'pre-wrap',
-          wordWrap: 'break-word',
-        }}
-      >
+          wordWrap: 'break-word'
+        }}>
         {props.href}
       </a>
     </div>
   );
 };
 
+LinkRenderer.propTypes = {
+  href: PropTypes.string.isRequired
+};
+
 export default function Markdown({ children }) {
   const renderers = {
-    a: LinkRenderer,
+    a: LinkRenderer
   };
 
   return (
@@ -40,3 +44,7 @@ export default function Markdown({ children }) {
     </Box>
   );
 }
+
+Markdown.propTypes = {
+  children: PropTypes.node.isRequired
+};
