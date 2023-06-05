@@ -4,7 +4,6 @@ import { Html, useProgress, Stage, OrbitControls, Environment } from '@react-thr
 import { Canvas, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-
 function Loader() {
   const { progress } = useProgress();
   return <Html center><CircularProgress variant="determinate" value={progress} /></Html>;
@@ -24,13 +23,11 @@ export function Model({ file }, props) {
 }
 
 export default function ModelViewer({ file }) {
-  console.log(file);
-
   return (
     <Box sx={{ height: 600 }}>
       <Canvas shadows camera={{ position: [-15, 10, 15], fov: 35, zoom: 0.8, near: 1, far: 1000 }}>
         <Suspense fallback={<Loader />}>
-          <Stage preset="rembrandt" intensity={1} environment="city">
+          <Stage intensity={1} >
             <color attach="background" args={['#252530']} />
             <ambientLight intensity={0.5} />
             <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
