@@ -23,9 +23,9 @@ const rawTheme = createTheme({
       main: '#414042',
     },
     background: {
-      default: '#1e1e1e',
-      header: '#2c2c2c',
-      paper: '#2c2c2c',
+      default: '#181818',
+      header: '#1F1F1F',
+      paper: '#1F1F1F',
     },
   },
   typography: {
