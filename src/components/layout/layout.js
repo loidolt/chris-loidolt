@@ -30,7 +30,7 @@ const Layout = ({ children }) => {
           }
         }
       `}
-      render={data => (
+      render={(data) => (
         <>
           <Header siteTitle={data.site.siteMetadata.title} />
           <Box sx={{ backgroundColor: theme.palette.background.default }}>
@@ -40,9 +40,8 @@ const Layout = ({ children }) => {
                 minHeight: '74vh',
                 margin: `0 auto`,
                 padding: `0px 1.0875rem 1.45rem`,
-                paddingTop: 8,
-              }}
-            >
+                paddingTop: 8
+              }}>
               <main>{children}</main>
             </Container>
           </Box>
@@ -57,7 +56,7 @@ const Layout = ({ children }) => {
 };
 
 Layout.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node.isRequired
 };
 
 export default Layout;

@@ -11,11 +11,8 @@ import { saveDocumentGenerateID } from '../utils/firestore';
 
 const schema = yup.object().shape({
   name: yup.string().required('Name is required'),
-  email: yup
-    .string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
-  message: yup.string().required('Message is required'),
+  email: yup.string().email('Please enter a valid email address').required('Email is required'),
+  message: yup.string().required('Message is required')
 });
 
 export default function Contact() {
@@ -26,17 +23,17 @@ export default function Contact() {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting }
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       name: '',
       email: '',
-      message: '',
-    },
+      message: ''
+    }
   });
 
-  const onSubmit = async data => {
+  const onSubmit = async (data) => {
     console.log(data);
     const message = {
       to: 'loidolt@gmail.com',
@@ -44,8 +41,8 @@ export default function Contact() {
       message: {
         subject: `${data.name} | Loidolt Design Contact Form`,
         text: `${data.message}`,
-        html: `${data.message}`,
-      },
+        html: `${data.message}`
+      }
     };
     const response = await saveDocumentGenerateID('mail', message);
     if (response) {
@@ -62,9 +59,8 @@ export default function Contact() {
         sx={{
           padding: 4,
           backgroundColor: theme.palette.background.paper,
-          borderRadius: '20px',
-        }}
-      >
+          borderRadius: '20px'
+        }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" name="form-name" value="contact" />
           <Grid container spacing={2}>
@@ -125,12 +121,7 @@ export default function Contact() {
               />
             </Grid>
             <Grid item xs={12}>
-              <LoadingButton
-                size="large"
-                type="submit"
-                variant="contained"
-                loading={isSubmitting}
-              >
+              <LoadingButton size="large" type="submit" variant="contained" loading={isSubmitting}>
                 Submit
               </LoadingButton>
             </Grid>

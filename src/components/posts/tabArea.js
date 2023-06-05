@@ -1,4 +1,5 @@
 import { Box, Paper, Tab, Tabs } from '@mui/material';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import GalleryComponent from './galleryGrid';
@@ -12,18 +13,28 @@ function TabPanel({ children, value, index, ...other }) {
       hidden={value !== index}
       id={`post-tabpanel-${index}`}
       aria-labelledby={`post-tab-${index}`}
-      {...other}
-    >
+      {...other}>
       {value === index && <Box sx={{ p: 3, minHeight: 240 }}>{children}</Box>}
     </div>
   );
 }
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired
+};
+
 function a11yProps(index) {
   return {
     id: `post-tab-${index}`,
-    'aria-controls': `post-tabpanel-${index}`,
+    'aria-controls': `post-tabpanel-${index}`
   };
 }
+
+a11yProps.propTypes = {
+  index: PropTypes.number.isRequired
+};
 
 export default function TabArea({ title, about, images, model }) {
   const [value, setValue] = React.useState(0);
@@ -40,12 +51,9 @@ export default function TabArea({ title, about, images, model }) {
           onChange={handleChange}
           aria-label="post tabs"
           variant="fullWidth"
-          scrollButtons="auto"
-        >
+          scrollButtons="auto">
           <Tab label="About" {...a11yProps(0)} />
-          {images && images.localFiles && (
-            <Tab label="Images" {...a11yProps(1)} />
-          )}
+          {images && images.localFiles && <Tab label="Images" {...a11yProps(1)} />}
           {model && <Tab label="3D Viewer" {...a11yProps(2)} />}
         </Tabs>
       </Box>
@@ -65,3 +73,10 @@ export default function TabArea({ title, about, images, model }) {
     </Paper>
   );
 }
+
+TabArea.propTypes = {
+  title: PropTypes.string.isRequired,
+  about: PropTypes.string.isRequired,
+  images: PropTypes.object,
+  model: PropTypes.string
+};

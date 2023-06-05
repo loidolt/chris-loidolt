@@ -1,7 +1,7 @@
 module.exports.toKebabCase = function (value) {
   return value
     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-    .map(x => x.toLowerCase())
+    .map((x) => x.toLowerCase())
     .join('-');
 };
 
@@ -10,7 +10,7 @@ module.exports.groupBy = function (arr, criteria) {
     // Check if the criteria is a function to run on the item or a property of it
     var key = typeof criteria === 'function' ? criteria(item) : item[criteria];
     // If the key doesn't exist yet, create it
-    if (!obj.hasOwnProperty(key)) {
+    if (!Object.prototype.hasOwnProperty.call(obj, key)) {
       obj[key] = [];
     }
     // Push the value to the object

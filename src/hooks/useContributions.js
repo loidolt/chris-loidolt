@@ -23,28 +23,25 @@ export default function useContributions() {
         process.env.GATSBY_FIREBASE_FUNCTIONS_URL + '/userContributions',
         {
           username: process.env.GATSBY_GITHUB_USERNAME,
-          year: year,
-        },
+          year: year
+        }
       );
       if (data.contributions) {
-        let contributionData = [];
-        data.contributions.forEach(wk => {
+        const contributionData = [];
+        data.contributions.forEach((wk) => {
           let count = 0;
-          wk.days.forEach(day => {
+          wk.days.forEach((day) => {
             count += day.count;
           });
 
           if (count > 0) {
             contributionData.push({
               week: wk.week,
-              contributions: count,
+              contributions: count
             });
           }
         });
-        sessionStorage.setItem(
-          'contributions',
-          JSON.stringify(contributionData),
-        );
+        sessionStorage.setItem('contributions', JSON.stringify(contributionData));
         setData(contributionData);
         setIsLoading(false);
       }
@@ -63,6 +60,6 @@ export default function useContributions() {
   return {
     data,
     isLoading,
-    error,
+    error
   };
 }

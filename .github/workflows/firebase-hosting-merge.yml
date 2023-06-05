@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-"on":
+'on':
   push:
     branches:
       - main
@@ -50,32 +50,32 @@ jobs:
         env:
           CI: true
           GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true
-          GATSBY_FIREBASE_API_KEY: "${{ secrets.GATSBY_FIREBASE_API_KEY }}"
-          GATSBY_FIREBASE_AUTH_DOMAIN: "${{ secrets.GATSBY_FIREBASE_AUTH_DOMAIN }}"
-          GATSBY_FIREBASE_PROJECT_ID: "${{ secrets.GATSBY_FIREBASE_PROJECT_ID }}"
-          GATSBY_FIREBASE_STORAGE_BUCKET: "${{ secrets.GATSBY_FIREBASE_STORAGE_BUCKET }}"
-          GATSBY_FIREBASE_MESSAGING_SENDERID: "${{ secrets.GATSBY_FIREBASE_MESSAGING_SENDERID }}"
-          GATSBY_FIREBASE_APP_ID: "${{ secrets.GATSBY_FIREBASE_APP_ID }}"
-          GATSBY_FIREBASE_MEASUREMENT_ID: "${{ secrets.GATSBY_FIREBASE_MEASUREMENT_ID }}"
-          GATSBY_FIREBASE_FUNCTIONS_URL: "${{ secrets.GATSBY_FIREBASE_FUNCTIONS_URL }}"
-          GATSBY_ALGOLIA_APP_ID: "${{ secrets.GATSBY_ALGOLIA_APP_ID }}"
-          GATSBY_ALGOLIA_INDEX_NAME: "${{ secrets.GATSBY_ALGOLIA_INDEX_NAME }}"
-          GATSBY_ALGOLIA_SEARCH_KEY: "${{ secrets.GATSBY_ALGOLIA_SEARCH_KEY }}"
-          GATSBY_ALGOLIA_ADMIN_KEY: "${{ secrets.GATSBY_ALGOLIA_ADMIN_KEY }}"
-          AIRTABLE_API_KEY: "${{ secrets.AIRTABLE_API_KEY }}"
-          AIRTABLE_POSTS_BASEID: "${{ secrets.AIRTABLE_POSTS_BASEID }}"
-          AIRTABLE_POSTS_TABLENAME: "${{ secrets.AIRTABLE_POSTS_TABLENAME }}"
-          AIRTABLE_QUALIFICATIONS_TABLENAME: "${{ secrets.AIRTABLE_QUALIFICATIONS_TABLENAME }}"
-          AIRTABLE_SERVICES_TABLENAME: "${{ secrets.AIRTABLE_SERVICES_TABLENAME }}"
-          AIRTABLE_WEBSITES_TABLENAME: "${{ secrets.AIRTABLE_WEBSITES_TABLENAME }}"
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          GATSBY_GITHUB_USERNAME: "${{ secrets.GATSBY_GITHUB_USERNAME }}"
+          GATSBY_FIREBASE_API_KEY: '${{ secrets.GATSBY_FIREBASE_API_KEY }}'
+          GATSBY_FIREBASE_AUTH_DOMAIN: '${{ secrets.GATSBY_FIREBASE_AUTH_DOMAIN }}'
+          GATSBY_FIREBASE_PROJECT_ID: '${{ secrets.GATSBY_FIREBASE_PROJECT_ID }}'
+          GATSBY_FIREBASE_STORAGE_BUCKET: '${{ secrets.GATSBY_FIREBASE_STORAGE_BUCKET }}'
+          GATSBY_FIREBASE_MESSAGING_SENDERID: '${{ secrets.GATSBY_FIREBASE_MESSAGING_SENDERID }}'
+          GATSBY_FIREBASE_APP_ID: '${{ secrets.GATSBY_FIREBASE_APP_ID }}'
+          GATSBY_FIREBASE_MEASUREMENT_ID: '${{ secrets.GATSBY_FIREBASE_MEASUREMENT_ID }}'
+          GATSBY_FIREBASE_FUNCTIONS_URL: '${{ secrets.GATSBY_FIREBASE_FUNCTIONS_URL }}'
+          GATSBY_ALGOLIA_APP_ID: '${{ secrets.GATSBY_ALGOLIA_APP_ID }}'
+          GATSBY_ALGOLIA_INDEX_NAME: '${{ secrets.GATSBY_ALGOLIA_INDEX_NAME }}'
+          GATSBY_ALGOLIA_SEARCH_KEY: '${{ secrets.GATSBY_ALGOLIA_SEARCH_KEY }}'
+          GATSBY_ALGOLIA_ADMIN_KEY: '${{ secrets.GATSBY_ALGOLIA_ADMIN_KEY }}'
+          AIRTABLE_API_KEY: '${{ secrets.AIRTABLE_API_KEY }}'
+          AIRTABLE_POSTS_BASEID: '${{ secrets.AIRTABLE_POSTS_BASEID }}'
+          AIRTABLE_POSTS_TABLENAME: '${{ secrets.AIRTABLE_POSTS_TABLENAME }}'
+          AIRTABLE_QUALIFICATIONS_TABLENAME: '${{ secrets.AIRTABLE_QUALIFICATIONS_TABLENAME }}'
+          AIRTABLE_SERVICES_TABLENAME: '${{ secrets.AIRTABLE_SERVICES_TABLENAME }}'
+          AIRTABLE_WEBSITES_TABLENAME: '${{ secrets.AIRTABLE_WEBSITES_TABLENAME }}'
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GATSBY_GITHUB_USERNAME: '${{ secrets.GATSBY_GITHUB_USERNAME }}'
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOIDOLT_DESIGN }}"
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOIDOLT_DESIGN }}'
           channelId: live
           projectId: loidolt-design
           target: prod

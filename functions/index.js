@@ -7,7 +7,7 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
   response.send('Hello from Firebase!');
 });
 
-getUserContributions = async (req, res) => {
+const getUserContributions = async (req, res) => {
   // We recover the data
   const username = req.body.username; // return "undefined"
   const year = req.body.year; // return "undefined"
@@ -21,18 +21,18 @@ getUserContributions = async (req, res) => {
 
   // (We have all the data, we continue the function)
   functions.logger.info(`GitHub ${username} ${year} Contributions`, {
-    structuredData: true,
+    structuredData: true
   });
 
   const url = 'https://skyline.github.com/' + username + '/' + year + '.json';
 
   await axios
     .get(url)
-    .then(response => {
+    .then((response) => {
       /* functions.logger.info(response.data, { structuredData: true }); */
       res.send(response.data);
     })
-    .catch(error => {
+    .catch((error) => {
       functions.logger.error(error, { structuredData: true });
       res.send(error);
     });

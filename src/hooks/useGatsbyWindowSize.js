@@ -19,6 +19,6 @@ export default function useWindowSize() {
 
   return {
     windowWidth: windowWidth,
-    windowHeight: windowHeight,
+    windowHeight: windowHeight
   };
 }

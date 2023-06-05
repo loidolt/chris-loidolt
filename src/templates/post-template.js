@@ -2,6 +2,7 @@ import { Box, Chip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { graphql, navigate } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Layout, Navigation, Seo } from '../components/layout';
@@ -20,9 +21,8 @@ export default function PostTemplate({ data, pageContext }) {
       </Typography>
       <Box
         sx={{
-          paddingBottom: 2,
-        }}
-      >
+          paddingBottom: 2
+        }}>
         {post.Tags.map((tag, index) => (
           <Chip
             key={index}
@@ -34,8 +34,8 @@ export default function PostTemplate({ data, pageContext }) {
               borderColor: theme.palette.white.dark,
               backgroundColor: theme.palette.background.paper,
               '&:hover': {
-                backgroundColor: theme.palette.background.default,
-              },
+                backgroundColor: theme.palette.background.default
+              }
             }}
             onClick={() => navigate(`/tag/${toKebabCase(tag)}/`)}
           />
@@ -45,9 +45,8 @@ export default function PostTemplate({ data, pageContext }) {
           component="p"
           sx={{
             color: 'rgba(255, 255, 255, 0.38)',
-            float: 'right',
-          }}
-        >
+            float: 'right'
+          }}>
           {post.Date}
         </Typography>
       </Box>
@@ -55,13 +54,10 @@ export default function PostTemplate({ data, pageContext }) {
         <Box
           sx={{
             marginBottom: 2,
-            borderRadius: '20px',
-          }}
-        >
+            borderRadius: '20px'
+          }}>
           <GatsbyImage
-            image={
-              post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData
-            }
+            image={post.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData}
             alt={post.Title + ' Featured Image'}
             style={{ borderRadius: '20px' }}
           />
@@ -91,12 +87,14 @@ export default function PostTemplate({ data, pageContext }) {
   );
 }
 
-export const Head = ({ data }) => (
-  <Seo
-    title={data.airtable.data.Title}
-    description={data.airtable.data.Excerpt}
-  />
-);
+PostTemplate.propTypes = {
+  data: PropTypes.object.isRequired,
+  pageContext: PropTypes.object.isRequired
+};
+
+export function Head({ data }) {
+  return <Seo title={data.airtable.data.Title} description={data.airtable.data.Excerpt} />;
+}
 
 export const pageQuery = graphql`
   query getPost($id: String) {

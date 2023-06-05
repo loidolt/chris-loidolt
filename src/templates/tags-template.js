@@ -1,16 +1,14 @@
 import { Grid, Typography } from '@mui/material';
 import { graphql } from 'gatsby';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Layout, Navigation, Seo } from '../components/layout';
 import { PostCard } from '../components/posts';
 
-const TagsPage = ({
-  data,
-  pageContext: { nextPagePath, previousPagePath, tag },
-}) => {
+const TagsPage = ({ data, pageContext: { nextPagePath, previousPagePath, tag } }) => {
   const {
-    allAirtable: { edges: posts },
+    allAirtable: { edges: posts }
   } = data;
 
   return (
@@ -23,7 +21,7 @@ const TagsPage = ({
         {posts.map(({ node }) => {
           const {
             id,
-            data: { Title, Date, Cover_Image, Tags, Excerpt, Path },
+            data: { Title, Date, Cover_Image, Tags, Excerpt, Path }
           } = node;
 
           if (Title || Date || Cover_Image || Tags || Excerpt || Path) {
@@ -53,15 +51,20 @@ const TagsPage = ({
   );
 };
 
-export const Head = ({ tag }) => (
-  <Seo title={tag + ' Projects Loidolt Design'} />
-);
+TagsPage.propTypes = {
+  data: PropTypes.any,
+  pageContext: PropTypes.any
+};
+
+export function Head({ tag }) {
+  return <Seo title={tag + ' Projects Loidolt Design'} />;
+}
 
 export const postsQuery = graphql`
   query AllPostsbyTag($skip: Int!, $limit: Int!, $tag: String) {
     allAirtable(
-      filter: {data: {Status: {eq: "Published"}, Tags: {eq: $tag}}, table: {eq: "Posts"}}
-      sort: {data: {Date: DESC}}
+      filter: { data: { Status: { eq: "Published" }, Tags: { eq: $tag } }, table: { eq: "Posts" } }
+      sort: { data: { Date: DESC } }
       skip: $skip
       limit: $limit
     ) {

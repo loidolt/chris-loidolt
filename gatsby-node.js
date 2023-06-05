@@ -1,11 +1,8 @@
 const { paginate } = require('gatsby-awesome-pagination');
 const path = require('path');
 const { toKebabCase } = require('./src/utils');
-const util = require('util');
-const child_process = require('child_process');
-const exec = util.promisify(child_process.exec);
 
-exports.createPages = async gatsbyUtilities => {
+exports.createPages = async (gatsbyUtilities) => {
   const { createPage } = gatsbyUtilities.actions;
 
   // Query posts from the GraphQL server
@@ -18,27 +15,27 @@ exports.createPages = async gatsbyUtilities => {
     items: posts,
     component: path.resolve(`./src/templates/index-template.js`),
     itemsPerPage: 12,
-    pathPrefix: '/',
+    pathPrefix: '/'
   });
 
   // Create tag pages
 
   // Get all tags and filter unique falues
-  let allTags = [];
+  const allTags = [];
   posts.map(({ post }) => {
-    post.data.Tags.map(tag => {
+    post.data.Tags.map((tag) => {
       //console.log(tag);
-      let tagString = String(tag);
+      const tagString = String(tag);
       allTags.push(tagString);
     });
   });
   //console.log(allTags);
-  let tags = [...new Set(allTags)];
+  const tags = [...new Set(allTags)];
   //console.log(tags);
 
-  tags.forEach(tag => {
+  tags.forEach((tag) => {
     const postsWithTag = posts.filter(
-      ({ post }) => post.data.Tags && post.data.Tags.indexOf(tag) !== -1,
+      ({ post }) => post.data.Tags && post.data.Tags.indexOf(tag) !== -1
     );
 
     paginate({
@@ -48,8 +45,8 @@ exports.createPages = async gatsbyUtilities => {
       itemsPerPage: 12,
       pathPrefix: `/tag/${toKebabCase(tag)}`,
       context: {
-        tag,
-      },
+        tag
+      }
     });
   });
 
@@ -78,10 +75,10 @@ const createIndividualPostPages = async ({ posts, gatsbyUtilities }) =>
           previousPostTitle: previous ? previous.data.Title : null,
           nextPostId: next ? next.id : null,
           nextPostPath: next ? next.data.Path : null,
-          nextPostTitle: next ? next.data.Title : null,
-        },
-      }),
-    ),
+          nextPostTitle: next ? next.data.Title : null
+        }
+      })
+    )
   );
 
 /**
@@ -96,8 +93,8 @@ async function getPosts({ graphql, reporter }) {
   const graphqlResult = await graphql(/* GraphQL */ `
     query AllPosts {
       allAirtable(
-        filter: {data: {Status: {eq: "Published"}}, table: {eq: "Posts"}}
-        sort: {data: {Date: DESC}}
+        filter: { data: { Status: { eq: "Published" } }, table: { eq: "Posts" } }
+        sort: { data: { Date: DESC } }
       ) {
         edges {
           next {
@@ -128,10 +125,7 @@ async function getPosts({ graphql, reporter }) {
   `);
 
   if (graphqlResult.errors) {
-    reporter.panicOnBuild(
-      `There was an error loading your posts`,
-      graphqlResult.errors,
-    );
+    reporter.panicOnBuild(`There was an error loading your posts`, graphqlResult.errors);
     return;
   }
 

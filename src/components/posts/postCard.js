@@ -1,26 +1,13 @@
-import {
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
-  Divider,
-  Typography,
-} from '@mui/material';
+import { Card, CardActions, CardContent, Chip, Divider, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Link, navigate } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { toKebabCase } from '../../utils';
 
-export default function PostCard({
-  title,
-  date,
-  path,
-  coverImage,
-  excerpt,
-  tags,
-}) {
+export default function PostCard({ title, date, path, coverImage, excerpt, tags }) {
   const theme = useTheme();
 
   return (
@@ -31,15 +18,14 @@ export default function PostCard({
         borderRadius: '20px',
         '&:hover': {
           boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
-          transition: 'all 0.55s ease-in-out',
-        },
-      }}
-    >
+          transition: 'all 0.55s ease-in-out'
+        }
+      }}>
       <Link to={path} style={{ color: 'inherit', textDecoration: 'inherit' }}>
         {coverImage && (
           <GatsbyImage
             sx={{
-              height: '100%',
+              height: '100%'
             }}
             image={coverImage.childImageSharp.gatsbyImageData}
             alt={title + 'Featured Image'}
@@ -53,9 +39,8 @@ export default function PostCard({
             component="h2"
             sx={{
               color: theme.palette.white.dark,
-              fontWeight: 700,
-            }}
-          >
+              fontWeight: 700
+            }}>
             {title}
           </Typography>
 
@@ -63,9 +48,8 @@ export default function PostCard({
             variant="body2"
             component="p"
             sx={{
-              color: theme.palette.white.dark,
-            }}
-          >
+              color: theme.palette.white.dark
+            }}>
             {excerpt}
           </Typography>
           <Typography
@@ -73,16 +57,15 @@ export default function PostCard({
             component="p"
             sx={{
               color: theme.palette.white.dark,
-              float: 'right',
-            }}
-          >
+              float: 'right'
+            }}>
             {date}
           </Typography>
         </CardContent>
       </Link>
       <Divider light sx={{ marginTop: 1 }} />
       <CardActions>
-        {tags.map(tag => (
+        {tags.map((tag) => (
           <Chip
             key={tag}
             label={'#' + tag}
@@ -91,8 +74,8 @@ export default function PostCard({
               color: theme.palette.white.dark,
               borderColor: theme.palette.white.dark,
               '&:hover': {
-                backgroundColor: theme.palette.white.main,
-              },
+                backgroundColor: theme.palette.white.main
+              }
             }}
             onClick={() => navigate(`/tag/${toKebabCase(tag)}/`)}
           />
@@ -101,3 +84,12 @@ export default function PostCard({
     </Card>
   );
 }
+
+PostCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  date: PropTypes.string.isRequired,
+  path: PropTypes.string.isRequired,
+  coverImage: PropTypes.object,
+  excerpt: PropTypes.string.isRequired,
+  tags: PropTypes.array.isRequired
+};

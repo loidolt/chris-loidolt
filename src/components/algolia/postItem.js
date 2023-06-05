@@ -1,13 +1,12 @@
 import { Link } from 'gatsby';
 import { GatsbyImage, getImage } from 'gatsby-plugin-image';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default function PostItem({ hit, components }) {
   let image;
   if (hit.Cover_Image.localFiles) {
-    image = getImage(
-      hit.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData,
-    );
+    image = getImage(hit.Cover_Image.localFiles[0].childImageSharp.gatsbyImageData);
   }
 
   return (
@@ -28,3 +27,8 @@ export default function PostItem({ hit, components }) {
     </Link>
   );
 }
+
+PostItem.propTypes = {
+  hit: PropTypes.any,
+  components: PropTypes.any
+};

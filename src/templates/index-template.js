@@ -6,12 +6,9 @@ import React from 'react';
 import { Layout, Navigation, Seo } from '../components/layout';
 import { PostCard } from '../components/posts';
 
-const IndexPage = ({
-  data,
-  pageContext: { nextPagePath, previousPagePath },
-}) => {
+const IndexPage = ({ data, pageContext: { nextPagePath, previousPagePath } }) => {
   const {
-    allAirtable: { edges: posts },
+    allAirtable: { edges: posts }
   } = data;
 
   return (
@@ -23,7 +20,7 @@ const IndexPage = ({
         {posts.map(({ node }) => {
           const {
             id,
-            data: { Title, Date, Cover_Image, Tags, Excerpt, Path },
+            data: { Title, Date, Cover_Image, Tags, Excerpt, Path }
           } = node;
           if (Title || Date || Cover_Image || Tags || Excerpt || Path) {
             return (
@@ -52,21 +49,23 @@ const IndexPage = ({
   );
 };
 
-export const Head = () => <Seo title="Projects" />;
+export function Head() {
+  return <Seo title="Projects" />;
+}
 
 IndexPage.propTypes = {
   data: PropTypes.object.isRequired,
   pageContext: PropTypes.shape({
     nextPagePath: PropTypes.string,
-    previousPagePath: PropTypes.string,
-  }),
+    previousPagePath: PropTypes.string
+  })
 };
 
 export const postsQuery = graphql`
   query AllPosts($skip: Int!, $limit: Int!) {
     allAirtable(
-      filter: {data: {Status: {eq: "Published"}}, table: {eq: "Posts"}}
-      sort: {data: {Date: DESC}}
+      filter: { data: { Status: { eq: "Published" } }, table: { eq: "Posts" } }
+      sort: { data: { Date: DESC } }
       skip: $skip
       limit: $limit
     ) {

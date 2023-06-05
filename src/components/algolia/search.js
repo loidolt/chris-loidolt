@@ -10,7 +10,7 @@ import PostItem from './postItem';
 
 const searchClient = algoliasearch(
   process.env.GATSBY_ALGOLIA_APP_ID,
-  process.env.GATSBY_ALGOLIA_ADMIN_KEY,
+  process.env.GATSBY_ALGOLIA_ADMIN_KEY
 );
 
 export default function Search() {
@@ -27,10 +27,10 @@ export default function Search() {
               queries: [
                 {
                   clickAnalytics: true,
-                  indexName: process.env.GATSBY_ALGOLIA_INDEX_NAME,
-                  query,
-                },
-              ],
+                  indexName: 'posts',
+                  query
+                }
+              ]
             });
           },
           onSelect({ item, setQuery, setIsOpen, refresh }) {
@@ -44,7 +44,7 @@ export default function Search() {
           navigator: {
             navigate({ item }) {
               navigate(item.Path);
-            },
+            }
           },
           templates: {
             header() {
@@ -60,9 +60,9 @@ export default function Search() {
             },
             noResults() {
               return 'No Matching Posts';
-            },
-          },
-        },
+            }
+          }
+        }
       ]}
     />
   );
