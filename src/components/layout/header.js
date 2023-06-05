@@ -76,17 +76,17 @@ const Header = ({ siteTitle }) => {
           </IconButton>
 
           <Typography
-            variant="h6"
             noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' } }}
+            component={Link}
+            to="/"
+            sx={{
+              flexGrow: 1,
+              display: { xs: 'block', sm: 'block' }, color: 'inherit',
+              textDecoration: 'inherit',
+              fontSize: '1.5rem'
+            }}
           >
-            <Link
-              to="/"
-              style={{ color: 'inherit', textDecoration: 'inherit' }}
-            >
-              {siteTitle}
-            </Link>
+            {siteTitle}
           </Typography>
 
           <Search />

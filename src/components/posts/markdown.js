@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const LinkRenderer = props => {
-  console.log(props);
+  //console.log(props);
   return (
     <div>
       <a
