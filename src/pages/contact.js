@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Grid, Paper, TextField, Typography, useTheme } from '@mui/material';
+import { Grid, Paper, TextField, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
