@@ -21,7 +21,7 @@ export default function getFirebase() {
   if (app) return app;
   // Use this to initialize the firebase App
   app = initializeApp(firebaseConfig);
-  console.log(app);
+  //console.log(app);
   return app;
 }
 
