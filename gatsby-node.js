@@ -13,7 +13,7 @@ exports.createPages = async (gatsbyUtilities) => {
   paginate({
     createPage,
     items: posts,
-    component: path.resolve(`./src/templates/index-template.js`),
+    component: path.resolve(`./src/templates/workshop-template.js`),
     itemsPerPage: 12,
     pathPrefix: '/'
   });
@@ -41,7 +41,7 @@ exports.createPages = async (gatsbyUtilities) => {
     paginate({
       createPage,
       items: postsWithTag,
-      component: path.resolve(`./src/templates/tags-template.js`),
+      component: path.resolve(`./src/templates/workshop-tags-template.js`),
       itemsPerPage: 12,
       pathPrefix: `/tag/${toKebabCase(tag)}`,
       context: {
@@ -64,7 +64,7 @@ const createIndividualPostPages = async ({ posts, gatsbyUtilities }) =>
       // See https://www.gatsbyjs.com/docs/actions#createPage for more info
       gatsbyUtilities.actions.createPage({
         path: post.data.Path,
-        component: path.resolve(`./src/templates/post-template.js`),
+        component: path.resolve(`./src/templates/workshop-post-template.js`),
 
         // `context` is available in the template as a prop and
         // as a variable in GraphQL.

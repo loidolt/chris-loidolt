@@ -14,7 +14,7 @@ const IndexPage = ({ data, pageContext: { nextPagePath, previousPagePath } }) =>
   return (
     <Layout>
       <Typography variant="h1" gutterBottom>
-        Projects
+        Workshop
       </Typography>
       <Grid container spacing={3} justifyContent="center">
         {posts.map(({ node }) => {
@@ -50,7 +50,7 @@ const IndexPage = ({ data, pageContext: { nextPagePath, previousPagePath } }) =>
 };
 
 export function Head() {
-  return <Seo title="Projects" />;
+  return <Seo title="Workshop Projects" />;
 }
 
 IndexPage.propTypes = {

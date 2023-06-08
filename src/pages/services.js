@@ -1,9 +1,10 @@
-import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Button, Grid, Stack, Typography } from '@mui/material';
 import { graphql, useStaticQuery } from 'gatsby';
 import React from 'react';
 
+import { ColorPaper, ColorPaperContent, ColorPaperTitle } from '../components/colorPaper';
 import { Layout, Seo } from '../components/layout';
+import { colors } from '../theme/pastelColors';
 
 const Services = () => {
   const data = useStaticQuery(graphql`
@@ -31,73 +32,41 @@ const Services = () => {
     }
   `);
 
-  const theme = useTheme();
-
   const services = data.allAirtable.nodes;
 
   return (
-    <Layout>
-      <Typography variant="h3" component="h1" gutterBottom>
+    <Layout color={colors[2]}>
+      <Typography variant="h1" gutterBottom>
         Public Services
       </Typography>
       <Grid container spacing={2}>
         {services.map((service, index) => (
-          <Grid item xs={12} sm={6} key={index}>
-            <Card
-              sx={{
-                backgroundColor: theme.palette.background.paper,
-                boxShadow: '0 3px 10px rgba(0, 0, 0, 0.43)',
-                borderRadius: '20px',
-                '&:hover': {
-                  boxShadow: '0 15px 35px 0 rgba(0, 0, 0, 0.41)',
-                  transition: 'all 0.55s ease-in-out'
-                }
-              }}>
-              {/* <a target="_blank" rel="noreferrer" href={service.node.data.URL}>
-                <GatsbyImage
-                  sx={{
-                    height: "100%",
-                  }}
-                  image={
-                    service.node.data.Screenshot.localFiles[0].childImageSharp
-                      .gatsbyImageData
-                  }
-                  alt={website.node.data.Name + " Screenshot"}
-                />
-              </a> */}
+          <Grid item xs={12} key={index}>
+            <ColorPaper color={colors[index % colors.length]} title={service.data.Name}>
+              <ColorPaperTitle color={colors[index % colors.length]} title={service.data.Name} />
               {service.data.Summary && (
-                <React.Fragment>
-                  <CardContent>
-                    <Typography
-                      sx={{
-                        fontSize: '1.6em',
-                        fontWeight: 'bold',
-                        color: 'rgba(255, 255, 255, 0.87)'
-                      }}
-                      gutterBottom>
-                      {service.data.Name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: '1em',
-                        fontWeight: 'bold',
-                        color: 'rgba(255, 255, 255, 0.38)',
-                        textTransform: 'uppercase'
-                      }}
-                      gutterBottom>
-                      {service.data.Subtitle}
-                    </Typography>
-                    <Typography gutterBottom>{service.data.Summary}</Typography>
-                  </CardContent>
-                  <Divider />
+                <ColorPaperContent>
+                  <Typography variant="h2" gutterBottom>
+                    {service.data.Subtitle}
+                  </Typography>
+                  <Typography gutterBottom>{service.data.Summary}</Typography>
                   <Stack
-                    direction="row"
                     justifyContent="space-between"
-                    alignItems="flex-end"
+                    alignItems="flex-start"
                     spacing={2}
-                    sx={{ padding: 2 }}>
+                    sx={{ marginTop: 2, marginBottom: 2 }}>
                     {service.data.More_Info && (
-                      <Button target="_blank" rel="noreferrer" href={service.data.More_Info}>
+                      <Button
+                        variant={'contained'}
+                        target="_blank"
+                        rel="noreferrer"
+                        href={service.data.More_Info}
+                        sx={{
+                          backgroundColor: colors[index % colors.length].light,
+                          '&:hover': {
+                            backgroundColor: colors[index % colors.length].dark
+                          }
+                        }}>
                         Learn More
                       </Button>
                     )}
@@ -106,14 +75,20 @@ const Services = () => {
                         variant={'contained'}
                         target="_blank"
                         rel="noreferrer"
-                        href={service.data.URL}>
+                        href={service.data.URL}
+                        sx={{
+                          backgroundColor: colors[index % colors.length].light,
+                          '&:hover': {
+                            backgroundColor: colors[index % colors.length].dark
+                          }
+                        }}>
                         View Service
                       </Button>
                     )}
                   </Stack>
-                </React.Fragment>
+                </ColorPaperContent>
               )}
-            </Card>
+            </ColorPaper>
           </Grid>
         ))}
       </Grid>

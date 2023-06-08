@@ -1,12 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Grid, Paper, TextField, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Grid, TextField } from '@mui/material';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { ColorPaper, ColorPaperContent, ColorPaperTitle } from '../components/colorPaper';
 import { Layout, Seo } from '../components/layout';
+import { colors } from '../theme/pastelColors';
 //firebase
 import { saveDocumentGenerateID } from '../utils/firestore';
 
@@ -17,8 +18,6 @@ const schema = yup.object().shape({
 });
 
 export default function Contact() {
-  const theme = useTheme();
-
   const {
     control,
     register,
@@ -52,83 +51,88 @@ export default function Contact() {
   };
 
   return (
-    <Layout>
-      <Typography variant="h3" component="h1" gutterBottom>
-        Contact
-      </Typography>
-      <Paper
-        sx={{
-          padding: 4,
-          backgroundColor: theme.palette.background.paper,
-          borderRadius: '20px'
-        }}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input type="hidden" name="form-name" value="contact" />
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Controller
-                id="name"
-                name="name"
-                control={control}
-                {...register('name', { required: true })}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Name"
-                    margin="dense"
-                    fullWidth
-                    error={Boolean(errors.name?.message)}
-                    helperText={errors.name?.message}
-                  />
-                )}
-              />
+    <Layout color={colors[0]}>
+      <ColorPaper invert color={colors[0]}>
+        <ColorPaperTitle invert title={'Contact'} color={colors[0]} />
+        <ColorPaperContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input type="hidden" name="form-name" value="contact" />
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  id="name"
+                  name="name"
+                  control={control}
+                  {...register('name', { required: true })}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Name"
+                      margin="dense"
+                      fullWidth
+                      error={Boolean(errors.name?.message)}
+                      helperText={errors.name?.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  id="email"
+                  name="email"
+                  control={control}
+                  {...register('email', { required: true })}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Email"
+                      margin="dense"
+                      fullWidth
+                      error={Boolean(errors.email?.message)}
+                      helperText={errors.email?.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Controller
+                  id="message"
+                  name="message"
+                  control={control}
+                  {...register('message', { required: true })}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Message"
+                      margin="dense"
+                      fullWidth
+                      multiline
+                      rows={6}
+                      error={Boolean(errors.message?.message)}
+                      helperText={errors.message?.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <LoadingButton
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  loading={isSubmitting}
+                  sx={{
+                    backgroundColor: colors[0].light,
+                    '&:hover': {
+                      backgroundColor: colors[0].dark
+                    }
+                  }}>
+                  Submit
+                </LoadingButton>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Controller
-                id="email"
-                name="email"
-                control={control}
-                {...register('email', { required: true })}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Email"
-                    margin="dense"
-                    fullWidth
-                    error={Boolean(errors.email?.message)}
-                    helperText={errors.email?.message}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Controller
-                id="message"
-                name="message"
-                control={control}
-                {...register('message', { required: true })}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Message"
-                    margin="dense"
-                    fullWidth
-                    multiline
-                    rows={6}
-                    error={Boolean(errors.message?.message)}
-                    helperText={errors.message?.message}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <LoadingButton size="large" type="submit" variant="contained" loading={isSubmitting}>
-                Submit
-              </LoadingButton>
-            </Grid>
-          </Grid>
-        </form>
-      </Paper>
+          </form>
+        </ColorPaperContent>
+      </ColorPaper>
     </Layout>
   );
 }

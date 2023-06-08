@@ -13,9 +13,9 @@ const TagsPage = ({ data, pageContext: { nextPagePath, previousPagePath, tag } }
 
   return (
     <Layout>
-      <Seo title={tag + ' Projects Loidolt Design'} />
+      <Seo title={tag + 'Workshop Loidolt Design'} />
       <Typography variant="h1" component="h1" gutterBottom>
-        #{tag}
+        #{tag} | Workshop
       </Typography>
       <Grid container spacing={3} justifyContent="center">
         {posts.map(({ node }) => {
@@ -57,7 +57,7 @@ TagsPage.propTypes = {
 };
 
 export function Head({ tag }) {
-  return <Seo title={tag + ' Projects Loidolt Design'} />;
+  return <Seo title={tag + ' Workshop Loidolt Design'} />;
 }
 
 export const postsQuery = graphql`

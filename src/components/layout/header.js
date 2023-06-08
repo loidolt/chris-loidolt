@@ -28,7 +28,7 @@ import React from 'react';
 import { Search } from '../algolia';
 
 const menuList = [
-  { title: 'Projects', link: '/', icon: <Home /> },
+  { title: 'Workshop', link: '/', icon: <Home /> },
   { title: 'Websites', link: '/websites', icon: <Web /> },
   { title: 'Services', link: '/services', icon: <Public /> },
   { title: 'About', link: '/about', icon: <Info /> },
@@ -101,6 +101,7 @@ const Header = ({ siteTitle }) => {
             borderBottomLeftRadius: 0
           }
         }}
+        onClose={handleDrawerClose}
         variant="persistent"
         anchor="left"
         open={open}>

@@ -38,7 +38,7 @@ const Websites = () => {
 
   return (
     <Layout>
-      <Typography variant="h3" component="h1" gutterBottom>
+      <Typography variant="h1" gutterBottom>
         Websites
       </Typography>
       <Grid container spacing={2}>
