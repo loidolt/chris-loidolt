@@ -1,21 +1,10 @@
-const { paginate } = require('gatsby-awesome-pagination');
 const path = require('path');
 
 exports.createPages = async (gatsbyUtilities) => {
-  const { createPage } = gatsbyUtilities.actions;
 
   // Query posts from the GraphQL server
   const posts = await getPosts(gatsbyUtilities);
   //console.log(posts);
-
-  // Create posts index with pagination
-  paginate({
-    createPage,
-    items: posts,
-    component: path.resolve(`./src/templates/project-template.js`),
-    itemsPerPage: 12,
-    pathPrefix: '/projects'
-  });
 
   // Create post pages
   await createIndividualPostPages({ posts, gatsbyUtilities });
