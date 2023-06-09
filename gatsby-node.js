@@ -1,6 +1,5 @@
 const { paginate } = require('gatsby-awesome-pagination');
 const path = require('path');
-const { toKebabCase } = require('./src/utils');
 
 exports.createPages = async (gatsbyUtilities) => {
   const { createPage } = gatsbyUtilities.actions;
@@ -13,41 +12,9 @@ exports.createPages = async (gatsbyUtilities) => {
   paginate({
     createPage,
     items: posts,
-    component: path.resolve(`./src/templates/workshop-template.js`),
+    component: path.resolve(`./src/templates/project-template.js`),
     itemsPerPage: 12,
-    pathPrefix: '/'
-  });
-
-  // Create tag pages
-
-  // Get all tags and filter unique falues
-  const allTags = [];
-  posts.map(({ post }) => {
-    post.data.Tags.map((tag) => {
-      //console.log(tag);
-      const tagString = String(tag);
-      allTags.push(tagString);
-    });
-  });
-  //console.log(allTags);
-  const tags = [...new Set(allTags)];
-  //console.log(tags);
-
-  tags.forEach((tag) => {
-    const postsWithTag = posts.filter(
-      ({ post }) => post.data.Tags && post.data.Tags.indexOf(tag) !== -1
-    );
-
-    paginate({
-      createPage,
-      items: postsWithTag,
-      component: path.resolve(`./src/templates/workshop-tags-template.js`),
-      itemsPerPage: 12,
-      pathPrefix: `/tag/${toKebabCase(tag)}`,
-      context: {
-        tag
-      }
-    });
+    pathPrefix: '/projects'
   });
 
   // Create post pages
@@ -63,8 +30,8 @@ const createIndividualPostPages = async ({ posts, gatsbyUtilities }) =>
       // createPage is an action passed to createPages
       // See https://www.gatsbyjs.com/docs/actions#createPage for more info
       gatsbyUtilities.actions.createPage({
-        path: post.data.Path,
-        component: path.resolve(`./src/templates/workshop-post-template.js`),
+        path: '/projects' + post.data.Path,
+        component: path.resolve(`./src/templates/project-post-template.js`),
 
         // `context` is available in the template as a prop and
         // as a variable in GraphQL.

@@ -14,7 +14,7 @@ import {
   Drawer,
   IconButton,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Toolbar,
@@ -23,24 +23,16 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { Link } from 'gatsby';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Search } from '../algolia';
-
-const menuList = [
-  { title: 'Workshop', link: '/', icon: <Home /> },
-  { title: 'Websites', link: '/websites', icon: <Web /> },
-  { title: 'Services', link: '/services', icon: <Public /> },
-  { title: 'About', link: '/about', icon: <Info /> },
-  { title: 'Contact', link: '/contact', icon: <Mail /> }
-];
 
 const drawerWidth = 240;
 
 const Header = ({ siteTitle }) => {
   const theme = useTheme();
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   function handleDrawerOpen() {
     setOpen(true);
@@ -123,19 +115,28 @@ const Header = ({ siteTitle }) => {
           </IconButton>
         </Box>
         <List>
-          {menuList.map((item, index) => (
-            <ListItem
-              key={index}
-              button
-              component={Link}
-              to={item.link}
-              sx={{
-                color: theme.palette.white.main
-              }}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText>{item.title}</ListItemText>
-            </ListItem>
-          ))}
+          <ListItemButton
+            component={Link}
+            to={'/about'}
+            sx={{
+              color: theme.palette.white.main
+            }}>
+            <ListItemIcon>
+              <Info />
+            </ListItemIcon>
+            <ListItemText>About</ListItemText>
+          </ListItemButton>
+          <ListItemButton
+            component={Link}
+            to={'/contact'}
+            sx={{
+              color: theme.palette.white.main
+            }}>
+            <ListItemIcon>
+              <Mail />
+            </ListItemIcon>
+            <ListItemText>Contact</ListItemText>
+          </ListItemButton>
         </List>
       </Drawer>
     </Box>

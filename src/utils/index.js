@@ -19,3 +19,10 @@ module.exports.groupBy = function (arr, criteria) {
     return obj;
   }, {});
 };
+
+module.exports.truncateText = function (input, maxLength = 200) {
+  if (input.length <= maxLength) {
+    return input;
+  }
+  return input.substring(0, maxLength) + '...';
+};

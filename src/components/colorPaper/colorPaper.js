@@ -6,7 +6,7 @@ export default function ColorPaper({ color, invert, children }) {
     <Paper
       sx={{
         position: 'relative',
-        backgroundColor: invert ? color.dark : color.paperBackground,
+        backgroundColor: invert ? color.dark : `${color.paperBackground}F7`,
         borderColor: color.main,
         borderStyle: invert ? 'none' : 'solid',
         borderWidth: 4,

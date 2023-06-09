@@ -82,7 +82,7 @@ export default function FooterChart({ color }) {
           <defs>
             <linearGradient id="colorContributions" x1="0" y1="0" x2="0" y2="1">
               <stop offset="35%" stopColor={color && color.paperBackground} stopOpacity={1} />
-              <stop offset="90%" stopColor={color && color.paperBackground} stopOpacity={0.2} />
+              <stop offset="90%" stopColor={color && color.paperBackground} stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis dataKey="week" hide={true} />
