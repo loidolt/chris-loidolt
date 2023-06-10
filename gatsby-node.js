@@ -1,7 +1,6 @@
 const path = require('path');
 
 exports.createPages = async (gatsbyUtilities) => {
-
   // Query posts from the GraphQL server
   const posts = await getPosts(gatsbyUtilities);
   //console.log(posts);
@@ -27,10 +26,10 @@ const createIndividualPostPages = async ({ posts, gatsbyUtilities }) =>
         context: {
           id: post.id,
           previousPostId: previous ? previous.id : null,
-          previousPostPath: previous ? previous.data.Path : null,
+          previousPostPath: previous ? '/projects' + previous.data.Path : null,
           previousPostTitle: previous ? previous.data.Title : null,
           nextPostId: next ? next.id : null,
-          nextPostPath: next ? next.data.Path : null,
+          nextPostPath: next ? '/projects' + next.data.Path : null,
           nextPostTitle: next ? next.data.Title : null
         }
       })
