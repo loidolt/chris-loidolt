@@ -25,6 +25,7 @@ function getRandomColor() {
 // Color map for groups
 const groupColors = {
   central: colors[3],
+  contact: colors[0],
   project: colors[6],
   work: colors[7],
   service: colors[8],
@@ -62,6 +63,7 @@ function createGraphData(data) {
     'central',
     null
   );
+  addNode('contact', 'Contact', 1, { Name: 'Contact' }, 'contact', null);
   addNode('projects', 'Projects', data.projects.length, { Name: 'Projects' }, 'project', null);
   addNode('work', 'Work', data.projects.length, { Name: 'Work' }, 'work', null);
   addNode('websites', 'Websites', data.projects.length, { Name: 'Websites' }, 'work', 'work');
@@ -76,6 +78,7 @@ function createGraphData(data) {
   );
 
   // Connect central nodes to Chris Loidolt node
+  addLink('central', 'contact');
   addLink('central', 'projects');
   addLink('central', 'work');
   addLink('work', 'websites');
@@ -189,6 +192,28 @@ const GraphNavigation = ({ onGroupSelect }) => {
             }
           }}>
           Qualifications
+        </Button>
+        <Button
+          variant={'contained'}
+          onClick={() => onGroupSelect('contact')}
+          sx={{
+            backgroundColor: groupColors.contact.light,
+            '&:hover': {
+              backgroundColor: groupColors.contact.dark
+            }
+          }}>
+          Contact
+        </Button>
+        <Button
+          variant={'contained'}
+          onClick={() => onGroupSelect('central')}
+          sx={{
+            backgroundColor: groupColors.central.light,
+            '&:hover': {
+              backgroundColor: groupColors.central.dark
+            }
+          }}>
+          About
         </Button>
       </Stack>
     </Box>
@@ -469,21 +494,21 @@ const Graph = () => {
         nodeColor={
           (node) =>
             selectedGroup == null ||
-              node.id === selectedGroup ||
-              node.group === selectedGroup ||
-              node.parent === selectedGroup
+            node.id === selectedGroup ||
+            node.group === selectedGroup ||
+            node.parent === selectedGroup
               ? node.color.main
               : 'rgba(255, 255, 255, 0.5)' // use faded color for non-selected nodes
         }
         linkColor={
           (link) =>
             selectedGroup == null ||
-              link.source.id === selectedGroup ||
-              link.target.id === selectedGroup ||
-              link.source.group === selectedGroup ||
-              link.target.group === selectedGroup ||
-              link.source.parent === selectedGroup ||
-              link.target.parent === selectedGroup
+            link.source.id === selectedGroup ||
+            link.target.id === selectedGroup ||
+            link.source.group === selectedGroup ||
+            link.target.group === selectedGroup ||
+            link.source.parent === selectedGroup ||
+            link.target.parent === selectedGroup
               ? 'rgba(255, 255, 255, 1)' // use solid color for links in the selected group
               : 'rgba(255, 255, 255, 0.1)' // use faded color for other links
         }
