@@ -57,7 +57,7 @@ export default function ServicesCard({ nodeData }) {
                   {nodeData.data.Subtitle}
                 </Typography>
                 <Stack
-                  direction={'row'}
+                  direction={{ xs: 'column', sm: 'row' }}
                   alignItems="flex-start"
                   spacing={2}
                   sx={{ marginTop: 2, marginBottom: 2 }}>
@@ -109,7 +109,7 @@ export default function ServicesCard({ nodeData }) {
           </Box>
         </ColorPaperContent>
       </ColorPaper>
-    </GraphCardWrapper>
+    </GraphCardWrapper >
   );
 }
 

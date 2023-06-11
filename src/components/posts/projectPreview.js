@@ -14,7 +14,7 @@ export default function ProjectPreview({ nodeData }) {
   return (
     <GraphCardWrapper nodeData={nodeData}>
       <ColorPaper color={nodeData.color}>
-        <ColorPaperTitle color={nodeData.color} title={nodeData.data.Tags} />
+        <ColorPaperTitle color={nodeData.color} title={nodeData.data.Categories} />
         <ColorPaperContent>
           <Box sx={{ paddingBottom: { xs: 2, sm: 4 } }}>
             <Grid container spacing={2}>
@@ -43,8 +43,8 @@ export default function ProjectPreview({ nodeData }) {
                 xs={12}
                 md={
                   nodeData.data.Cover_Image &&
-                    nodeData.data.Cover_Image.localFiles &&
-                    nodeData.data.Cover_Image.localFiles[0]
+                  nodeData.data.Cover_Image.localFiles &&
+                  nodeData.data.Cover_Image.localFiles[0]
                     ? 6
                     : 12
                 }>
@@ -82,7 +82,7 @@ export default function ProjectPreview({ nodeData }) {
                 </Button>
               </Grid>
             </Grid>
-            <Box sx={{ marginTop: 2, marginBottom: 2 }}>
+            <Box sx={{ marginTop: 4, marginBottom: 4 }}>
               {nodeData.data.Excerpt && (
                 <Typography
                   variant="body2"

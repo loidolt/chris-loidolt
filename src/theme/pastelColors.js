@@ -82,5 +82,89 @@ export const colors = [
     dark: '#c87c24',
     paperBackground: '#29251d',
     contrastText: '#ffffff'
+  },
+  {
+    main: '#f28779',
+    light: '#f5b0a1',
+    dark: '#c06c5e',
+    paperBackground: '#291e1d',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#93c0a4',
+    light: '#b7d5c0',
+    dark: '#6c9179',
+    paperBackground: '#1d2924',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#bf5aaa',
+    light: '#d584c2',
+    dark: '#933a85',
+    paperBackground: '#291d26',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#64abb1',
+    light: '#87c3c8',
+    dark: '#4c8188',
+    paperBackground: '#1d2829',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#f282b4',
+    light: '#f5a8ca',
+    dark: '#c06392',
+    paperBackground: '#291d24',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#8ab274',
+    light: '#adc897',
+    dark: '#698e58',
+    paperBackground: '#1f2921',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#7a7eda',
+    light: '#9f9fe7',
+    dark: '#5b5eb8',
+    paperBackground: '#1d1f29',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#d6be5e',
+    light: '#e1d189',
+    dark: '#a8954b',
+    paperBackground: '#29281d',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#c27779',
+    light: '#d89f9f',
+    dark: '#94585c',
+    paperBackground: '#29201d',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#8dabe1',
+    light: '#add2f3',
+    dark: '#6a88b7',
+    paperBackground: '#1d2329',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#b696ac',
+    light: '#d1b7c4',
+    dark: '#8e7387',
+    paperBackground: '#282429',
+    contrastText: '#ffffff'
+  },
+  {
+    main: '#7ab4a2',
+    light: '#9fcec5',
+    dark: '#5a8a79',
+    paperBackground: '#1d2926',
+    contrastText: '#ffffff'
   }
 ];
