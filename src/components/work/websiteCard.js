@@ -16,7 +16,7 @@ export default function WebsiteCard({ nodeData }) {
       <ColorPaper color={nodeData.color}>
         <ColorPaperTitle color={nodeData.color} title={nodeData.data.URL} />
         <ColorPaperContent>
-          <Box sx={{ width: { xs: '72vw', md: '50vw' }, marginBottom: 10 }}>
+          <Box sx={{ width: { xs: '72vw', md: '50vw' }, paddingBottom: { xs: 2, sm: 4 } }}>
             <Grid container spacing={2}>
               {nodeData.data.Image &&
                 nodeData.data.Image.localFiles &&
@@ -41,8 +41,8 @@ export default function WebsiteCard({ nodeData }) {
                 xs={12}
                 md={
                   nodeData.data.Image &&
-                  nodeData.data.Image.localFiles &&
-                  nodeData.data.Image.localFiles[0]
+                    nodeData.data.Image.localFiles &&
+                    nodeData.data.Image.localFiles[0]
                     ? 6
                     : 12
                 }>

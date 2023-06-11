@@ -16,7 +16,7 @@ export default function QualificationsCard({ nodeData }) {
       <ColorPaper color={nodeData.color}>
         <ColorPaperTitle color={nodeData.color} title={nodeData.data.Category} />
         <ColorPaperContent>
-          <Box sx={{ marginBottom: 4 }}>
+          <Box sx={{ paddingBottom: { xs: 2, sm: 4 } }}>
             <Grid container spacing={2}>
               {nodeData.data.Image &&
                 nodeData.data.Image.localFiles &&

@@ -13,7 +13,7 @@ export default function AboutCard({ color }) {
       <ColorPaper color={color} invert>
         <ColorPaperTitle color={color} title={'Who Am I?'} invert />
         <ColorPaperContent>
-          <Box sx={{ marginBottom: 4 }}>
+          <Box sx={{ paddingBottom: { xs: 2, sm: 4 } }}>
             <Typography
               variant="body1"
               sx={{
@@ -36,7 +36,7 @@ export default function AboutCard({ color }) {
           </Box>
         </ColorPaperContent>
       </ColorPaper>
-    </GraphCardWrapper>
+    </GraphCardWrapper >
   );
 }
 

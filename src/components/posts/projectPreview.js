@@ -16,7 +16,7 @@ export default function ProjectPreview({ nodeData }) {
       <ColorPaper color={nodeData.color}>
         <ColorPaperTitle color={nodeData.color} title={nodeData.data.Tags} />
         <ColorPaperContent>
-          <Box sx={{ marginBottom: 4 }}>
+          <Box sx={{ paddingBottom: { xs: 2, sm: 4 } }}>
             <Grid container spacing={2}>
               {nodeData.data.Cover_Image &&
                 nodeData.data.Cover_Image.localFiles &&
