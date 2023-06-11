@@ -1,26 +1,17 @@
-import { ArrowBack, ArrowForward, Close, StopCircle, ThreeSixty } from '@mui/icons-material';
-import { Box, Button, IconButton, Stack, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { graphql, useStaticQuery } from 'gatsby';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
 
 import { colors } from '../../theme/pastelColors';
+import { getRandomColor } from '../../utils';
 import { QualificationsCard } from '../about';
 import { GraphLayout, Seo } from '../layout';
 import { ProjectPreview } from '../posts';
 import { ServicesCard } from '../services';
 import { WebsiteCard } from '../work';
-
-// Color generator function
-function getRandomColor() {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
+import GraphControls from './graphControls';
+import GraphNavigation from './graphNavigation';
 
 // Color map for groups
 const groupColors = {
@@ -141,124 +132,6 @@ function createGraphData(data) {
 
   return { nodes, links };
 }
-
-const GraphNavigation = ({ onGroupSelect }) => {
-  return (
-    <Box sx={{ position: 'fixed', top: 80, left: 20, zIndex: 1000 }}>
-      <Stack spacing={1}>
-        <Button variant={'contained'} onClick={() => onGroupSelect(null)}>
-          All
-        </Button>
-        <Button
-          variant={'contained'}
-          onClick={() => onGroupSelect('projects')}
-          sx={{
-            backgroundColor: groupColors.project.light,
-            '&:hover': {
-              backgroundColor: groupColors.project.dark
-            }
-          }}>
-          Projects
-        </Button>
-        <Button
-          variant={'contained'}
-          onClick={() => onGroupSelect('work')}
-          sx={{
-            backgroundColor: groupColors.work.light,
-            '&:hover': {
-              backgroundColor: groupColors.work.dark
-            }
-          }}>
-          Work
-        </Button>
-        <Button
-          variant={'contained'}
-          onClick={() => onGroupSelect('services')}
-          sx={{
-            backgroundColor: groupColors.service.light,
-            '&:hover': {
-              backgroundColor: groupColors.service.dark
-            }
-          }}>
-          Services
-        </Button>
-        <Button
-          variant={'contained'}
-          onClick={() => onGroupSelect('qualifications')}
-          sx={{
-            backgroundColor: groupColors.qualification.light,
-            '&:hover': {
-              backgroundColor: groupColors.qualification.dark
-            }
-          }}>
-          Qualifications
-        </Button>
-        <Button
-          variant={'contained'}
-          onClick={() => onGroupSelect('contact')}
-          sx={{
-            backgroundColor: groupColors.contact.light,
-            '&:hover': {
-              backgroundColor: groupColors.contact.dark
-            }
-          }}>
-          Contact
-        </Button>
-        <Button
-          variant={'contained'}
-          onClick={() => onGroupSelect('central')}
-          sx={{
-            backgroundColor: groupColors.central.light,
-            '&:hover': {
-              backgroundColor: groupColors.central.dark
-            }
-          }}>
-          About
-        </Button>
-      </Stack>
-    </Box>
-  );
-};
-
-const GraphControls = ({
-  autoRotate,
-  setAutoRotate,
-  nodeData,
-  handleNextNode,
-  handleCloseNode,
-  handlePrevNode
-}) => {
-  return (
-    <Box sx={{ position: 'fixed', top: 80, right: 20, zIndex: 1000 }}>
-      <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
-        <Tooltip title={autoRotate ? 'Stop Rotation' : 'Start Rotation'}>
-          <IconButton variant={'contained'} onClick={() => setAutoRotate(!autoRotate)}>
-            {autoRotate ? <StopCircle /> : <ThreeSixty />}
-          </IconButton>
-        </Tooltip>
-        {nodeData && (
-          <>
-            <Tooltip title={'Previous Node'}>
-              <IconButton variant={'contained'} onClick={() => handleNextNode(nodeData.id)}>
-                {<ArrowBack />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={'Close Node'}>
-              <IconButton variant={'contained'} onClick={() => handleCloseNode()}>
-                {<Close />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={'Next Node'}>
-              <IconButton variant={'contained'} onClick={() => handlePrevNode(nodeData.id)}>
-                {<ArrowForward />}
-              </IconButton>
-            </Tooltip>
-          </>
-        )}
-      </Stack>
-    </Box>
-  );
-};
 
 const Graph = () => {
   const theme = useTheme();
@@ -460,7 +333,11 @@ const Graph = () => {
 
   return (
     <GraphLayout color={colors[2]}>
-      <GraphNavigation onGroupSelect={handleGroupSelect} />
+      <GraphNavigation
+        groupColors={groupColors}
+        onGroupSelect={handleGroupSelect}
+        selectedGroup={selectedGroup}
+      />
       <GraphControls
         autoRotate={autoRotate}
         setAutoRotate={setAutoRotate}

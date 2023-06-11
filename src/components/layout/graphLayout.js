@@ -33,11 +33,6 @@ const GraphLayout = ({ color, children }) => {
     <>
       <Header siteTitle={data.site.siteMetadata.title} color={color} />
       <Box sx={{ backgroundColor: theme.palette.background.default }}>{children}</Box>
-      <Footer
-        color={color}
-        githubUrl={data.site.siteMetadata.githubUrl}
-        donationLink={data.site.siteMetadata.donationLink}
-      />
     </>
   );
 };
