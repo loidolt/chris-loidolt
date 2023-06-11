@@ -9,7 +9,7 @@ import { ColorPaper, ColorPaperContent, ColorPaperTitle } from '../colorPaper';
 import { GraphCardWrapper } from '../graph';
 
 export default function WebsiteCard({ nodeData }) {
-  console.log(nodeData);
+  //console.log(nodeData);
 
   return (
     <GraphCardWrapper>
@@ -22,8 +22,8 @@ export default function WebsiteCard({ nodeData }) {
                 nodeData.data.Image.localFiles &&
                 nodeData.data.Image.localFiles[0] && (
                   <Grid item xs={12} sm={6}>
-                    <Link
-                      to={nodeData.data.Path}
+                    <a
+                      href={nodeData.data.Path}
                       style={{ color: 'inherit', textDecoration: 'inherit' }}>
                       <GatsbyImage
                         sx={{
@@ -33,7 +33,7 @@ export default function WebsiteCard({ nodeData }) {
                         alt={nodeData.data.Name + 'Featured Image'}
                         style={{ borderRadius: 10 }}
                       />
-                    </Link>
+                    </a>
                   </Grid>
                 )}
               <Grid
@@ -41,8 +41,8 @@ export default function WebsiteCard({ nodeData }) {
                 xs={12}
                 md={
                   nodeData.data.Image &&
-                    nodeData.data.Image.localFiles &&
-                    nodeData.data.Image.localFiles[0]
+                  nodeData.data.Image.localFiles &&
+                  nodeData.data.Image.localFiles[0]
                     ? 6
                     : 12
                 }>

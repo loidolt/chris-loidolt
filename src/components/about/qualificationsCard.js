@@ -41,8 +41,8 @@ export default function QualificationsCard({ nodeData }) {
                 xs={12}
                 md={
                   nodeData.data.Image &&
-                    nodeData.data.Image.localFiles &&
-                    nodeData.data.Image.localFiles[0]
+                  nodeData.data.Image.localFiles &&
+                  nodeData.data.Image.localFiles[0]
                     ? 6
                     : 12
                 }>
@@ -64,12 +64,12 @@ export default function QualificationsCard({ nodeData }) {
                   }}>
                   {nodeData.data.Type} {nodeData.data.Level && ` | ${nodeData.data.Level}`}
                 </Typography>
-                <Stack
-                  justifyContent="space-between"
-                  alignItems="flex-start"
-                  spacing={2}
-                  sx={{ marginTop: 2, marginBottom: 2 }}>
-                  {nodeData.data.More_Info && (
+                {nodeData.data.More_Info && (
+                  <Stack
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    spacing={2}
+                    sx={{ marginTop: 2, marginBottom: 2 }}>
                     <Button
                       variant={'contained'}
                       target="_blank"
@@ -83,8 +83,8 @@ export default function QualificationsCard({ nodeData }) {
                       }}>
                       More Info
                     </Button>
-                  )}
-                </Stack>
+                  </Stack>
+                )}
               </Grid>
             </Grid>
             <Box sx={{ marginTop: 2, marginBottom: 2 }}>

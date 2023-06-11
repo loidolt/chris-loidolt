@@ -17,7 +17,6 @@ const schema = yup.object().shape({
 export default function ContactForm({ color }) {
   const {
     control,
-    register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting }
@@ -56,7 +55,6 @@ export default function ContactForm({ color }) {
             id="name"
             name="name"
             control={control}
-            {...register('name', { required: true })}
             render={({ field }) => (
               <TextField
                 {...field}
@@ -74,7 +72,6 @@ export default function ContactForm({ color }) {
             id="email"
             name="email"
             control={control}
-            {...register('email', { required: true })}
             render={({ field }) => (
               <TextField
                 {...field}
@@ -92,7 +89,6 @@ export default function ContactForm({ color }) {
             id="message"
             name="message"
             control={control}
-            {...register('message', { required: true })}
             render={({ field }) => (
               <TextField
                 {...field}

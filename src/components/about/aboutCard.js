@@ -19,24 +19,27 @@ export default function AboutCard({ color }) {
               sx={{
                 color: color.contrastText
               }}>
-              My name is Chris Loidolt.
+              Hello, I'm Chris Loidolt—an avid learner and creator driven by the belief that the
+              world craves more of both.
               <br />
               <br />
-              I like learning and creating. I strongly believe the world needs more of that.
+              As a Colorado native, I've grown up surrounded by the breathtaking landscapes of
+              Monument, which fuel my inspiration and passion for exploration. From an early age,
+              I've been immersed in a diverse range of hands-on activities, including building,
+              drawing, designing, carving, modeling, programming, soldering, sewing, capturing
+              moments through my lens, and even taking to the skies.
               <br />
               <br />
-              Born and raised in Colorado, I now live in Monument and enjoy taking advantage of what
-              this beautiful place has to offer. I have been building, drawing, designing, carving,
-              modeling, programming, soldering, sewing, capturing, and flying for as long as I can
-              remember.
-              <br />
-              <br />
-              My personality can be best defined by my level of creativity and quality in work.
+              What truly defines me is my unwavering commitment to creativity and the pursuit of
+              excellence. I thrive on infusing every project I undertake with innovation and
+              meticulous attention to detail, ensuring the utmost quality in my work. With a
+              versatile skill set and a drive to continuously learn and grow, I'm eager to
+              contribute my diverse expertise to make a meaningful impact.
             </Typography>
           </Box>
         </ColorPaperContent>
       </ColorPaper>
-    </GraphCardWrapper >
+    </GraphCardWrapper>
   );
 }
 
