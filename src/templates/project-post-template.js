@@ -1,13 +1,12 @@
 import { Box, Chip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { graphql, navigate } from 'gatsby';
+import { graphql } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Layout, Navigation, Seo } from '../components/layout';
 import { Links, TabArea } from '../components/posts';
-import { toKebabCase } from '../utils';
 
 export default function PostTemplate({ data, pageContext }) {
   const theme = useTheme();
@@ -37,7 +36,6 @@ export default function PostTemplate({ data, pageContext }) {
                 backgroundColor: theme.palette.background.default
               }
             }}
-            onClick={() => navigate(`/tag/${toKebabCase(tag)}/`)}
           />
         ))}
         <Typography

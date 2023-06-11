@@ -63,7 +63,7 @@ const About = () => {
 
   return (
     <Layout>
-      <Typography variant="h3" component="h1" gutterBottom>
+      <Typography variant="h1" gutterBottom>
         Who Am I?
       </Typography>
       <Grid container spacing={2}>

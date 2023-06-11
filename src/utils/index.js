@@ -19,3 +19,19 @@ module.exports.groupBy = function (arr, criteria) {
     return obj;
   }, {});
 };
+
+module.exports.truncateText = function (input, maxLength = 200) {
+  if (input.length <= maxLength) {
+    return input;
+  }
+  return input.substring(0, maxLength) + '...';
+};
+
+module.exports.getRandomColor = function () {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};

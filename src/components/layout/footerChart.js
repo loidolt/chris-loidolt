@@ -1,7 +1,6 @@
-import { Box } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Box, Stack, Typography } from '@mui/material';
 import React from 'react';
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { useContributions } from '../../hooks';
 
@@ -36,9 +35,36 @@ const placeholderData = [
   }
 ];
 
-export default function FooterChart() {
-  const theme = useTheme();
+const CustomTooltip = ({ active, payload, color }) => {
+  if (active && payload && payload.length) {
+    return (
+      <Box
+        sx={{
+          backgroundColor: color && color.paperBackground,
+          paddingTop: 1,
+          paddingBottom: 1,
+          paddingLeft: 2,
+          paddingRight: 2,
+          borderRadius: 4,
+          border: `2px solid ${color && color.main}`
+        }}>
+        <Stack direction="row" spacing={4} alignItems="center" justifyContent={'space-between'}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'white' }}>
+            {`${payload[0].value}`}
+          </Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'white' }}>
+            GitHub <br />
+            Contributions
+          </Typography>
+        </Stack>
+      </Box>
+    );
+  }
 
+  return null;
+};
+
+export default function FooterChart({ color }) {
   const { data, isLoading, error } = useContributions();
 
   return (
@@ -55,17 +81,19 @@ export default function FooterChart() {
           }}>
           <defs>
             <linearGradient id="colorContributions" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={theme.palette.primary.dark} stopOpacity={0.8} />
-              <stop offset="95%" stopColor={theme.palette.primary.dark} stopOpacity={0} />
+              <stop offset="35%" stopColor={color && color.paperBackground} stopOpacity={1} />
+              <stop offset="90%" stopColor={color && color.paperBackground} stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis dataKey="week" hide={true} />
           <YAxis hide={true} />
+          <Tooltip content={<CustomTooltip color={color && color} />} />
           <Area
             type="monotone"
             name="Contributions"
             dataKey="contributions"
-            stroke={theme.palette.primary.main}
+            strokeWidth={4}
+            stroke={color && color.main}
             fillOpacity={1}
             fill="url(#colorContributions)"
           />
