@@ -5,7 +5,8 @@ import { ForceGraph3D } from 'react-force-graph';
 
 import { colors } from '../../theme/pastelColors';
 import { getRandomColor } from '../../utils';
-import { QualificationsCard } from '../about';
+import { AboutCard, QualificationsCard } from '../about';
+import { ContactCard } from '../contact';
 import { GraphLayout, Seo } from '../layout';
 import { ProjectPreview } from '../posts';
 import { ServicesCard } from '../services';
@@ -15,12 +16,13 @@ import GraphNavigation from './graphNavigation';
 
 // Color map for groups
 const groupColors = {
-  central: colors[3],
+  all: colors[2],
+  about: colors[3],
   contact: colors[0],
-  project: colors[6],
+  projects: colors[6],
   work: colors[7],
-  service: colors[8],
-  qualification: colors[11]
+  services: colors[8],
+  qualifications: colors[11]
 };
 
 // Color map for sub-groups (tags and categories)
@@ -45,40 +47,40 @@ function createGraphData(data) {
     links.push({ source, target });
   }
 
-  // Create central nodes
+  // Create primary nodes
   addNode(
-    'central',
+    'about',
     'Chris Loidolt',
     data.projects.length + data.services.length + data.qualifications.length,
     { Name: 'Chris Loidolt' },
-    'central',
+    'about',
     null
   );
   addNode('contact', 'Contact', 1, { Name: 'Contact' }, 'contact', null);
-  addNode('projects', 'Projects', data.projects.length, { Name: 'Projects' }, 'project', null);
+  addNode('projects', 'Projects', data.projects.length, { Name: 'Projects' }, 'projects', null);
   addNode('work', 'Work', data.projects.length, { Name: 'Work' }, 'work', null);
   addNode('websites', 'Websites', data.projects.length, { Name: 'Websites' }, 'work', 'work');
-  addNode('services', 'Services', data.services.length, { Name: 'Services' }, 'service', null);
+  addNode('services', 'Services', data.services.length, { Name: 'Services' }, 'services', null);
   addNode(
     'qualifications',
     'Qualifications',
     data.qualifications.length,
     { Name: 'Qualifications' },
-    'qualification',
+    'qualifications',
     null
   );
 
-  // Connect central nodes to Chris Loidolt node
-  addLink('central', 'contact');
-  addLink('central', 'projects');
-  addLink('central', 'work');
+  // Connect hub nodes
+  addLink('about', 'contact');
+  addLink('about', 'projects');
+  addLink('about', 'work');
   addLink('work', 'websites');
-  addLink('central', 'services');
-  addLink('central', 'qualifications');
+  addLink('about', 'services');
+  addLink('about', 'qualifications');
 
-  // Iterate over projects, services, and qualifications and add them as nodes, linking them to central nodes
+  // Iterate over projects, services, and qualifications and add them as nodes, linking them to hub nodes
   for (const project of data.projects.nodes) {
-    addNode(project.id, project.data.Title, 1, project.data, 'project', 'projects');
+    addNode(project.id, project.data.Title, 1, project.data, 'projects', 'projects');
 
     // Link projects to their tags
     for (const tag of project.data.Tags) {
@@ -86,7 +88,7 @@ function createGraphData(data) {
 
       if (!nodes.find((node) => node.id === tagId)) {
         addNode(tagId, tag, 1, { Name: tag }, tagId, 'projects');
-        addLink('projects', tagId); // Link tag to central-project
+        addLink('projects', tagId); // Link tag to projects
       }
 
       addLink(tagId, project.id);
@@ -99,7 +101,7 @@ function createGraphData(data) {
   }
 
   for (const service of data.services.nodes) {
-    addNode(service.id, service.data.Name, 1, service.data, 'service', 'services');
+    addNode(service.id, service.data.Name, 1, service.data, 'services', 'services');
     addLink('services', service.id);
   }
 
@@ -109,7 +111,7 @@ function createGraphData(data) {
       qualification.data.Name,
       1,
       qualification.data,
-      'qualification',
+      'qualifications',
       'qualifications'
     );
 
@@ -120,11 +122,12 @@ function createGraphData(data) {
       addNode(
         categoryId,
         qualification.data.Category,
+        1,
         { Name: qualification.data.Category },
         categoryId,
         'qualifications'
       );
-      addLink('qualifications', categoryId); // Link category to central-qualification
+      addLink('qualifications', categoryId); // Link category to qualifications
     }
 
     addLink(categoryId, qualification.id);
@@ -234,10 +237,11 @@ const Graph = () => {
     setNodeData(null);
     setSelectedGroup(groupId);
 
-    if (groupId === null) {
+    if (groupId === null || groupId === 'all') {
       // Reset the camera position to the default position when groupId is null
       fgRef.current.cameraPosition({ x: 0, y: 0, z: 1200 }, null, 1000);
       setAutoRotate(false);
+      setSelectedGroup(null);
       return;
     }
 
@@ -279,7 +283,7 @@ const Graph = () => {
     }
 
     // Set the clicked node data to the state
-    console.log(node);
+    //console.log(node);
     setNodeData(node);
   };
 
@@ -331,6 +335,9 @@ const Graph = () => {
     return () => clearInterval(rotationInterval); // Clean up the interval on unmount
   }, [autoRotate]);
 
+  //console.log(nodeData);
+  //console.log(selectedGroup);
+
   return (
     <GraphLayout color={colors[2]}>
       <GraphNavigation
@@ -346,7 +353,7 @@ const Graph = () => {
         handleCloseNode={handleCloseNode}
         handleNextNode={handleNextNode}
       />
-      {nodeData && nodeData.group === 'project' && (
+      {nodeData && nodeData.group === 'projects' && (
         <ProjectPreview
           nodeData={nodeData}
           handleNextNode={handleNextNode}
@@ -354,9 +361,15 @@ const Graph = () => {
           handlePrevNode={handlePrevNode}
         />
       )}
+      {nodeData && nodeData.group === 'about' && <AboutCard color={groupColors.about} />}
+      {selectedGroup && selectedGroup === 'about' && <AboutCard color={groupColors.about} />}
+      {nodeData && nodeData.group === 'contact' && <ContactCard color={groupColors.contact} />}
+      {selectedGroup && selectedGroup === 'contact' && <ContactCard color={groupColors.contact} />}
       {nodeData && nodeData.group === 'website' && <WebsiteCard nodeData={nodeData} />}
-      {nodeData && nodeData.group === 'service' && <ServicesCard nodeData={nodeData} />}
-      {nodeData && nodeData.group === 'qualification' && <QualificationsCard nodeData={nodeData} />}
+      {nodeData && nodeData.group === 'services' && <ServicesCard nodeData={nodeData} />}
+      {nodeData && nodeData.group === 'qualifications' && (
+        <QualificationsCard nodeData={nodeData} />
+      )}
       <ForceGraph3D
         ref={fgRef}
         graphData={{ nodes, links }}
@@ -371,21 +384,21 @@ const Graph = () => {
         nodeColor={
           (node) =>
             selectedGroup == null ||
-            node.id === selectedGroup ||
-            node.group === selectedGroup ||
-            node.parent === selectedGroup
+              node.id === selectedGroup ||
+              node.group === selectedGroup ||
+              node.parent === selectedGroup
               ? node.color.main
               : 'rgba(255, 255, 255, 0.5)' // use faded color for non-selected nodes
         }
         linkColor={
           (link) =>
             selectedGroup == null ||
-            link.source.id === selectedGroup ||
-            link.target.id === selectedGroup ||
-            link.source.group === selectedGroup ||
-            link.target.group === selectedGroup ||
-            link.source.parent === selectedGroup ||
-            link.target.parent === selectedGroup
+              link.source.id === selectedGroup ||
+              link.target.id === selectedGroup ||
+              link.source.group === selectedGroup ||
+              link.target.group === selectedGroup ||
+              link.source.parent === selectedGroup ||
+              link.target.parent === selectedGroup
               ? 'rgba(255, 255, 255, 1)' // use solid color for links in the selected group
               : 'rgba(255, 255, 255, 0.1)' // use faded color for other links
         }

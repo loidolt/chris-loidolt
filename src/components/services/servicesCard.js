@@ -16,7 +16,7 @@ export default function ServicesCard({ nodeData }) {
       <ColorPaper color={nodeData.color}>
         <ColorPaperTitle color={nodeData.color} title={nodeData.data.Name} />
         <ColorPaperContent>
-          <Box sx={{ width: { xs: '72vw', md: '50vw' } }}>
+          <Box sx={{ marginBottom: 4 }}>
             <Grid container spacing={2}>
               {nodeData.data.Image &&
                 nodeData.data.Image.localFiles &&
@@ -41,8 +41,8 @@ export default function ServicesCard({ nodeData }) {
                 xs={12}
                 md={
                   nodeData.data.Image &&
-                  nodeData.data.Image.localFiles &&
-                  nodeData.data.Image.localFiles[0]
+                    nodeData.data.Image.localFiles &&
+                    nodeData.data.Image.localFiles[0]
                     ? 6
                     : 12
                 }>

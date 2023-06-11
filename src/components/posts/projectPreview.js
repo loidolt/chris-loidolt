@@ -16,7 +16,7 @@ export default function ProjectPreview({ nodeData }) {
       <ColorPaper color={nodeData.color}>
         <ColorPaperTitle color={nodeData.color} title={nodeData.data.Tags} />
         <ColorPaperContent>
-          <Box sx={{ width: { xs: '72vw', md: '50vw' }, marginBottom: 2 }}>
+          <Box sx={{ marginBottom: 4 }}>
             <Grid container spacing={2}>
               {nodeData.data.Cover_Image &&
                 nodeData.data.Cover_Image.localFiles &&
@@ -43,8 +43,8 @@ export default function ProjectPreview({ nodeData }) {
                 xs={12}
                 md={
                   nodeData.data.Cover_Image &&
-                  nodeData.data.Cover_Image.localFiles &&
-                  nodeData.data.Cover_Image.localFiles[0]
+                    nodeData.data.Cover_Image.localFiles &&
+                    nodeData.data.Cover_Image.localFiles[0]
                     ? 6
                     : 12
                 }>
