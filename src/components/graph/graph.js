@@ -55,7 +55,7 @@ const subGroupColors = {
   other: colors[18]
 };
 
-const categoryCounts = {};
+const categoryCounts = { shop: 0 };
 
 function createGraphData(data) {
   // Create arrays for nodes and links
@@ -123,7 +123,7 @@ function createGraphData(data) {
     'work',
     'work'
   );
-  addNode('shop', 'Shop', 10, { Name: 'Shop', nodeType: 'category' }, 'work', 'work');
+  addNode('shop', 'Shop', 20, { Name: 'Shop', nodeType: 'category' }, 'work', 'work');
   addNode(
     'services',
     'Services',
