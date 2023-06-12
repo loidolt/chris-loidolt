@@ -41,8 +41,8 @@ export default function ServicesCard({ nodeData }) {
                 xs={12}
                 md={
                   nodeData.data.Image &&
-                    nodeData.data.Image.localFiles &&
-                    nodeData.data.Image.localFiles[0]
+                  nodeData.data.Image.localFiles &&
+                  nodeData.data.Image.localFiles[0]
                     ? 6
                     : 12
                 }>
@@ -109,7 +109,7 @@ export default function ServicesCard({ nodeData }) {
           </Box>
         </ColorPaperContent>
       </ColorPaper>
-    </GraphCardWrapper >
+    </GraphCardWrapper>
   );
 }
 

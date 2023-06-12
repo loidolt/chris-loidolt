@@ -1,4 +1,5 @@
 const path = require('path');
+const million = require('million/compiler');
 
 exports.createPages = async (gatsbyUtilities) => {
   // Query posts from the GraphQL server
@@ -86,3 +87,9 @@ async function getPosts({ graphql, reporter }) {
 
   return graphqlResult.data.allAirtable.edges;
 }
+
+exports.onCreateWebpackConfig = ({ actions }) => {
+  actions.setWebpackConfig({
+    plugins: [million.webpack({ mode: 'react', server: true })]
+  });
+};
