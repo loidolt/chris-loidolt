@@ -10,7 +10,7 @@ export default function PostItem({ hit, components }) {
   }
 
   return (
-    <Link to={hit.Path} className="aa-ItemLink">
+    <Link to={'/projects' + hit.Path} className="aa-ItemLink">
       <div className="aa-ItemContent">
         {image && (
           <div className="aa-ItemIcon aa-ItemIcon--picture aa-ItemIcon--alignTop">
