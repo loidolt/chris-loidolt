@@ -2,11 +2,8 @@ import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { graphql, useStaticQuery } from 'gatsby';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 
-//firebase
-import firebaseApp, { logAnalyticsEvent } from '../../utils/firebase-config';
-import Footer from './footer';
 import Header from './header';
 
 const GraphLayout = ({ color, children }) => {
@@ -23,11 +20,6 @@ const GraphLayout = ({ color, children }) => {
       }
     }
   `);
-
-  useEffect(() => {
-    if (!firebaseApp()) return;
-    logAnalyticsEvent('page_view', window.location.pathname);
-  }, []);
 
   return (
     <>
