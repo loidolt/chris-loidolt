@@ -6,11 +6,11 @@ require('dotenv').config({
 
 module.exports = {
   siteMetadata: {
-    title: `Loidolt Design`,
+    title: `Chris Loidolt`,
     description: `I like learning and creating. I strongly believe the world needs more of that.`,
-    copyrights: 'Loidolt Design 2022',
+    copyrights: 'Chris Loidolt 2023',
     author: `Chris Loidolt`,
-    siteUrl: `https://loidolt.design`,
+    siteUrl: `https://chrisloidolt.com`,
     image: `./src/images/CLLightBulbBlue.png`,
     githubUrl: `https://github.com/loidolt`,
     donationLink: `https://www.paypal.com/donate/?hosted_button_id=5M29WMCGYLZTJ`
@@ -22,8 +22,8 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
-        host: 'https://loidolt.design',
-        sitemap: 'https://loidolt.design/sitemap.xml',
+        host: 'https://chrisloidolt.com',
+        sitemap: 'https://chrisloidolt.com/sitemap.xml',
         policy: [{ userAgent: '*', allow: '/' }]
       }
     },
