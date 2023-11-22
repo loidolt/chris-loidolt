@@ -28,12 +28,17 @@ export default function ContactForm({ color }) {
 
   const onSubmit = async (data) => {
     try {
+      const formData = new URLSearchParams();
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
       const response = await fetch('/api/submit', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(data),
+        body: formData
       });
 
       const result = await response.text();
