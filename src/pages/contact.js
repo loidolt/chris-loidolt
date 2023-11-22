@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { ColorPaper, ColorPaperContent, ColorPaperTitle } from '../components/colorPaper';
-//firebase
 import { ContactForm } from '../components/contact';
 import { Layout, Seo } from '../components/layout';
 import { colors } from '../theme/pastelColors';

@@ -5,9 +5,6 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-//firebase
-import { saveDocumentGenerateID } from '../../utils/firestore';
-
 const schema = yup.object().shape({
   name: yup.string().required('Name is required'),
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
@@ -18,7 +15,6 @@ export default function ContactForm({ color }) {
   const {
     control,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting }
   } = useForm({
     resolver: yupResolver(schema),
@@ -31,19 +27,22 @@ export default function ContactForm({ color }) {
 
   const onSubmit = async (data) => {
     console.log(data);
-    const message = {
-      to: 'loidolt@gmail.com',
-      replyTo: `${data.email}`,
-      message: {
-        subject: `${data.name} | Loidolt Design Contact Form`,
-        text: `${data.message}`,
-        html: `${data.message}`
-      }
-    };
-    const response = await saveDocumentGenerateID('mail', message);
-    if (response) {
-      reset();
-    }
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    fetch('/api/submit', {
+      method: 'POST',
+      body: formData
+    })
+      .then((response) => response.text())
+      .then((result) => {
+        alert(result); // Display the response text
+        form.reset(); // Clear the form fields
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert(error);
+      });
   };
 
   return (
