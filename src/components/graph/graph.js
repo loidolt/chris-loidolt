@@ -68,7 +68,7 @@ function createGraphData(data) {
       group in groupColors
         ? groupColors[group.toLowerCase()]
         : subGroupColors[group.toLowerCase()] ||
-          (subGroupColors[group.toLowerCase()] = getRandomColor());
+        (subGroupColors[group.toLowerCase()] = getRandomColor());
 
     // Push to nodes for graph
     nodes.push({
@@ -87,7 +87,7 @@ function createGraphData(data) {
     links.push({ source, target });
   }
 
-  console.log(data);
+  //console.log(data);
 
   // Create primary nodes
   addNode(
@@ -501,21 +501,21 @@ const Graph = () => {
         nodeColor={
           (node) =>
             selectedGroup == null ||
-            node.id === selectedGroup ||
-            node.group === selectedGroup ||
-            node.parent === selectedGroup
+              node.id === selectedGroup ||
+              node.group === selectedGroup ||
+              node.parent === selectedGroup
               ? node.color.main
               : 'rgba(255, 255, 255, 0.5)' // use faded color for non-selected nodes
         }
         linkColor={
           (link) =>
             selectedGroup == null ||
-            link.source.id === selectedGroup ||
-            link.target.id === selectedGroup ||
-            link.source.group === selectedGroup ||
-            link.target.group === selectedGroup ||
-            link.source.parent === selectedGroup ||
-            link.target.parent === selectedGroup
+              link.source.id === selectedGroup ||
+              link.target.id === selectedGroup ||
+              link.source.group === selectedGroup ||
+              link.target.group === selectedGroup ||
+              link.source.parent === selectedGroup ||
+              link.target.parent === selectedGroup
               ? 'rgba(255, 255, 255, 1)' // use solid color for links in the selected group
               : 'rgba(255, 255, 255, 0.1)' // use faded color for other links
         }

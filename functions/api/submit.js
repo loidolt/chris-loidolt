@@ -85,8 +85,8 @@ export async function onRequestPost(context, env) {
     if (!emailResponse.ok) {
       throw new Error(
         'Failed to send email via Mailgun. Please try again. If the issue persists, please contact us directly at ' +
-        context.env.TO_EMAIL +
-        '.'
+          context.env.TO_EMAIL +
+          '.'
       );
     }
 

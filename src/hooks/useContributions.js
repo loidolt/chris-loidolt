@@ -19,16 +19,14 @@ export default function useContributions() {
     const year = new Date().getFullYear();
 
     try {
-      const { data } = await axios.post(
-        process.env.GATSBY_FIREBASE_FUNCTIONS_URL + '/userContributions',
-        {
-          username: process.env.GATSBY_GITHUB_USERNAME,
-          year: year
-        }
-      );
-      if (data.contributions) {
+      const response = await axios.post('/api/user-contributions', {
+        username: process.env.GATSBY_GITHUB_USERNAME,
+        year: year
+      });
+
+      if (response.data.contributions) {
         const contributionData = [];
-        data.contributions.forEach((wk) => {
+        response.data.contributions.forEach((wk) => {
           let count = 0;
           wk.days.forEach((day) => {
             count += day.count;
@@ -48,10 +46,9 @@ export default function useContributions() {
     } catch (err) {
       sessionStorage.removeItem('contributions');
       setError(err);
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
-  }, [setIsLoading, setData, setError]);
+  }, []);
 
   useEffect(() => {
     fetchContributions();

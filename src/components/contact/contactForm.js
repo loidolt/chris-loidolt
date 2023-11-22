@@ -15,6 +15,7 @@ export default function ContactForm({ color }) {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting }
   } = useForm({
     resolver: yupResolver(schema),
@@ -26,23 +27,27 @@ export default function ContactForm({ color }) {
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    fetch('/api/submit', {
-      method: 'POST',
-      body: formData
-    })
-      .then((response) => response.text())
-      .then((result) => {
-        alert(result); // Display the response text
-        form.reset(); // Clear the form fields
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        alert(error);
+    try {
+      const formData = new URLSearchParams();
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
       });
+
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData
+      });
+
+      const result = await response.text();
+      alert(result);
+      reset(); // Clear the form fields
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error submitting form, please try again.');
+    }
   };
 
   return (
