@@ -23,7 +23,7 @@ async function getPosts(graphql, reporter) {
     query AllPosts {
       allAirtable(
         filter: { data: { Status: { eq: "Published" } }, table: { eq: "Posts" } }
-        sort: { fields: [data___Date], order: DESC }
+        sort: { data: { Date: DESC } }
       ) {
         edges {
           next {
