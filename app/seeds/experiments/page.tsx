@@ -1,16 +1,16 @@
-import { DigitalGarden } from '@/lib/garden';
-import { GardenHeader, GardenLayout } from '@/components/garden';
+import { DigitalForest } from '@/lib/forest';
+import { ForestHeader, ForestLayout } from '@/components/forest';
 import { SeedGrid } from '@/components/seed';
 
 export default async function ExperimentsPage() {
-  const garden = new DigitalGarden();
-  await garden.cultivate();
+  const forest = new DigitalForest();
+  await forest.cultivate();
   
-  const experimentSeeds = garden.findByType('experiment' as const);
+  const experimentSeeds = forest.findByType('experiment' as const);
   
   return (
-    <GardenLayout>
-      <GardenHeader 
+    <ForestLayout>
+      <ForestHeader 
         title="Experiments 🧪"
         description="Technical experiments, prototypes, and explorations"
       />
@@ -19,6 +19,6 @@ export default async function ExperimentsPage() {
         seeds={experimentSeeds} 
         emptyMessage="No experiments documented yet."
       />
-    </GardenLayout>
+    </ForestLayout>
   );
 }

@@ -1,13 +1,13 @@
 #!/usr/bin/env tsx
 
 /**
- * Test script for Phase 5: Garden Management
- * Tests garden statistics, search functionality, and the DigitalGarden class
+ * Test script for Phase 5: Forest Management
+ * Tests forest statistics, search functionality, and the DigitalForest class
  */
 
 import { config as dotenvConfig } from 'dotenv';
-import { DigitalGarden } from '../lib/garden';
-import { getMostRecentSeeds, getGrowthDistribution, getTypeDistribution } from '../lib/garden/stats';
+import { DigitalForest } from '../lib/forest';
+import { getMostRecentSeeds, getGrowthDistribution, getTypeDistribution } from '../lib/forest/stats';
 import type { SeedContent } from '../lib/seed/types';
 
 // Load environment variables
@@ -40,43 +40,43 @@ function logSubsection(title: string) {
   console.log('-'.repeat(40));
 }
 
-async function testGardenManagement() {
-  log('🌱 Testing Digital Garden Management System', colors.green);
+async function testForestManagement() {
+  log('🌲 Testing Digital Forest Management System', colors.green);
   
   try {
-    // Initialize the garden
-    logSection('1. Initializing Digital Garden');
-    const garden = new DigitalGarden();
-    const gardenData = await garden.cultivate();
-    log(`✓ Garden cultivated successfully`, colors.green);
-    log(`  Total seeds: ${gardenData.seeds.length}`);
+    // Initialize the forest
+    logSection('1. Initializing Digital Forest');
+    const forest = new DigitalForest();
+    const forestData = await forest.cultivate();
+    log(`✓ Forest cultivated successfully`, colors.green);
+    log(`  Total seeds: ${forestData.seeds.length}`);
     
-    // Test garden statistics
-    logSection('2. Testing Garden Statistics');
+    // Test forest statistics
+    logSection('2. Testing Forest Statistics');
     
     logSubsection('2.1 Basic Stats');
-    log(`Total seeds: ${gardenData.stats.totalSeeds}`);
-    log(`Last updated: ${gardenData.stats.lastUpdated.toLocaleString()}`);
+    log(`Total seeds: ${forestData.stats.totalSeeds}`);
+    log(`Last updated: ${forestData.stats.lastUpdated.toLocaleString()}`);
     
     logSubsection('2.2 Type Distribution');
-    Object.entries(gardenData.stats.byType).forEach(([type, count]) => {
+    Object.entries(forestData.stats.byType).forEach(([type, count]) => {
       log(`  ${type}: ${count} seeds`, colors.gray);
     });
     
     logSubsection('2.3 Growth Stage Distribution');
-    const growthDist = getGrowthDistribution(gardenData.seeds);
+    const growthDist = getGrowthDistribution(forestData.seeds);
     Object.entries(growthDist).forEach(([stage, count]) => {
       const emoji = {
-        seedling: '🌱',
-        budding: '🌿',
-        evergreen: '🌳',
-        perennial: '🌲',
+        sprout: '🌱',
+        sapling: '🌿',
+        mature: '🌳',
+        ancient: '🌲',
       }[stage] || '🌿';
       log(`  ${emoji} ${stage}: ${count} seeds`, colors.gray);
     });
     
     logSubsection('2.4 Most Recent Seeds');
-    const recentSeeds = getMostRecentSeeds(gardenData.seeds, 3);
+    const recentSeeds = getMostRecentSeeds(forestData.seeds, 3);
     recentSeeds.forEach((seed, index) => {
       log(`  ${index + 1}. ${seed.meta.title} (${seed.meta.tended || seed.meta.planted})`, colors.gray);
     });
@@ -84,23 +84,23 @@ async function testGardenManagement() {
     // Test search functionality
     logSection('3. Testing Search Functionality');
     
-    if (gardenData.seeds.length > 0) {
-      const firstSeed = gardenData.seeds[0];
+    if (forestData.seeds.length > 0) {
+      const firstSeed = forestData.seeds[0];
       
       logSubsection('3.1 Search by Type');
-      const projectSeeds = garden.findByType('project');
+      const projectSeeds = forest.findByType('project');
       log(`Found ${projectSeeds.length} project seeds`);
       
       logSubsection('3.2 Search by Stage');
-      const evergreenSeeds = garden.findByStage('evergreen');
-      log(`Found ${evergreenSeeds.length} evergreen seeds`);
+      const matureSeeds = forest.findByStage('mature');
+      log(`Found ${matureSeeds.length} mature seeds`);
       
       logSubsection('3.3 Search Featured Seeds');
-      const featuredSeeds = garden.findFeatured();
+      const featuredSeeds = forest.findFeatured();
       log(`Found ${featuredSeeds.length} featured seeds`);
       
       logSubsection('3.4 Search by Slug');
-      const seedBySlug = garden.getSeed(firstSeed.slug);
+      const seedBySlug = forest.getSeed(firstSeed.slug);
       if (seedBySlug) {
         log(`✓ Found seed by slug: ${seedBySlug.meta.title}`, colors.green);
       }
@@ -108,19 +108,19 @@ async function testGardenManagement() {
       logSubsection('3.5 Full-text Search');
       if (firstSeed.meta.title) {
         const searchTerm = firstSeed.meta.title.split(' ')[0];
-        const searchResults = garden.search({ query: searchTerm });
+        const searchResults = forest.search({ query: searchTerm });
         log(`Search for "${searchTerm}" found ${searchResults.length} results`);
       }
       
       logSubsection('3.6 Related Seeds');
-      const relatedSeeds = garden.findRelated(firstSeed, 3);
+      const relatedSeeds = forest.findRelated(firstSeed, 3);
       log(`Found ${relatedSeeds.length} related seeds`);
       relatedSeeds.forEach(seed => {
         log(`  - ${seed.meta.title}`, colors.gray);
       });
       
       logSubsection('3.7 Complex Search');
-      const complexSearch = garden.search({
+      const complexSearch = forest.search({
         type: 'project',
         featured: true,
       });
@@ -130,11 +130,11 @@ async function testGardenManagement() {
     }
     
     // Test tag search if we have seeds with tags
-    const seedsWithTags = gardenData.seeds.filter(s => s.meta.tags && s.meta.tags.length > 0);
+    const seedsWithTags = forestData.seeds.filter(s => s.meta.tags && s.meta.tags.length > 0);
     if (seedsWithTags.length > 0) {
       logSubsection('3.8 Tag Search');
       const firstTag = seedsWithTags[0].meta.tags![0];
-      const tagResults = garden.findByTag(firstTag);
+      const tagResults = forest.findByTag(firstTag);
       log(`Seeds with tag "${firstTag}": ${tagResults.length}`);
     }
     
@@ -143,16 +143,16 @@ async function testGardenManagement() {
     
     const searchStart = Date.now();
     for (let i = 0; i < 100; i++) {
-      garden.search({ query: 'test' });
+      forest.search({ query: 'test' });
     }
     const searchDuration = Date.now() - searchStart;
     log(`100 searches completed in ${searchDuration}ms (${(searchDuration / 100).toFixed(2)}ms avg)`);
     
     // Summary
-    logSection('5. Garden Management Summary');
-    log('✅ All garden management features tested successfully!', colors.green);
+    logSection('5. Forest Management Summary');
+    log('✅ All forest management features tested successfully!', colors.green);
     log('\nFeatures verified:', colors.yellow);
-    log('  ✓ Garden cultivation and seed discovery');
+    log('  ✓ Forest cultivation and seed discovery');
     log('  ✓ Statistics calculation');
     log('  ✓ Type and stage filtering');
     log('  ✓ Featured content filtering');
@@ -163,13 +163,13 @@ async function testGardenManagement() {
     
     return true;
   } catch (error) {
-    log(`\n❌ Error testing garden management: ${error}`, colors.red);
+    log(`\n❌ Error testing forest management: ${error}`, colors.red);
     console.error(error);
     return false;
   }
 }
 
 // Run the test
-testGardenManagement().then(success => {
+testForestManagement().then(success => {
   process.exit(success ? 0 : 1);
 });

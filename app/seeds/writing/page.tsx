@@ -1,16 +1,16 @@
-import { DigitalGarden } from '@/lib/garden';
-import { GardenHeader, GardenLayout } from '@/components/garden';
+import { DigitalForest } from '@/lib/forest';
+import { ForestHeader, ForestLayout } from '@/components/forest';
 import { SeedGrid } from '@/components/seed';
 
 export default async function WritingPage() {
-  const garden = new DigitalGarden();
-  await garden.cultivate();
+  const forest = new DigitalForest();
+  await forest.cultivate();
   
-  const writingSeeds = garden.findByType('writing' as const);
+  const writingSeeds = forest.findByType('writing' as const);
   
   return (
-    <GardenLayout>
-      <GardenHeader 
+    <ForestLayout>
+      <ForestHeader 
         title="Writing ✍️"
         description="Articles, tutorials, and longer-form content"
       />
@@ -19,6 +19,6 @@ export default async function WritingPage() {
         seeds={writingSeeds} 
         emptyMessage="No writing published yet."
       />
-    </GardenLayout>
+    </ForestLayout>
   );
 }

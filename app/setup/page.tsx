@@ -12,7 +12,7 @@ export default function SetupPage() {
             Setup Required
           </CardTitle>
           <CardDescription>
-            Configure your environment variables to start using the Digital Garden
+            Configure your environment variables to start using the Digital Forest
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

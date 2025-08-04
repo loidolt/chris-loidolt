@@ -23,10 +23,10 @@ const contentTypes: { value: ContentType; label: string; emoji: string }[] = [
 ];
 
 const growthStages: { value: GrowthStage; label: string; emoji: string }[] = [
-  { value: 'seedling', label: 'Seedling', emoji: '🌱' },
-  { value: 'budding', label: 'Budding', emoji: '🌿' },
-  { value: 'evergreen', label: 'Evergreen', emoji: '🌳' },
-  { value: 'perennial', label: 'Perennial', emoji: '🌲' },
+  { value: 'sprout', label: 'Sprout', emoji: '🌱' },
+  { value: 'sapling', label: 'Sapling', emoji: '🌿' },
+  { value: 'mature', label: 'Mature', emoji: '🌳' },
+  { value: 'ancient', label: 'Ancient', emoji: '🌲' },
 ];
 
 export function SeedFilter({ onFilterChange }: SeedFilterProps) {

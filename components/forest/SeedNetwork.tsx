@@ -175,7 +175,7 @@ export function SeedNetwork({ seeds, currentSeed }: SeedNetworkProps) {
               }
             }}
             onNodeClick={(node: any) => {
-              window.location.href = `/garden/${node.id}`;
+              window.location.href = `/forest/${node.id}`;
             }}
             enableZoomInteraction={true}
             enablePanInteraction={true}

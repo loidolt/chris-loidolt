@@ -76,8 +76,8 @@ export class EnhancedContentProcessor {
     // Try to fetch various metadata sources
     const sources = [
       { path: 'metadata.json', parser: JSON.parse },
-      { path: 'garden.json', parser: JSON.parse },
-      { path: '.garden/config.json', parser: JSON.parse },
+      { path: 'forest.json', parser: JSON.parse },
+      { path: '.forest/config.json', parser: JSON.parse },
       { path: 'package.json', parser: (content: string) => {
         const pkg = JSON.parse(content);
         return {
@@ -230,7 +230,7 @@ export class EnhancedContentProcessor {
 
   private determineStage(topics: string[], metadata: Record<string, unknown>, frontmatter: Record<string, unknown>): GrowthStage {
     // Check frontmatter first
-    if (frontmatter.stage && ['seedling', 'budding', 'evergreen'].includes(frontmatter.stage as string)) {
+    if (frontmatter.stage && ['sprout', 'sapling', 'mature'].includes(frontmatter.stage as string)) {
       return frontmatter.stage as GrowthStage;
     }
     
@@ -238,16 +238,16 @@ export class EnhancedContentProcessor {
     if (metadata.stage) return metadata.stage as GrowthStage;
     
     // Then check topics
-    const stages: GrowthStage[] = ['seedling', 'budding', 'evergreen'];
+    const stages: GrowthStage[] = ['sprout', 'sapling', 'mature'];
     for (const stage of stages) {
       if (topics.includes(stage)) return stage;
     }
     
     // Infer from other signals
-    if (frontmatter.draft === true || topics.includes('wip')) return 'seedling';
-    if (topics.includes('complete') || topics.includes('stable')) return 'evergreen';
+    if (frontmatter.draft === true || topics.includes('wip')) return 'sprout';
+    if (topics.includes('complete') || topics.includes('stable')) return 'mature';
     
-    return 'budding';
+    return 'sapling';
   }
 
   private extractConnections(content: string): string[] {

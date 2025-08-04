@@ -1,4 +1,4 @@
-// Seed system - Clean, simple discovery for digital garden content
+// Seed system - Clean, simple discovery for digital forest content
 
 export * from './types';
 export * from './discovery';
@@ -19,8 +19,6 @@ export async function discoverSeeds(
   if (!process.env.GITHUB_TOKEN || !process.env.GITHUB_OWNER) {
     throw new Error('Missing required environment variables: GITHUB_TOKEN and GITHUB_OWNER');
   }
-  
-  console.log('GitHub Owner from env:', process.env.GITHUB_OWNER); // Debug log
   
   const client = cacheEnabled
     ? new CachedGitHubClient(

@@ -1,6 +1,6 @@
 # Seed Template 🌱
 
-A minimal template for adding any repository to your digital garden using the `.seed` directory structure.
+A minimal template for adding any repository to your digital forest using the `.seed` directory structure.
 
 ## Quick Start
 
@@ -26,7 +26,7 @@ Only 3 fields are required in `meta.yml`:
 ```yaml
 title: Your Project Name
 type: project        # project, experiment, note, or writing
-stage: budding       # seedling, budding, evergreen, or perennial
+stage: sapling       # sprout, sapling, mature, or ancient
 ```
 
 ## Content Types
@@ -38,10 +38,10 @@ stage: budding       # seedling, budding, evergreen, or perennial
 
 ## Growth Stages
 
-- **seedling** 🌱: New ideas, early development
-- **budding** 🌿: Active development
-- **evergreen** 🌳: Mature and maintained
-- **perennial** 🌲: Complete but not actively maintained
+- **sprout** 🌱: New growth, just emerging
+- **sapling** 🌿: Young tree, establishing roots
+- **mature** 🌳: Full grown, bearing fruit
+- **ancient** 🌲: Timeless wisdom, deep roots
 
 ## Examples
 

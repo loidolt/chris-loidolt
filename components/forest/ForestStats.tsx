@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Garden } from '@/lib/garden';
+import type { Forest } from '@/lib/forest';
 
-interface GardenStatsProps {
-  garden: Garden;
+interface ForestStatsProps {
+  forest: Forest;
 }
 
 const typeEmojis = {
@@ -13,14 +13,14 @@ const typeEmojis = {
 };
 
 const stageEmojis = {
-  seedling: '🌱',
-  budding: '🌿',
-  evergreen: '🌳',
-  perennial: '🌲',
+  sprout: '🌱',
+  sapling: '🌿',
+  mature: '🌳',
+  ancient: '🌲',
 };
 
-export function GardenStats({ garden }: GardenStatsProps) {
-  const { stats } = garden;
+export function ForestStats({ forest }: ForestStatsProps) {
+  const { stats } = forest;
   
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

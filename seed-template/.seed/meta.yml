@@ -4,7 +4,7 @@
 # REQUIRED FIELDS
 title: Your Project Title
 type: project      # project, experiment, note, or writing  
-stage: budding     # seedling, budding, evergreen, or perennial
+stage: sapling     # sprout, sapling, mature, or ancient
 
 # RECOMMENDED FIELDS
 description: A brief description of your project

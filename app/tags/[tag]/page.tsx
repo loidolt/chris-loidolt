@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import { DigitalGarden } from '@/lib/garden';
-import { GardenHeader, GardenLayout } from '@/components/garden';
+import { DigitalForest } from '@/lib/forest';
+import { ForestHeader, ForestLayout } from '@/components/forest';
 import { SeedGrid } from '@/components/seed';
 
 interface TagPageProps {
@@ -13,30 +13,30 @@ export default async function TagPage({ params }: TagPageProps) {
   const { tag } = await params;
   const decodedTag = decodeURIComponent(tag);
   
-  const garden = new DigitalGarden();
-  await garden.cultivate();
+  const forest = new DigitalForest();
+  await forest.cultivate();
   
-  const taggedSeeds = garden.findByTag(decodedTag);
+  const taggedSeeds = forest.findByTag(decodedTag);
   
   if (taggedSeeds.length === 0) {
     notFound();
   }
   
   return (
-    <GardenLayout>
-      <GardenHeader 
+    <ForestLayout>
+      <ForestHeader 
         title={`Seeds tagged with "${decodedTag}"`}
         description={`Found ${taggedSeeds.length} ${taggedSeeds.length === 1 ? 'seed' : 'seeds'} with this tag`}
       />
       
       <SeedGrid seeds={taggedSeeds} />
-    </GardenLayout>
+    </ForestLayout>
   );
 }
 
 export async function generateStaticParams() {
-  const garden = new DigitalGarden();
-  const { seeds } = await garden.cultivate();
+  const forest = new DigitalForest();
+  const { seeds } = await forest.cultivate();
   
   // Extract all unique tags
   const allTags = new Set<string>();

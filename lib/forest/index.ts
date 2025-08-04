@@ -1,38 +1,38 @@
-// The Digital Garden - Main site module
-// The garden is where seeds (content from repositories) are planted and grow
+// The Digital Forest - Main site module
+// The forest is where seeds (content from repositories) grow into trees
 
 import { discoverSeeds } from '@/lib/seed';
 import type { SeedContent, ContentType, GrowthStage } from '@/lib/seed/types';
-import { calculateGardenStats, type GardenStats } from './stats';
+import { calculateForestStats, type ForestStats } from './stats';
 import { SeedSearcher } from './search';
 
-export interface Garden {
+export interface Forest {
   seeds: SeedContent[];
-  stats: GardenStats;
+  stats: ForestStats;
 }
 
-export class DigitalGarden {
+export class DigitalForest {
   private seeds: SeedContent[] = [];
   private searcher: SeedSearcher | null = null;
   
-  async cultivate(): Promise<Garden> {
+  async cultivate(): Promise<Forest> {
     try {
       // Discover all seeds
       const discovery = await discoverSeeds();
       this.seeds = discovery.seeds;
       this.searcher = new SeedSearcher(this.seeds);
       
-      // Calculate garden statistics
-      const stats = calculateGardenStats(this.seeds);
+      // Calculate forest statistics
+      const stats = calculateForestStats(this.seeds);
       
       return {
         seeds: this.seeds,
         stats,
       };
     } catch (error) {
-      console.error('Failed to cultivate garden:', error);
+      console.error('Failed to cultivate forest:', error);
       
-      // Return empty garden on error
+      // Return empty forest on error
       return {
         seeds: [],
         stats: {

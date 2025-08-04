@@ -1,16 +1,16 @@
-import { DigitalGarden } from '@/lib/garden';
-import { GardenHeader, GardenLayout } from '@/components/garden';
+import { DigitalForest } from '@/lib/forest';
+import { ForestHeader, ForestLayout } from '@/components/forest';
 import { SeedGrid } from '@/components/seed';
 
 export default async function NotesPage() {
-  const garden = new DigitalGarden();
-  await garden.cultivate();
+  const forest = new DigitalForest();
+  await forest.cultivate();
   
-  const noteSeeds = garden.findByType('note' as const);
+  const noteSeeds = forest.findByType('note' as const);
   
   return (
-    <GardenLayout>
-      <GardenHeader 
+    <ForestLayout>
+      <ForestHeader 
         title="Notes 📝"
         description="Quick thoughts, observations, and ideas in progress"
       />
@@ -19,6 +19,6 @@ export default async function NotesPage() {
         seeds={noteSeeds} 
         emptyMessage="No notes yet. Start capturing ideas!"
       />
-    </GardenLayout>
+    </ForestLayout>
   );
 }

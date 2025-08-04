@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '.env.local' });
 import { GitHubClient } from '../lib/github/client';
-import { GardenContentProcessor } from '../lib/content/garden-processor';
+import { ContentProcessor } from '../lib/content/processor';
 import { DiscoveryEngine } from '../lib/discovery/engine';
 
 async function testFloatingDuckHouse() {
@@ -12,7 +12,7 @@ async function testFloatingDuckHouse() {
     process.env.GITHUB_OWNER!
   );
   
-  const processor = new GardenContentProcessor(client);
+  const processor = new ContentProcessor(client);
   const discovery = new DiscoveryEngine(client);
   
   try {

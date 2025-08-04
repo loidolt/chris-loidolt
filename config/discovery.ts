@@ -8,7 +8,7 @@ export const discoveryConfig = {
   rules: {
     include: {
       topics: {
-        any: ['garden', 'project', 'note', 'writing', 'experiment'],
+        any: ['forest', 'project', 'note', 'writing', 'experiment'],
         all: [],
       },
       visibility: ['public'],

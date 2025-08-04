@@ -92,7 +92,7 @@ export interface GistMeta extends Omit<SeedMeta, 'type' | 'stage'> {
 export type { SeedContent as Seed } from '@/lib/seed/types';
 
 export type ContentType = 'project' | 'note' | 'writing' | 'experiment';
-export type GrowthStage = 'seedling' | 'budding' | 'evergreen' | 'perennial';
+export type GrowthStage = 'sprout' | 'sapling' | 'mature' | 'ancient';
 
 // Alias for content processing
 export interface Content {

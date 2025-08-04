@@ -9,16 +9,16 @@ import {
   FuzzySearch,
   SeedNetwork,
   type FilterState
-} from '@/components/garden';
+} from '@/components/forest';
 import { SeedGrid } from '@/components/seed';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { SeedContent } from '@/lib/seed/types';
 
-interface GardenExploreClientProps {
+interface ForestExploreClientProps {
   seeds: SeedContent[];
 }
 
-export function GardenExploreClient({ seeds }: GardenExploreClientProps) {
+export function ForestExploreClient({ seeds }: ForestExploreClientProps) {
   const [filters, setFilters] = useState<FilterState>({});
   const [selectedTag, setSelectedTag] = useState<string>();
 

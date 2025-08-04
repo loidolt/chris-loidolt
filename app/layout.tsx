@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { GardenHeader } from '@/components/garden';
+import { ForestHeader } from '@/components/forest';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Digital Garden",
-  description: "A collection of ideas, projects, and thoughts growing in public",
+  title: "Digital Forest",
+  description: "A collection of ideas, projects, and thoughts growing into a mighty forest",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <GardenHeader />
+        <ForestHeader />
         <main className="min-h-screen">
           {children}
         </main>

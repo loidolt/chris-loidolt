@@ -2,8 +2,8 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { GitHubClient } from '../lib/github/client';
-import { GardenDiscoveryEngine } from '../lib/discovery/garden-discovery';
-import { GardenContentProcessor } from '../lib/content/garden-processor';
+import { DiscoveryEngine } from '../lib/discovery/engine';
+import { ContentProcessor } from '../lib/content/processor';
 
 async function testFloatingDuckHouseV2() {
   console.log('🦆 Testing floating-duck-house with improved system\n');
@@ -13,8 +13,8 @@ async function testFloatingDuckHouseV2() {
     process.env.GITHUB_OWNER!
   );
   
-  const discovery = new GardenDiscoveryEngine(client);
-  const processor = new GardenContentProcessor(client);
+  const discovery = new DiscoveryEngine(client);
+  const processor = new ContentProcessor(client);
   
   try {
     // Use the new discovery engine

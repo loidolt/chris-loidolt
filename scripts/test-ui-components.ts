@@ -1,8 +1,8 @@
 #!/usr/bin/env npx tsx
 
 // Test script to verify UI components have proper types
-import type { SeedContent, Garden } from '@/lib/seed/types';
-import type { GardenStats } from '@/lib/garden/stats';
+import type { SeedContent } from '@/lib/seed/types';
+import type { Forest, ForestStats } from '@/lib/forest';
 
 // Mock data for testing
 const mockSeed: SeedContent = {
@@ -11,7 +11,7 @@ const mockSeed: SeedContent = {
   meta: {
     title: 'Test Project',
     type: 'project',
-    stage: 'budding',
+    stage: 'sapling',
     description: 'A test project for UI components',
     tags: ['test', 'typescript', 'react'],
     featured: true,
@@ -33,12 +33,12 @@ const mockSeed: SeedContent = {
   },
 };
 
-const mockGarden: Garden = {
+const mockForest: Forest = {
   seeds: [mockSeed],
   stats: {
     totalSeeds: 1,
     byType: { project: 1 },
-    byStage: { budding: 1 },
+    byStage: { sapling: 1 },
     lastUpdated: new Date(),
   },
 };
@@ -46,16 +46,16 @@ const mockGarden: Garden = {
 console.log('✅ UI Components type check successful!');
 console.log('\nMock data created:');
 console.log('- SeedContent:', mockSeed.meta.title);
-console.log('- Garden stats:', mockGarden.stats.totalSeeds, 'seeds');
+console.log('- Forest stats:', mockForest.stats.totalSeeds, 'seeds');
 
 // Verify component props types
 import type { SeedCardProps } from '@/components/seed/SeedCard';
 import type { SeedGridProps } from '@/components/seed/SeedGrid';
-import type { GardenStatsProps } from '@/components/garden/GardenStats';
+import type { ForestStatsProps } from '@/components/forest/ForestStats';
 
 const seedCardProps: SeedCardProps = { seed: mockSeed };
 const seedGridProps: SeedGridProps = { seeds: [mockSeed] };
-const gardenStatsProps: GardenStatsProps = { garden: mockGarden };
+const forestStatsProps: ForestStatsProps = { forest: mockForest };
 
 console.log('\n✅ Component props validated!');
 console.log('- SeedCard props OK');

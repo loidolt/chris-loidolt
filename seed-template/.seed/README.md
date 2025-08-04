@@ -2,10 +2,10 @@
 
 <!-- 
 This file is optional. If not present, the root README.md will be used.
-Use this when you want different content for your garden than your GitHub README.
+Use this when you want different content for your forest than your GitHub README.
 -->
 
-Your project's garden content goes here. This can be different from your main README.
+Your project's forest content goes here. This can be different from your main README.
 
 ## Why This Project Exists
 

@@ -103,7 +103,7 @@ export class SeedProcessor {
     }
     
     // Validate stage
-    const validStages = ['seedling', 'budding', 'evergreen', 'perennial'];
+    const validStages = ['sprout', 'sapling', 'mature', 'ancient'];
     if (!validStages.includes(metaObj.stage as string)) {
       throw new Error(
         `Invalid stage '${metaObj.stage}' in ${repoName}. Must be one of: ${validStages.join(', ')}`

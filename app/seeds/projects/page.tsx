@@ -1,16 +1,16 @@
-import { DigitalGarden } from '@/lib/garden';
-import { GardenHeader, GardenLayout } from '@/components/garden';
+import { DigitalForest } from '@/lib/forest';
+import { ForestHeader, ForestLayout } from '@/components/forest';
 import { SeedGrid } from '@/components/seed';
 
 export default async function ProjectsPage() {
-  const garden = new DigitalGarden();
-  await garden.cultivate();
+  const forest = new DigitalForest();
+  await forest.cultivate();
   
-  const projectSeeds = garden.findByType('project' as const);
+  const projectSeeds = forest.findByType('project' as const);
   
   return (
-    <GardenLayout>
-      <GardenHeader 
+    <ForestLayout>
+      <ForestHeader 
         title="Projects 🚀"
         description="Software projects and experiments I've built"
       />
@@ -19,6 +19,6 @@ export default async function ProjectsPage() {
         seeds={projectSeeds} 
         emptyMessage="No projects found. Time to build something!"
       />
-    </GardenLayout>
+    </ForestLayout>
   );
 }

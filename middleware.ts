@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   const missingVars = requiredEnvVars.filter(varName => !process.env[varName])
   
   if (missingVars.length > 0) {
-    // Redirect to setup page for any route that needs the garden
+    // Redirect to setup page for any route that needs the forest
     if (request.nextUrl.pathname !== '/setup' && 
         !request.nextUrl.pathname.startsWith('/_next') &&
         !request.nextUrl.pathname.startsWith('/api/health')) {

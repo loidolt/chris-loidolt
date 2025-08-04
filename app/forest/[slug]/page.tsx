@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import { DigitalGarden } from '@/lib/garden';
-import { GardenLayout } from '@/components/garden';
+import { DigitalForest } from '@/lib/forest';
+import { ForestLayout } from '@/components/forest';
 import { SeedDetail, RelatedSeeds } from '@/components/seed';
 
 interface SeedPageProps {
@@ -11,28 +11,28 @@ interface SeedPageProps {
 
 export default async function SeedPage({ params }: SeedPageProps) {
   const { slug } = await params;
-  const garden = new DigitalGarden();
-  await garden.cultivate();
+  const forest = new DigitalForest();
+  await forest.cultivate();
   
-  const seed = garden.getSeed(slug);
+  const seed = forest.getSeed(slug);
   
   if (!seed) {
     notFound();
   }
   
-  const relatedSeeds = garden.findRelated(seed, 5);
+  const relatedSeeds = forest.findRelated(seed, 5);
   
   return (
-    <GardenLayout>
+    <ForestLayout>
       <SeedDetail seed={seed} />
       <RelatedSeeds currentSeed={seed} relatedSeeds={relatedSeeds} />
-    </GardenLayout>
+    </ForestLayout>
   );
 }
 
 export async function generateStaticParams() {
-  const garden = new DigitalGarden();
-  const { seeds } = await garden.cultivate();
+  const forest = new DigitalForest();
+  const { seeds } = await forest.cultivate();
   
   return seeds.map((seed) => ({
     slug: seed.slug,

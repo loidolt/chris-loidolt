@@ -32,8 +32,8 @@ export class GistContentProcessor {
       const contentFile = this.findMainContentFile(gist);
       if (!contentFile) return null;
 
-      // Check if this is a garden gist (has garden.md or description with #garden)
-      if (!this.isGardenGist(gist)) return null;
+      // Check if this is a forest gist (has forest.md or description with #forest)
+      if (!this.isForestGist(gist)) return null;
 
       // Fetch content
       const content = await this.client.fetchGistContent(gist.id, contentFile.filename);
@@ -47,18 +47,18 @@ export class GistContentProcessor {
     }
   }
 
-  private isGardenGist(gist: Gist): boolean {
-    // Check if description contains #garden tag
-    if (gist.description && gist.description.includes('#garden')) {
+  private isForestGist(gist: Gist): boolean {
+    // Check if description contains #forest tag
+    if (gist.description && gist.description.includes('#forest')) {
       return true;
     }
 
-    // Check if there's a garden.md metadata file
-    if ('garden.md' in gist.files || 'garden.json' in gist.files) {
+    // Check if there's a forest.md metadata file
+    if ('forest.md' in gist.files || 'forest.json' in gist.files) {
       return true;
     }
 
-    // Check if main content file has garden frontmatter
+    // Check if main content file has forest frontmatter
     const contentFile = this.findMainContentFile(gist);
     if (contentFile && contentFile.filename.match(/\.(md|mdx)$/)) {
       return true; // We'll check frontmatter during processing
@@ -96,8 +96,8 @@ export class GistContentProcessor {
     // Parse frontmatter
     const { data: frontmatter, content: markdownContent } = matter(content);
 
-    // Check if it's a garden content via frontmatter
-    if (!this.hasGardenMetadata(frontmatter, gist)) {
+    // Check if it's a forest content via frontmatter
+    if (!this.hasForestMetadata(frontmatter, gist)) {
       return null;
     }
 
@@ -107,7 +107,7 @@ export class GistContentProcessor {
     // Merge metadata sources
     const metadata: GistMeta = {
       type: descriptionMeta.type || frontmatter.type || 'note',
-      stage: descriptionMeta.stage || frontmatter.stage || 'seedling',
+      stage: descriptionMeta.stage || frontmatter.stage || 'sprout',
       ...descriptionMeta,
       ...frontmatter
     };
@@ -179,9 +179,9 @@ export class GistContentProcessor {
     };
   }
 
-  private hasGardenMetadata(frontmatter: Record<string, unknown>, gist: Gist): boolean {
-    // Has garden tag in description
-    if (gist.description && gist.description.includes('#garden')) {
+  private hasForestMetadata(frontmatter: Record<string, unknown>, gist: Gist): boolean {
+    // Has forest tag in description
+    if (gist.description && gist.description.includes('#forest')) {
       return true;
     }
 
@@ -190,8 +190,8 @@ export class GistContentProcessor {
       return true;
     }
 
-    // Has garden flag in frontmatter
-    if (frontmatter.garden === true) {
+    // Has forest flag in frontmatter
+    if (frontmatter.forest === true) {
       return true;
     }
 
@@ -206,9 +206,10 @@ export class GistContentProcessor {
     if (description.includes('#writing')) meta.type = 'writing';
 
     // Extract stage
-    if (description.includes('#seedling')) meta.stage = 'seedling';
-    if (description.includes('#budding')) meta.stage = 'budding';
-    if (description.includes('#evergreen')) meta.stage = 'evergreen';
+    if (description.includes('#sprout')) meta.stage = 'sprout';
+    if (description.includes('#sapling')) meta.stage = 'sapling';
+    if (description.includes('#mature')) meta.stage = 'mature';
+    if (description.includes('#ancient')) meta.stage = 'ancient';
 
     // Extract other flags
     if (description.includes('#featured')) meta.featured = true;
@@ -221,7 +222,7 @@ export class GistContentProcessor {
     const hashtags = text.match(/#\w+/g) || [];
     return hashtags
       .map(tag => tag.slice(1)) // Remove #
-      .filter(tag => !['garden', 'note', 'writing', 'seedling', 'budding', 'evergreen', 'featured', 'draft'].includes(tag));
+      .filter(tag => !['forest', 'note', 'writing', 'sprout', 'sapling', 'mature', 'ancient', 'featured', 'draft'].includes(tag));
   }
 
   private extractTitle(content: string, fallback: string): string {

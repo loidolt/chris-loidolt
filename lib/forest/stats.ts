@@ -1,13 +1,13 @@
 import type { SeedContent } from '@/lib/seed/types';
 
-export interface GardenStats {
+export interface ForestStats {
   totalSeeds: number;
   byType: Record<string, number>;
   byStage: Record<string, number>;
   lastUpdated: Date;
 }
 
-export function calculateGardenStats(seeds: SeedContent[]): GardenStats {
+export function calculateForestStats(seeds: SeedContent[]): ForestStats {
   const byType: Record<string, number> = {};
   const byStage: Record<string, number> = {};
   
@@ -26,10 +26,10 @@ export function calculateGardenStats(seeds: SeedContent[]): GardenStats {
 
 export function getGrowthDistribution(seeds: SeedContent[]): Record<string, number> {
   const distribution: Record<string, number> = {
-    seedling: 0,
-    budding: 0,
-    evergreen: 0,
-    perennial: 0,
+    sprout: 0,
+    sapling: 0,
+    mature: 0,
+    ancient: 0,
   };
   
   for (const seed of seeds) {

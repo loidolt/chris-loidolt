@@ -1,12 +1,12 @@
-import { GardenLayout } from '@/components/garden'
+import { ForestLayout } from '@/components/forest'
 import { Card, CardContent } from '@/components/ui/card'
 
 export default function AboutPage() {
   return (
-    <GardenLayout>
+    <ForestLayout>
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
-          <h1 className="text-4xl font-bold mb-4">About this Digital Garden</h1>
+          <h1 className="text-4xl font-bold mb-4">About this Digital Forest</h1>
           <p className="text-lg text-muted-foreground">
             A space for ideas to grow and evolve in public
           </p>
@@ -14,32 +14,32 @@ export default function AboutPage() {
 
         <Card>
           <CardContent className="prose prose-neutral dark:prose-invert max-w-none pt-6">
-            <h2>What is a Digital Garden?</h2>
+            <h2>What is a Digital Forest?</h2>
             <p>
-              A digital garden is a collection of evolving ideas that aren&apos;t strictly 
-              organized by publication date. They&apos;re inherently exploratory – notes 
-              are linked through contextual associations. They aren&apos;t refined or 
-              complete - notes are published as half-finished thoughts that will grow 
-              and evolve over time.
+              A digital forest is a collection of evolving ideas that grow like trees, 
+              each starting as a small seed and growing into something larger. Ideas 
+              are linked through root systems and canopy connections. They aren&apos;t 
+              refined or complete - thoughts are planted as seeds that will grow 
+              into mighty trees over time.
             </p>
 
             <h2>The Growing Stages</h2>
             <ul>
               <li>
-                <strong>🌱 Seedling</strong> - Newly planted ideas that are just 
-                taking root. These are rough, early stage thoughts.
+                <strong>🌱 Sprout</strong> - New growth, just emerging from 
+                the soil. These are fresh, early stage thoughts.
               </li>
               <li>
-                <strong>🌿 Budding</strong> - Ideas that have started to grow. 
-                More developed but still evolving.
+                <strong>🌿 Sapling</strong> - Young trees establishing their roots. 
+                More developed but still growing stronger.
               </li>
               <li>
-                <strong>🌳 Evergreen</strong> - Well-developed ideas that are 
-                relatively complete, though may still be updated.
+                <strong>🌳 Mature</strong> - Full grown trees bearing fruit. 
+                Well-developed ideas that are complete and productive.
               </li>
               <li>
-                <strong>🌲 Perennial</strong> - Established ideas that have stood 
-                the test of time. Rarely updated but occasionally tended to.
+                <strong>🌲 Ancient</strong> - Timeless wisdom with deep roots. 
+                Established ideas that have stood the test of time.
               </li>
             </ul>
 
@@ -61,14 +61,14 @@ export default function AboutPage() {
 
             <h2>How It Works</h2>
             <p>
-              This garden automatically discovers and cultivates content from my GitHub 
+              This forest automatically discovers and cultivates content from my GitHub 
               repositories. Each repository with a <code>.seed</code> directory is 
-              processed and displayed here, creating a living documentation of my work 
+              processed and displayed here, creating a living ecosystem of my work 
               and thoughts.
             </p>
           </CardContent>
         </Card>
       </div>
-    </GardenLayout>
+    </ForestLayout>
   )
 }

@@ -8,22 +8,22 @@ interface SeedCardProps {
 }
 
 const stageColors = {
-  seedling: 'bg-green-100 text-green-800',
-  budding: 'bg-yellow-100 text-yellow-800',
-  evergreen: 'bg-blue-100 text-blue-800',
-  perennial: 'bg-purple-100 text-purple-800',
+  sprout: 'bg-green-100 text-green-800',
+  sapling: 'bg-yellow-100 text-yellow-800',
+  mature: 'bg-blue-100 text-blue-800',
+  ancient: 'bg-purple-100 text-purple-800',
 };
 
 const stageEmojis = {
-  seedling: '🌱',
-  budding: '🌿',
-  evergreen: '🌳',
-  perennial: '🌲',
+  sprout: '🌱',
+  sapling: '🌿',
+  mature: '🌳',
+  ancient: '🌲',
 };
 
 export function SeedCard({ seed }: SeedCardProps) {
   return (
-    <Link href={`/garden/${seed.slug}`} className="block">
+    <Link href={`/forest/${seed.slug}`} className="block">
       <Card className="h-full hover:shadow-lg transition-shadow">
         <CardHeader>
           <div className="flex items-start justify-between mb-2">

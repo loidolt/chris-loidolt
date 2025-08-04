@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     } else {
       // Revalidate all main paths
       revalidatePath('/');
-      revalidatePath('/garden');
+      revalidatePath('/forest');
       revalidatePath('/seeds/projects');
       revalidatePath('/seeds/notes');
       revalidatePath('/seeds/writing');

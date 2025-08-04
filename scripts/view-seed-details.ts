@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 
-import { DigitalGarden } from '@/lib/garden';
+import { DigitalForest } from '@/lib/forest';
 import { config } from 'dotenv';
 import path from 'path';
 
@@ -11,13 +11,13 @@ async function viewSeedDetails() {
   console.log('🌱 Viewing Seed Details\n');
   
   try {
-    const garden = new DigitalGarden();
-    const gardenData = await garden.cultivate();
+    const forest = new DigitalForest();
+    const forestData = await forest.cultivate();
     
-    console.log(`Found ${gardenData.stats.totalSeeds} seed(s)\n`);
+    console.log(`Found ${forestData.stats.totalSeeds} seed(s)\n`);
     
-    if (gardenData.seeds.length > 0) {
-      const seed = gardenData.seeds[0];
+    if (forestData.seeds.length > 0) {
+      const seed = forestData.seeds[0];
       
       console.log('📋 Seed Details:');
       console.log('================\n');
@@ -53,7 +53,7 @@ async function viewSeedDetails() {
       const contentPreview = seed.raw.substring(0, 300).trim();
       console.log(contentPreview + '...\n');
       
-      console.log('\n✅ Seed is ready to be displayed in the digital garden!');
+      console.log('\n✅ Seed is ready to be displayed in the digital forest!');
     }
     
   } catch (error) {

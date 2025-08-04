@@ -25,7 +25,7 @@ Been experimenting with different PKM approaches. Current setup:
 
 - Obsidian for notes (see [[obsidian-setup]])
 - Readwise for capture
-- This digital garden for sharing
+- This digital forest for sharing
 
 ## Open Questions
 
@@ -60,7 +60,7 @@ This is just the beginning of my exploration with [[next-app-router]] and RSCs.`
     'ghi789': {
       'random-thoughts.md': `# Random Thoughts
 
-Just some random ideas not connected to the garden.`
+Just some random ideas not connected to the forest.`
     }
   };
 
@@ -73,7 +73,7 @@ Just some random ideas not connected to the garden.`
 const testGists: Gist[] = [
   {
     id: 'abc123',
-    description: 'PKM workflow experiments #garden #note #budding #pkm',
+    description: 'PKM workflow experiments #forest #note #sapling #pkm',
     public: true,
     files: {
       'note.md': {
@@ -91,7 +91,7 @@ const testGists: Gist[] = [
   },
   {
     id: 'def456',
-    description: 'Understanding React Server Components #garden #writing #evergreen #react #featured',
+    description: 'Understanding React Server Components #forest #writing #mature #react #featured',
     public: true,
     files: {
       'post.md': {
@@ -158,7 +158,7 @@ async function testGistProcessor() {
     
     if (content) {
       processedCount++;
-      console.log(`\n✅ Successfully processed as garden content`);
+      console.log(`\n✅ Successfully processed as forest content`);
       console.log(`📋 Content Info:`);
       console.log(`  • Title: ${content.title}`);
       console.log(`  • Type: ${content.type}`);
@@ -176,10 +176,10 @@ async function testGistProcessor() {
       console.log(`  "${content.description}"`);
       
     } else {
-      console.log(`\n❌ Not processed - doesn't match garden criteria`);
+      console.log(`\n❌ Not processed - doesn't match forest criteria`);
       console.log(`   Missing:`);
-      if (!gist.description?.includes('#garden')) {
-        console.log(`   - #garden tag in description`);
+      if (!gist.description?.includes('#forest')) {
+        console.log(`   - #forest tag in description`);
       }
       console.log(`   - Or frontmatter with type: note/writing`);
     }
@@ -189,10 +189,10 @@ async function testGistProcessor() {
   console.log('📊 Summary');
   console.log(`${'═'.repeat(60)}`);
   console.log(`Total gists tested: ${testGists.length}`);
-  console.log(`Garden gists found: ${processedCount}`);
-  console.log(`Non-garden gists: ${testGists.length - processedCount}`);
+  console.log(`Forest gists found: ${processedCount}`);
+  console.log(`Non-forest gists: ${testGists.length - processedCount}`);
   console.log('\n✅ Gist processor working correctly!');
-  console.log('\n💡 Use GIST_GARDEN_GUIDE.md to learn how to create garden gists.');
+  console.log('\n💡 Use GIST_FOREST_GUIDE.md to learn how to create forest gists.');
 }
 
 // Run the test

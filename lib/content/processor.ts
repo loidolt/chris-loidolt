@@ -111,13 +111,13 @@ export class ContentProcessor {
   private determineStage(topics: string[], metadata: Record<string, unknown>): GrowthStage {
     if (metadata.stage) return metadata.stage as GrowthStage;
     
-    const stages: GrowthStage[] = ['seedling', 'budding', 'evergreen'];
+    const stages: GrowthStage[] = ['sprout', 'sapling', 'mature'];
     
     for (const stage of stages) {
       if (topics.includes(stage)) return stage;
     }
     
-    return 'seedling';
+    return 'sprout';
   }
 
   private extractConnections(content: string): string[] {

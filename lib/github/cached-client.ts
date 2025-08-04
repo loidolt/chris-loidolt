@@ -63,8 +63,14 @@ export class CachedGitHubClient {
     const cacheKey = `content:${this.owner}:${repo}:${path}`;
     
     const cached = await this.cache.get<string>(cacheKey);
-    if (cached !== null) {
-      return cached;
+    if (cached !== null && cached !== undefined) {
+      // Don't return cached empty strings for seed meta files
+      // This allows us to detect newly added seed directories
+      if (cached === '' && (path.endsWith('.seed/meta.yml') || path.endsWith('.seed/meta.json'))) {
+        // Skip cache for empty seed meta files
+      } else {
+        return cached;
+      }
     }
     
     try {
@@ -82,8 +88,11 @@ export class CachedGitHubClient {
       
       throw new Error('Not a file');
     } catch {
-      // Cache empty string for missing files to avoid repeated API calls
-      await this.cache.set(cacheKey, '');
+      // For seed meta files, don't cache missing files
+      // This allows detection when they're added later
+      if (!path.endsWith('.seed/meta.yml') && !path.endsWith('.seed/meta.json')) {
+        await this.cache.set(cacheKey, '');
+      }
       return '';
     }
   }

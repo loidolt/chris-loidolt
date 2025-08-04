@@ -7,17 +7,17 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
-interface GardenHeaderProps {
+interface ForestHeaderProps {
   className?: string
   title?: string
   description?: string
 }
 
-export function GardenHeader({ className, title, description }: GardenHeaderProps) {
+export function ForestHeader({ className, title, description }: ForestHeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const navigation = [
-    { name: 'Garden', href: '/garden' },
+    { name: 'Forest', href: '/forest' },
     { name: 'Projects', href: '/seeds/projects' },
     { name: 'Writing', href: '/seeds/writing' },
     { name: 'Tags', href: '/tags' },
@@ -39,7 +39,7 @@ export function GardenHeader({ className, title, description }: GardenHeaderProp
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/" className="text-xl font-bold">
-              Digital Garden
+              Digital Forest
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               {navigation.map((item) => (

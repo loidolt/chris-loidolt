@@ -1,6 +1,6 @@
-export { GardenStats } from './GardenStats';
-export { GardenHeader } from './GardenHeader';
-export { GardenLayout } from './GardenLayout';
+export { ForestStats } from './ForestStats';
+export { ForestHeader } from './ForestHeader';
+export { ForestLayout } from './ForestLayout';
 export { SeedSearch } from './SeedSearch';
 export { SeedFilter } from './SeedFilter';
 export type { FilterState } from './SeedFilter';

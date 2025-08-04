@@ -19,7 +19,7 @@ export function RelatedSeeds({ relatedSeeds }: RelatedSeedsProps) {
         {relatedSeeds.map(seed => (
           <Link
             key={seed.slug}
-            href={`/garden/${seed.slug}`}
+            href={`/forest/${seed.slug}`}
             className="p-4 border rounded-lg hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between">

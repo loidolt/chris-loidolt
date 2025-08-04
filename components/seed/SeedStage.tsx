@@ -7,28 +7,28 @@ interface SeedStageProps {
 }
 
 const stageConfig = {
-  seedling: {
+  sprout: {
     emoji: '🌱',
-    label: 'Seedling',
-    description: 'Just planted, early ideas',
+    label: 'Sprout',
+    description: 'New growth, just emerging',
     className: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   },
-  budding: {
+  sapling: {
     emoji: '🌿',
-    label: 'Budding',
-    description: 'Growing and developing',
+    label: 'Sapling',
+    description: 'Young tree, establishing roots',
     className: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
   },
-  evergreen: {
+  mature: {
     emoji: '🌳',
-    label: 'Evergreen',
-    description: 'Mature and actively maintained',
+    label: 'Mature',
+    description: 'Full grown, bearing fruit',
     className: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   },
-  perennial: {
+  ancient: {
     emoji: '🌲',
-    label: 'Perennial',
-    description: 'Complete but worth preserving',
+    label: 'Ancient',
+    description: 'Timeless wisdom, deep roots',
     className: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
   },
 };

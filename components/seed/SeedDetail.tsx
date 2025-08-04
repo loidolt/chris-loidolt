@@ -59,7 +59,7 @@ export function SeedDetail({ seed }: SeedDetailProps) {
           <h2 className="text-2xl font-semibold mb-4">Connected Seeds</h2>
           <div className="flex flex-wrap gap-2">
             {seed.meta.connections.map((connection) => (
-              <Link key={connection} href={`/garden/${connection}`}>
+              <Link key={connection} href={`/forest/${connection}`}>
                 <Badge variant="secondary" className="cursor-pointer hover:bg-accent">
                   {connection}
                 </Badge>

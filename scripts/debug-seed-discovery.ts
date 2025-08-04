@@ -1,107 +1,98 @@
 #!/usr/bin/env npx tsx
 
-import { GitHubClient } from '@/lib/github/client';
-import { SeedDiscovery } from '@/lib/seed/discovery';
-import * as dotenv from 'dotenv';
 import { config } from 'dotenv';
 import path from 'path';
-
-// Load environment variables
 config({ path: path.resolve(process.cwd(), '.env.local') });
 
+import { GitHubClient } from '@/lib/github/client';
+import { SeedDiscovery } from '@/lib/seed/discovery';
+import { discoverSeeds } from '@/lib/seed';
+
 async function debugSeedDiscovery() {
-  console.log('🔍 Debugging Seed Discovery\n');
-  
-  // Check environment variables
-  console.log('1. Environment Variables:');
-  console.log(`   GITHUB_TOKEN: ${process.env.GITHUB_TOKEN ? '✅ Set' : '❌ Not set'}`);
-  console.log(`   GITHUB_OWNER: ${process.env.GITHUB_OWNER || '❌ Not set'}`);
+  console.log('🔍 Debugging Seed Discovery System\n');
   
   if (!process.env.GITHUB_TOKEN || !process.env.GITHUB_OWNER) {
-    console.error('\n❌ Missing required environment variables');
+    console.error('❌ Missing required environment variables: GITHUB_TOKEN and GITHUB_OWNER');
     return;
   }
-  
+
+  console.log(`GitHub Owner: ${process.env.GITHUB_OWNER}\n`);
+
   try {
-    // Test GitHub client
-    console.log('\n2. Testing GitHub Client...');
+    // Create client
     const client = new GitHubClient(
       process.env.GITHUB_TOKEN,
       process.env.GITHUB_OWNER
     );
-    
-    // Fetch user info to verify authentication
-    const { data: user } = await client['octokit'].users.getAuthenticated();
-    console.log(`   ✅ Authenticated as: ${user.login}`);
-    console.log(`   ✅ Rate limit remaining: ${user.headers?.['x-ratelimit-remaining'] || 'unknown'}`);
-    
-    // Fetch repositories
-    console.log('\n3. Fetching Repositories...');
-    const repos = await client.fetchUserRepos();
-    console.log(`   ✅ Found ${repos.length} repositories`);
-    
-    // Show first few repos
-    console.log('\n   First 5 repositories:');
-    repos.slice(0, 5).forEach(repo => {
-      console.log(`   - ${repo.name} (${repo.private ? 'private' : 'public'})`);
-    });
-    
-    // Look for repos with .seed directory
-    console.log('\n4. Checking for .seed directories...');
-    const discovery = new SeedDiscovery(client);
-    
-    // Check a specific repo if you know one has .seed
-    const testRepo = 'floating-duck-house'; // Replace with your repo name
-    console.log(`\n   Checking ${testRepo} for .seed directory...`);
-    
-    try {
-      const metaYml = await client.fetchRepoContent(testRepo, '.seed/meta.yml');
-      const metaJson = await client.fetchRepoContent(testRepo, '.seed/meta.json');
-      
-      if (metaYml) {
-        console.log(`   ✅ Found .seed/meta.yml in ${testRepo}`);
-        console.log('   Content preview:', metaYml.substring(0, 100) + '...');
+
+    // 1. List all repositories
+    console.log('1. Fetching all repositories...');
+    const allRepos = await client.fetchUserRepos();
+    console.log(`✅ Found ${allRepos.length} total repositories\n`);
+
+    // 2. Check each repo for .seed directory
+    console.log('2. Checking for .seed directories...');
+    const reposWithSeed: string[] = [];
+    const reposWithoutSeed: string[] = [];
+
+    for (const repo of allRepos) {
+      try {
+        const [yml, json] = await Promise.all([
+          client.fetchRepoContent(repo.name, '.seed/meta.yml'),
+          client.fetchRepoContent(repo.name, '.seed/meta.json'),
+        ]);
+        
+        if (yml || json) {
+          reposWithSeed.push(repo.name);
+          console.log(`  ✅ ${repo.name} - has .seed/${yml ? 'meta.yml' : 'meta.json'}`);
+        } else {
+          reposWithoutSeed.push(repo.name);
+        }
+      } catch (error) {
+        reposWithoutSeed.push(repo.name);
       }
-      if (metaJson) {
-        console.log(`   ✅ Found .seed/meta.json in ${testRepo}`);
-        console.log('   Content preview:', metaJson.substring(0, 100) + '...');
-      }
-      if (!metaYml && !metaJson) {
-        console.log(`   ❌ No .seed/meta.yml or .seed/meta.json found in ${testRepo}`);
-      }
-    } catch (error: any) {
-      console.log(`   ❌ Error checking ${testRepo}: ${error.message}`);
     }
-    
-    // Run full discovery
-    console.log('\n5. Running Full Discovery...');
+
+    console.log(`\n📊 Summary:`);
+    console.log(`  - Repos with .seed: ${reposWithSeed.length}`);
+    console.log(`  - Repos without .seed: ${reposWithoutSeed.length}`);
+
+    if (reposWithSeed.length > 0) {
+      console.log(`\n📁 Repositories with .seed directory:`);
+      reposWithSeed.forEach(name => console.log(`  - ${name}`));
+    }
+
+    // 3. Run full discovery
+    console.log('\n3. Running full seed discovery...');
+    const discovery = new SeedDiscovery(client);
     const result = await discovery.discover();
     
-    console.log(`\n📊 Discovery Results:`);
-    console.log(`   Total repos checked: ${result.stats.totalRepos}`);
-    console.log(`   Repos with .seed: ${result.stats.reposWithSeed}`);
-    console.log(`   Successfully processed: ${result.stats.successfullyProcessed}`);
-    console.log(`   Failed: ${result.stats.failed}`);
-    console.log(`   Duration: ${result.stats.duration}ms`);
-    
+    console.log(`\n✅ Discovery Results:`);
+    console.log(`  - Seeds found: ${result.seeds.length}`);
+    console.log(`  - Errors: ${result.errors.length}`);
+    console.log(`  - Duration: ${result.stats.duration}ms`);
+
     if (result.seeds.length > 0) {
-      console.log('\n✅ Found seeds:');
+      console.log(`\n🌱 Seeds discovered:`);
       result.seeds.forEach(seed => {
-        console.log(`   - ${seed.slug}: ${seed.meta.title}`);
+        console.log(`  - ${seed.slug}: "${seed.meta.title}" (${seed.meta.type}, ${seed.meta.stage})`);
       });
-    } else {
-      console.log('\n⚠️  No seeds found');
     }
-    
+
     if (result.errors.length > 0) {
-      console.log('\n❌ Errors:');
-      result.errors.forEach(error => {
-        console.log(`   - ${error.repository}: ${error.error}`);
+      console.log(`\n❌ Errors during discovery:`);
+      result.errors.forEach(err => {
+        console.log(`  - ${err.repository}: ${err.error}`);
       });
     }
-    
+
+    // 4. Test the main discoverSeeds function
+    console.log('\n4. Testing main discoverSeeds function...');
+    const mainResult = await discoverSeeds();
+    console.log(`  - Seeds found: ${mainResult.seeds.length}`);
+
   } catch (error) {
-    console.error('\n❌ Error:', error);
+    console.error('❌ Error during discovery:', error);
   }
 }
 

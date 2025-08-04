@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { DigitalGarden } from '@/lib/garden';
-import type { SearchOptions } from '@/lib/garden/search';
+import { DigitalForest } from '@/lib/forest';
+import type { SearchOptions } from '@/lib/forest/search';
 import type { ContentType, GrowthStage } from '@/lib/seed/types';
 
 export async function GET(request: Request) {
@@ -13,10 +13,10 @@ export async function GET(request: Request) {
     const tag = searchParams.get('tag');
     const limit = searchParams.get('limit');
     
-    const garden = new DigitalGarden();
-    await garden.cultivate();
+    const forest = new DigitalForest();
+    await forest.cultivate();
     
-    // Use garden search method if query parameters are provided
+    // Use forest search method if query parameters are provided
     const searchOptions: SearchOptions = {};
     if (type) searchOptions.type = type as ContentType;
     if (stage) searchOptions.stage = stage as GrowthStage;
@@ -25,8 +25,8 @@ export async function GET(request: Request) {
     if (tag) searchOptions.tags = [tag];
     
     let filteredSeeds = Object.keys(searchOptions).length > 0 
-      ? garden.search(searchOptions)
-      : garden.getAllSeeds();
+      ? forest.search(searchOptions)
+      : forest.getAllSeeds();
     
     // Apply limit if specified
     if (limit) {

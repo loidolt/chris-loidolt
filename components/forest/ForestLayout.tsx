@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 
-interface GardenLayoutProps {
+interface ForestLayoutProps {
   children: ReactNode;
   sidebar?: ReactNode;
 }
 
-export function GardenLayout({ children, sidebar }: GardenLayoutProps) {
+export function ForestLayout({ children, sidebar }: ForestLayoutProps) {
   if (!sidebar) {
     return <main className="container mx-auto px-4 py-8">{children}</main>;
   }
