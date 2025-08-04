@@ -1,0 +1,32 @@
+# Example: Full-featured project
+title: Task Management App
+type: project
+stage: evergreen
+
+description: A modern task management application with real-time sync and AI-powered suggestions
+
+tags:
+  - productivity
+  - react
+  - typescript
+  - supabase
+  - ai
+
+featured: true
+status: active
+
+technologies:
+  - React 18
+  - TypeScript
+  - Supabase
+  - OpenAI API
+  - Tailwind CSS
+  - Radix UI
+
+demoUrl: https://tasks.example.com
+repository: https://github.com/username/task-app
+
+connections:
+  - ai-productivity-experiments
+  - supabase-auth-template
+  - react-component-library

@@ -1,0 +1,6 @@
+# Minimal seed configuration
+# Only these 3 fields are required
+
+title: My Project
+type: project
+stage: budding

@@ -1,6 +1,6 @@
-# GitHub CMS Documentation
+# GitHub-Based Digital Garden Documentation
 
-A comprehensive guide for building a portfolio site using GitHub repositories as a content management system.
+A comprehensive guide for building a digital garden using GitHub repositories as a content management system with automatic content discovery.
 
 ## Table of Contents
 
@@ -21,16 +21,17 @@ A comprehensive guide for building a portfolio site using GitHub repositories as
 
 ## Overview
 
-This GitHub CMS system transforms GitHub repositories into a powerful content management system for portfolio sites. It eliminates external dependencies like Airtable while maintaining all features including 3D model viewing, search, and static site generation.
+This GitHub-based digital garden system automatically discovers and organizes content from your GitHub repositories based on topics, tags, and metadata. It creates a living, evolving knowledge base that grows with your work, eliminating manual curation while maintaining flexibility for portfolio use.
 
 ### Key Features
 
-- **Git-based content management** - All content lives in version-controlled repositories
-- **Static site generation** - Pre-rendered pages for optimal performance
-- **Extensible architecture** - Plugin system for adding new features
-- **Multiple content types** - Projects, blogs, tutorials, and more
-- **Schema versioning** - Backward compatibility and migrations
-- **Build-time optimization** - Image processing, search indexing, and caching
+- **Automatic content discovery** - No manual project lists; discovers repos via GitHub API
+- **Tag-based organization** - Content organized by GitHub topics and custom tags
+- **Digital garden philosophy** - Interconnected notes, projects, and ideas that evolve
+- **Portfolio-ready** - Can surface featured/polished work when needed
+- **Zero maintenance** - Add/remove content by updating repos, not code
+- **Static site generation** - Fast, secure, and deployable anywhere
+- **Flexible content types** - Projects, notes, experiments, writings, and more
 
 ## Architecture
 
@@ -53,34 +54,36 @@ This GitHub CMS system transforms GitHub repositories into a powerful content ma
 ### Directory Structure
 
 ```
-portfolio-site/
+digital-garden/
 ├── app/                    # Next.js app directory
 │   ├── layout.tsx
 │   ├── page.tsx
-│   └── projects/
-│       └── [slug]/
+│   ├── garden/           # Browse all content
+│   │   └── [slug]/
+│   │       └── page.tsx
+│   ├── projects/         # Portfolio view
+│   │   └── [slug]/
+│   │       └── page.tsx
+│   └── tags/             # Tag-based views
+│       └── [tag]/
 │           └── page.tsx
 ├── lib/
-│   ├── github/            # GitHub API integration
-│   ├── content/           # Content processing
-│   ├── plugins/           # Plugin system
-│   └── schemas/           # Schema validation
+│   ├── github/           # GitHub API integration
+│   ├── discovery/        # Content discovery rules
+│   ├── content/          # Content processing
+│   ├── graph/            # Content relationships
+│   └── schemas/          # Schema validation
 ├── config/
-│   ├── projects.json      # Repository list
-│   ├── content-types.json # Content type definitions
-│   ├── site.json         # Site configuration
-│   └── hooks.js          # Build hooks
+│   ├── discovery.json    # Discovery rules & filters
+│   ├── site.json        # Site configuration
+│   └── hooks.js         # Build hooks
 ├── schemas/
+│   ├── base.schema.json
 │   ├── project.schema.json
-│   ├── blog.schema.json
+│   ├── note.schema.json
 │   └── custom/
-├── plugins/
-│   ├── analytics/
-│   ├── search/
-│   └── 3d-viewer/
-└── content/              # Local content
-    ├── pages/
-    └── data/
+└── content/             # Local content only
+    └── pages/           # Static pages
 ```
 
 ## Getting Started
@@ -123,27 +126,49 @@ ENABLE_SEARCH=true
 
 ### Quick Start
 
-1. Configure your content sources in `config/projects.json`:
+1. Configure content discovery in `config/discovery.json`:
 
 ```json
 {
-  "sources": [
-    {
-      "type": "github-topic",
-      "topic": "portfolio-project",
-      "owner": "yourusername"
+  "rules": {
+    "include": {
+      "topics": ["garden", "project", "note", "writing"],
+      "owner": "yourusername",
+      "visibility": "public"
+    },
+    "exclude": {
+      "topics": ["archived", "private"],
+      "repos": ["dotfiles", "configs"]
+    },
+    "special": {
+      "featured": { "topic": "featured" },
+      "portfolio": { "topic": "portfolio" },
+      "drafts": { "topic": "draft" }
     }
-  ]
+  },
+  "refresh": {
+    "interval": "1h",
+    "webhook": true
+  }
 }
 ```
 
-2. Run the development server:
+2. Tag your repositories on GitHub:
+
+```bash
+# Add topics to your repos
+gh repo edit owner/repo --add-topic garden
+gh repo edit owner/repo --add-topic project
+gh repo edit owner/repo --add-topic featured
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-3. Build for production:
+4. Build for production:
 
 ```bash
 npm run build
@@ -199,18 +224,19 @@ Images are automatically pulled from the assets/gallery folder.
 - [Documentation](https://docs.example.com)
 ```
 
-### project.json Metadata
+### metadata.json (Optional)
+
+Optional metadata file for additional control. If not present, system derives metadata from README and repo info:
 
 ```json
 {
   "version": "1.0",
-  "schema": "project",
-  "title": "Project Name",
-  "date": "2024-01-15",
-  "tags": ["3D Printing", "Design", "Electronics"],
-  "excerpt": "Brief description for previews",
-  "featured": true,
-  "status": "completed",
+  "type": "project",
+  "status": "growing",
+  "planted": "2024-01-15",
+  "tended": "2024-03-20",
+  "stage": "seedling",
+  "connections": ["related-project", "inspiration-source"],
   "coverImage": "assets/cover.jpg",
   "gallery": "assets/gallery",
   "model": {
@@ -219,28 +245,37 @@ Images are automatically pulled from the assets/gallery folder.
     "position": [0, 0, 0],
     "rotation": [0, 0, 0]
   },
-  "links": {
-    "repository": "https://github.com/username/project",
-    "demo": "https://demo.example.com",
-    "video": "https://youtube.com/watch?v=..."
-  },
-  "attribution": {
-    "author": "Your Name",
-    "license": "MIT",
-    "credits": ["Contributor 1", "Contributor 2"]
+  "showcase": {
+    "portfolio": true,
+    "featured": true,
+    "order": 1
   },
   "extensions": {
-    "analytics": {
-      "views": 0,
-      "likes": 0
-    },
-    "shop": {
-      "available": true,
-      "price": 29.99,
-      "currency": "USD"
-    }
+    "custom": {}
   }
 }
+```
+
+### Content Types via Topics
+
+Content type is automatically determined by GitHub topics:
+
+- `garden` - General digital garden content
+- `project` - Completed or ongoing projects
+- `note` - Quick thoughts, TILs, snippets
+- `writing` - Long-form articles or essays
+- `experiment` - Work in progress, trials
+- `resource` - Curated links, tools, references
+- `portfolio` - Polished work for professional display
+- `featured` - Highlight on homepage
+
+### Growth Stages
+
+Digital garden content can be tagged with growth stages:
+
+- `seedling` - New ideas, just planted
+- `budding` - Starting to develop
+- `evergreen` - Mature, maintained content
 ```
 
 ## Content Types
@@ -307,8 +342,9 @@ Create new content types by adding to `config/content-types.json`:
 ```json
 {
   "name": "Chris Loidolt",
-  "title": "Portfolio",
-  "description": "Designer & Engineer",
+  "title": "Digital Garden",
+  "tagline": "Growing ideas in public",
+  "description": "A digital garden of projects, notes, and experiments",
   "url": "https://chrisloidolt.com",
   "author": {
     "name": "Chris Loidolt",
@@ -318,11 +354,17 @@ Create new content types by adding to `config/content-types.json`:
       "twitter": "chrisloidolt"
     }
   },
+  "garden": {
+    "showGrowthStage": true,
+    "showLastTended": true,
+    "enableGraph": true,
+    "enableBacklinks": true
+  },
   "features": {
     "search": true,
-    "analytics": true,
     "rss": true,
-    "sitemap": true
+    "sitemap": true,
+    "portfolio": true
   },
   "build": {
     "output": "out",
@@ -331,32 +373,54 @@ Create new content types by adding to `config/content-types.json`:
 }
 ```
 
-### Project Sources (`config/projects.json`)
+### Discovery Configuration (`config/discovery.json`)
 
 ```json
 {
-  "sources": [
-    {
-      "type": "github-topic",
-      "topic": "portfolio-project",
+  "sources": {
+    "github": {
       "owner": "chrisloidolt",
-      "exclude": ["private-project"]
-    },
-    {
-      "type": "github-repo",
-      "repos": [
-        "chrisloidolt/specific-project",
-        "organization/shared-project"
-      ]
-    },
-    {
-      "type": "local",
-      "path": "content/projects"
+      "type": "user",
+      "includeOrgs": ["myorg"],
+      "auth": "env:GITHUB_TOKEN"
     }
-  ],
-  "defaults": {
-    "status": "published",
-    "features": ["gallery", "search"]
+  },
+  "rules": {
+    "include": {
+      "topics": {
+        "any": ["garden", "project", "note", "writing", "experiment"],
+        "all": []
+      },
+      "visibility": ["public"],
+      "language": null,
+      "minStars": 0
+    },
+    "exclude": {
+      "topics": ["archived", "deprecated", "private"],
+      "repos": ["dotfiles", ".github", "configs"],
+      "namePattern": "^\\."
+    },
+    "categorize": {
+      "featured": { 
+        "topics": ["featured"],
+        "minStars": 10 
+      },
+      "portfolio": { 
+        "topics": ["portfolio", "showcase"] 
+      },
+      "experiments": { 
+        "topics": ["wip", "experiment", "draft"] 
+      }
+    }
+  },
+  "processing": {
+    "cache": "1h",
+    "parallel": 5,
+    "retries": 3
+  },
+  "webhooks": {
+    "enabled": true,
+    "secret": "env:WEBHOOK_SECRET"
   }
 }
 ```
@@ -541,59 +605,134 @@ export default {
 
 ## Data Fetching
 
-### GitHub API Integration
+### Automatic Content Discovery
 
 ```javascript
-// lib/github/fetcher.js
+// lib/discovery/discoverer.js
 import { Octokit } from '@octokit/rest';
+import { DiscoveryRules } from './rules';
 
-export class GitHubFetcher {
-  constructor(token) {
-    this.octokit = new Octokit({ auth: token });
+export class ContentDiscoverer {
+  constructor(config) {
+    this.octokit = new Octokit({ auth: config.github.token });
+    this.rules = new DiscoveryRules(config.rules);
     this.cache = new Map();
   }
   
-  async fetchProjectRepos(owner, topic) {
-    const cacheKey = `${owner}:${topic}`;
-    
-    if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey);
-    }
-    
-    const repos = await this.octokit.paginate(
-      this.octokit.repos.listForUser,
-      {
-        username: owner,
-        per_page: 100
-      }
-    );
-    
-    const projectRepos = repos.filter(repo => 
-      repo.topics.includes(topic)
-    );
-    
-    const projects = await Promise.all(
-      projectRepos.map(repo => this.fetchProjectData(repo))
-    );
-    
-    this.cache.set(cacheKey, projects);
-    return projects;
-  }
-  
-  async fetchProjectData(repo) {
-    const [readme, metadata, assets] = await Promise.all([
-      this.fetchReadme(repo),
-      this.fetchMetadata(repo),
-      this.fetchAssets(repo)
-    ]);
+  async discoverContent() {
+    const repos = await this.fetchAllRepos();
+    const filtered = this.rules.filter(repos);
+    const categorized = this.rules.categorize(filtered);
     
     return {
-      id: repo.name,
-      repo: repo.html_url,
-      readme,
-      metadata,
-      assets
+      all: filtered,
+      categories: categorized,
+      graph: this.buildGraph(filtered)
     };
+  }
+  
+  async fetchAllRepos() {
+    const { owner, type, includeOrgs } = this.config.sources.github;
+    
+    let repos = [];
+    
+    // Fetch user repos
+    if (type === 'user') {
+      repos = await this.octokit.paginate(
+        this.octokit.repos.listForUser,
+        { username: owner, per_page: 100 }
+      );
+    }
+    
+    // Fetch org repos
+    for (const org of includeOrgs || []) {
+      const orgRepos = await this.octokit.paginate(
+        this.octokit.repos.listForOrg,
+        { org, per_page: 100 }
+      );
+      repos.push(...orgRepos);
+    }
+    
+    return repos;
+  }
+  
+  buildGraph(repos) {
+    // Build connection graph based on topics, mentions, etc
+    const nodes = repos.map(repo => ({
+      id: repo.name,
+      label: repo.name,
+      topics: repo.topics,
+      connections: []
+    }));
+    
+    // Find connections
+    nodes.forEach(node => {
+      node.connections = this.findConnections(node, nodes);
+    });
+    
+    return { nodes, edges: this.buildEdges(nodes) };
+  }
+}
+```
+
+### Discovery Rules Engine
+
+```javascript
+// lib/discovery/rules.js
+export class DiscoveryRules {
+  constructor(config) {
+    this.config = config;
+  }
+  
+  filter(repos) {
+    return repos.filter(repo => {
+      // Include rules
+      if (!this.matchesInclude(repo)) return false;
+      
+      // Exclude rules
+      if (this.matchesExclude(repo)) return false;
+      
+      return true;
+    });
+  }
+  
+  matchesInclude(repo) {
+    const { topics, visibility, language, minStars } = this.config.include;
+    
+    // Check topics (any or all)
+    if (topics.any?.length) {
+      const hasAny = topics.any.some(t => repo.topics.includes(t));
+      if (!hasAny) return false;
+    }
+    
+    if (topics.all?.length) {
+      const hasAll = topics.all.every(t => repo.topics.includes(t));
+      if (!hasAll) return false;
+    }
+    
+    // Check visibility
+    if (visibility && !visibility.includes(repo.visibility)) {
+      return false;
+    }
+    
+    // Check stars
+    if (minStars && repo.stargazers_count < minStars) {
+      return false;
+    }
+    
+    return true;
+  }
+  
+  categorize(repos) {
+    const categories = {};
+    
+    Object.entries(this.config.categorize).forEach(([name, rules]) => {
+      categories[name] = repos.filter(repo => 
+        this.matchesCategory(repo, rules)
+      );
+    });
+    
+    return categories;
   }
 }
 ```
@@ -928,12 +1067,42 @@ async function convertWordPress(xmlFile) {
 
 ## Best Practices
 
-### Content Organization
+### Digital Garden Philosophy
 
-1. **Use meaningful repository names**: `3d-printed-drone-parts` instead of `project-1`
-2. **Consistent tagging**: Create a tag taxonomy and stick to it
-3. **Image optimization**: Use appropriate formats (WebP for photos, PNG for diagrams)
-4. **Model optimization**: Compress 3D models and use LOD (Level of Detail)
+1. **Learn in Public**: Share works in progress, not just finished pieces
+2. **Bi-directional Links**: Connect related ideas across repositories
+3. **Iterative Growth**: Update and tend to content over time
+4. **Topic Taxonomy**: Use consistent GitHub topics for organization
+
+### Repository Organization
+
+1. **Topic Strategy**:
+   - Primary type: `garden`, `project`, `note`, `writing`
+   - Growth stage: `seedling`, `budding`, `evergreen`
+   - Special flags: `featured`, `portfolio`, `draft`
+   - Subject tags: `3d-printing`, `electronics`, `web-dev`
+
+2. **Naming Conventions**:
+   - Projects: `descriptive-project-name`
+   - Notes: `YYYY-MM-DD-topic-name`
+   - Resources: `resource-category-name`
+
+3. **README Structure**:
+   ```markdown
+   # Title
+   
+   > Brief description or key insight
+   
+   **Planted**: 2024-01-15  
+   **Stage**: 🌱 Seedling
+   
+   ## Overview
+   Main content...
+   
+   ## Connections
+   - [[Related Project]]
+   - [[Inspiration Source]]
+   ```
 
 ### Performance
 
@@ -964,7 +1133,19 @@ const projects = await Promise.all(
 ```javascript
 // Only rebuild changed content
 const changed = await getChangedRepos(lastBuildTime);
-await rebuildProjects(changed);
+await rebuildContent(changed);
+```
+
+4. **Smart discovery**:
+```javascript
+// Use webhooks for real-time updates
+app.post('/webhook/github', async (req, res) => {
+  const { repository, action } = req.body;
+  
+  if (action === 'updated' || action === 'topics_changed') {
+    await updateContent(repository);
+  }
+});
 ```
 
 ### Security
@@ -1060,6 +1241,99 @@ interface SchemaValidator {
 }
 ```
 
+## Digital Garden Features
+
+### Knowledge Graph Visualization
+
+```typescript
+// components/GardenGraph.tsx
+import { ForceGraph } from 'react-force-graph';
+
+export function GardenGraph({ content }) {
+  const graphData = useMemo(() => {
+    const nodes = content.map(item => ({
+      id: item.slug,
+      name: item.title,
+      val: item.connections.length,
+      group: item.type,
+      stage: item.stage
+    }));
+    
+    const links = content.flatMap(item =>
+      item.connections.map(target => ({
+        source: item.slug,
+        target
+      }))
+    );
+    
+    return { nodes, links };
+  }, [content]);
+  
+  return (
+    <ForceGraph
+      graphData={graphData}
+      nodeLabel="name"
+      nodeColor={node => stageColors[node.stage]}
+      linkDirectionalParticles={2}
+    />
+  );
+}
+```
+
+### Backlinks & References
+
+```javascript
+// lib/content/backlinks.js
+export function buildBacklinks(content) {
+  const backlinks = new Map();
+  
+  content.forEach(item => {
+    // Find [[wiki-style]] links
+    const links = item.content.match(/\[\[([^\]]+)\]\]/g) || [];
+    
+    links.forEach(link => {
+      const target = link.slice(2, -2);
+      if (!backlinks.has(target)) {
+        backlinks.set(target, []);
+      }
+      backlinks.get(target).push(item.slug);
+    });
+  });
+  
+  return backlinks;
+}
+```
+
+### Portfolio Mode
+
+```typescript
+// app/portfolio/page.tsx
+export default async function PortfolioPage() {
+  const content = await getContent();
+  const portfolio = content.categories.portfolio || [];
+  
+  return (
+    <div className="portfolio-grid">
+      <h1>Selected Work</h1>
+      <p>Polished projects ready for professional presentation</p>
+      
+      {portfolio.map(project => (
+        <ProjectCard 
+          key={project.slug}
+          project={project}
+          showStats={false}
+          minimal={true}
+        />
+      ))}
+      
+      <Link href="/garden">
+        Explore the full garden →
+      </Link>
+    </div>
+  );
+}
+```
+
 ---
 
-This GitHub CMS provides a flexible, extensible foundation for building portfolio sites with all content managed through Git. The system grows with your needs while maintaining simplicity and performance.
+This GitHub-based digital garden system provides automatic content discovery, flexible organization, and grows naturally with your work. It eliminates manual curation while supporting both digital garden exploration and professional portfolio presentation.
