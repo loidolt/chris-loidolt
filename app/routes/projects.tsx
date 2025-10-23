@@ -6,8 +6,13 @@ import { Layout } from "../components/Layout";
 import { getAllProjects, type Project } from "../services/airtable.server";
 
 export async function loader({}: Route.LoaderArgs) {
-  const projects = await getAllProjects();
-  return { projects };
+  try {
+    const projects = await getAllProjects();
+    return { projects };
+  } catch (error) {
+    console.error("Error loading projects:", error);
+    return { projects: [] };
+  }
 }
 
 export function meta({}: Route.MetaArgs) {

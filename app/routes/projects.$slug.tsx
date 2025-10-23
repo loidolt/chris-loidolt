@@ -5,13 +5,18 @@ import { ModelViewer } from "../components/ModelViewer";
 import { getProjectBySlug } from "../services/airtable.server";
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const project = await getProjectBySlug(params.slug);
+  try {
+    const project = await getProjectBySlug(params.slug);
 
-  if (!project) {
+    if (!project) {
+      throw new Response("Project not found", { status: 404 });
+    }
+
+    return { project };
+  } catch (error) {
+    console.error("Error loading project:", error);
     throw new Response("Project not found", { status: 404 });
   }
-
-  return { project };
 }
 
 export function meta({ data }: Route.MetaArgs) {

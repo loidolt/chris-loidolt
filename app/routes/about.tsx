@@ -4,12 +4,17 @@ import { Layout } from "../components/Layout";
 import { getQualifications, getServices } from "../services/airtable.server";
 
 export async function loader({}: Route.LoaderArgs) {
-  const [qualifications, services] = await Promise.all([
-    getQualifications(),
-    getServices(),
-  ]);
+  try {
+    const [qualifications, services] = await Promise.all([
+      getQualifications().catch(() => []),
+      getServices().catch(() => []),
+    ]);
 
-  return { qualifications, services };
+    return { qualifications, services };
+  } catch (error) {
+    console.error("Error loading about page data:", error);
+    return { qualifications: [], services: [] };
+  }
 }
 
 export function meta({}: Route.MetaArgs) {
