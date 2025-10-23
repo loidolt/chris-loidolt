@@ -12,6 +12,27 @@ import "./app.css";
 
 export const links: Route.LinksFunction = () => [];
 
+export function meta() {
+  return [
+    { charSet: "utf-8" },
+    { name: "viewport", content: "width=device-width, initial-scale=1" },
+    { title: "Chris Loidolt - Design & Engineering Portfolio" },
+    { name: "description", content: "Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development." },
+    { name: "theme-color", content: "#0d1117" },
+
+    // Open Graph
+    { property: "og:type", content: "website" },
+    { property: "og:title", content: "Chris Loidolt - Design & Engineering Portfolio" },
+    { property: "og:description", content: "Portfolio showcasing design and engineering projects in 3D printing, woodworking, and software development." },
+    { property: "og:site_name", content: "Chris Loidolt Portfolio" },
+
+    // Twitter Card
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: "Chris Loidolt - Design & Engineering Portfolio" },
+    { name: "twitter:description", content: "Portfolio showcasing design and engineering projects in 3D printing, woodworking, and software development." },
+  ];
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -51,22 +72,20 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="min-h-screen p-8 bg-terminal-darker text-terminal-text">
-      <div className="border border-terminal-border p-6 max-w-4xl">
-        <div className="text-terminal-red mb-4">
-          <span className="text-terminal-text-bright">ERROR</span> [{message}]
+    <main className="min-h-screen flex items-center justify-center p-8 bg-terminal-darker text-terminal-text">
+      <div className="max-w-2xl w-full">
+        <div className="text-terminal-red mb-2 text-sm">
+          {message}
         </div>
-        <p className="text-terminal-amber mb-4">$ {details}</p>
+        <p className="text-terminal-gray mb-8 text-sm">$ {details}</p>
         {stack && (
-          <pre className="text-xs text-terminal-text bg-terminal-black border border-terminal-gray p-4 overflow-x-auto">
+          <pre className="text-xs text-terminal-gray bg-terminal-black p-4 overflow-x-auto mb-8 border-l border-terminal-border">
             <code>{stack}</code>
           </pre>
         )}
-        <div className="mt-6 text-terminal-cyan">
-          <a href="/" className="hover:text-terminal-text-bright">
-            [← back to home]
-          </a>
-        </div>
+        <a href="/" className="text-terminal-cyan hover:text-terminal-text-bright transition-colors text-sm">
+          [← back to home]
+        </a>
       </div>
     </main>
   );

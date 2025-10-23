@@ -24,9 +24,17 @@ export function meta({ data }: Route.MetaArgs) {
     return [{ title: "Project Not Found" }];
   }
 
+  const { project } = data;
   return [
-    { title: `${data.project.title} - Chris Loidolt` },
-    { name: "description", content: data.project.description },
+    { title: `${project.title} - Chris Loidolt` },
+    { name: "description", content: project.description },
+    { property: "og:title", content: `${project.title} - Chris Loidolt` },
+    { property: "og:description", content: project.description },
+    { property: "og:type", content: "article" },
+    ...(project.featuredImage ? [{ property: "og:image", content: project.featuredImage }] : []),
+    { name: "twitter:title", content: `${project.title} - Chris Loidolt` },
+    { name: "twitter:description", content: project.description },
+    ...(project.featuredImage ? [{ name: "twitter:image", content: project.featuredImage }] : []),
   ];
 }
 
@@ -35,38 +43,34 @@ export default function ProjectDetail() {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        {/* Terminal Header */}
-        <div className="border border-terminal-green p-4 bg-terminal-black">
-          <div className="flex items-center gap-2 text-terminal-green mb-2">
-            <Link to="/projects" className="text-terminal-cyan hover:text-terminal-text-bright">
+      <div className="space-y-8">
+        {/* Page Header */}
+        <div>
+          <div className="flex items-center gap-3 text-sm mb-4">
+            <Link to="/projects" className="text-terminal-cyan hover:text-terminal-text-bright transition-colors">
               [← back]
             </Link>
-            <span className="text-terminal-border">|</span>
-            <span>$ cat project/{project.slug}</span>
+            <span className="text-terminal-gray">$ cat project/{project.slug}</span>
           </div>
-          <h1 className="text-2xl text-terminal-text-bright">{project.title}</h1>
+          <h1 className="text-2xl text-terminal-text mb-2">{project.title}</h1>
           {project.category && (
-            <div className="text-sm text-terminal-amber mt-2">
+            <div className="text-sm text-terminal-gray">
               [{project.category}]
             </div>
           )}
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left Column: 3D Model or Image */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             {project.modelFile ? (
               <ModelViewer
                 modelPath={`/models/${project.modelFile}`}
                 className="sticky top-4"
               />
             ) : project.featuredImage ? (
-              <div className="border border-terminal-border bg-terminal-black">
-                <div className="border-b border-terminal-border p-2 bg-terminal-dark">
-                  <span className="text-terminal-text text-xs">Featured Image</span>
-                </div>
+              <div className="bg-terminal-black">
                 <img
                   src={project.featuredImage}
                   alt={project.title}
@@ -74,22 +78,22 @@ export default function ProjectDetail() {
                 />
               </div>
             ) : (
-              <div className="border border-terminal-border bg-terminal-black p-12 flex items-center justify-center aspect-square">
-                <div className="text-terminal-gray text-6xl">📁</div>
+              <div className="bg-terminal-black p-12 flex items-center justify-center aspect-square">
+                <div className="text-terminal-gray text-6xl opacity-30">📁</div>
               </div>
             )}
 
             {/* Gallery */}
             {project.images && project.images.length > 0 && (
-              <div className="border border-terminal-border bg-terminal-dark p-4">
-                <div className="text-terminal-amber mb-3">$ ls images/</div>
-                <div className="grid grid-cols-2 gap-2">
+              <div>
+                <div className="text-terminal-cyan text-sm mb-4">$ ls images/</div>
+                <div className="grid grid-cols-2 gap-3">
                   {project.images.map((img, idx) => (
                     <img
                       key={idx}
                       src={img}
                       alt={`${project.title} - ${idx + 1}`}
-                      className="w-full h-auto border border-terminal-border hover:border-terminal-cyan transition-colors cursor-pointer"
+                      className="w-full h-auto hover:opacity-80 transition-opacity cursor-pointer"
                     />
                   ))}
                 </div>
@@ -98,22 +102,22 @@ export default function ProjectDetail() {
           </div>
 
           {/* Right Column: Details */}
-          <div className="space-y-4">
+          <div className="space-y-8">
             {/* Description */}
-            <div className="border border-terminal-border bg-terminal-dark p-6">
-              <div className="text-terminal-amber mb-4">$ cat description.txt</div>
-              <p className="text-terminal-text whitespace-pre-wrap">
+            <div>
+              <div className="text-terminal-cyan text-sm mb-4">$ cat description.txt</div>
+              <p className="text-terminal-text text-sm whitespace-pre-wrap leading-relaxed">
                 {project.longDescription || project.description}
               </p>
             </div>
 
             {/* Metadata */}
-            <div className="border border-terminal-border bg-terminal-dark p-6">
-              <div className="text-terminal-amber mb-4">$ ls -la metadata/</div>
+            <div className="border-t border-terminal-border pt-8">
+              <div className="text-terminal-cyan text-sm mb-4">$ ls -la metadata/</div>
               <div className="space-y-3 text-sm">
                 {project.date && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-terminal-cyan min-w-[80px]">date:</span>
+                  <div className="flex items-start gap-4">
+                    <span className="text-terminal-gray min-w-[80px]">date</span>
                     <span className="text-terminal-text">
                       {new Date(project.date).toLocaleDateString("en-US", {
                         year: "numeric",
@@ -125,18 +129,18 @@ export default function ProjectDetail() {
                 )}
 
                 {project.category && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-terminal-cyan min-w-[80px]">category:</span>
+                  <div className="flex items-start gap-4">
+                    <span className="text-terminal-gray min-w-[80px]">category</span>
                     <span className="text-terminal-text">{project.category}</span>
                   </div>
                 )}
 
                 {project.tags && project.tags.length > 0 && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-terminal-cyan min-w-[80px]">tags:</span>
+                  <div className="flex items-start gap-4">
+                    <span className="text-terminal-gray min-w-[80px]">tags</span>
                     <div className="flex flex-wrap gap-2">
                       {project.tags.map((tag) => (
-                        <span key={tag} className="text-terminal-green">
+                        <span key={tag} className="text-terminal-gray">
                           #{tag}
                         </span>
                       ))}
@@ -145,8 +149,8 @@ export default function ProjectDetail() {
                 )}
 
                 {project.modelFile && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-terminal-cyan min-w-[80px]">3d_model:</span>
+                  <div className="flex items-start gap-4">
+                    <span className="text-terminal-gray min-w-[80px]">3d_model</span>
                     <span className="text-terminal-text">{project.modelFile}</span>
                   </div>
                 )}
@@ -155,18 +159,17 @@ export default function ProjectDetail() {
 
             {/* Links */}
             {(project.github || project.website) && (
-              <div className="border border-terminal-border bg-terminal-dark p-6">
-                <div className="text-terminal-amber mb-4">$ cat links.txt</div>
-                <div className="space-y-2">
+              <div className="border-t border-terminal-border pt-8">
+                <div className="text-terminal-cyan text-sm mb-4">$ cat links.txt</div>
+                <div className="space-y-3 text-sm">
                   {project.github && (
                     <a
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-terminal-cyan hover:text-terminal-text-bright transition-colors"
+                      className="text-terminal-cyan hover:text-terminal-text-bright transition-colors block"
                     >
-                      <span>→</span>
-                      <span>[View on GitHub]</span>
+                      [View on GitHub →]
                     </a>
                   )}
                   {project.website && (
@@ -174,10 +177,9 @@ export default function ProjectDetail() {
                       href={project.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-terminal-cyan hover:text-terminal-text-bright transition-colors"
+                      className="text-terminal-cyan hover:text-terminal-text-bright transition-colors block"
                     >
-                      <span>→</span>
-                      <span>[Visit Website]</span>
+                      [Visit Website →]
                     </a>
                   )}
                 </div>

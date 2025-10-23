@@ -54,7 +54,11 @@ export async function action({ request }: Route.ActionArgs) {
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Contact - Chris Loidolt" },
-    { name: "description", content: "Get in touch with Chris Loidolt" },
+    { name: "description", content: "Get in touch to discuss your project or collaboration opportunities." },
+    { property: "og:title", content: "Contact - Chris Loidolt" },
+    { property: "og:description", content: "Get in touch to discuss your project or collaboration opportunities." },
+    { name: "twitter:title", content: "Contact - Chris Loidolt" },
+    { name: "twitter:description", content: "Get in touch to discuss your project or collaboration opportunities." },
   ];
 }
 
@@ -65,34 +69,31 @@ export default function Contact() {
 
   return (
     <Layout>
-      <div className="max-w-3xl mx-auto space-y-6">
-        {/* Terminal Header */}
-        <div className="border border-terminal-green p-4 bg-terminal-black">
-          <pre className="text-terminal-green">
-{`$ mail contact@chrisloidolt.com
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Compose your message below...`}
-          </pre>
+      <div className="max-w-2xl space-y-8">
+        {/* Page Header */}
+        <div>
+          <div className="text-terminal-cyan text-sm mb-2">$ mail contact@chrisloidolt.com</div>
+          <p className="text-terminal-gray text-sm">Compose your message below</p>
         </div>
 
         {/* Success Message */}
         {actionData?.success && (
-          <div className="border border-terminal-green p-6 bg-terminal-black">
-            <div className="text-terminal-green mb-2">
-              <span className="text-terminal-text-bright">SUCCESS</span> Message sent!
+          <div className="border-t border-terminal-green pt-6">
+            <div className="text-terminal-green mb-2 text-sm">
+              Message sent successfully
             </div>
-            <p className="text-terminal-text">
-              $ Thank you for reaching out. I'll get back to you soon.
+            <p className="text-terminal-text text-sm">
+              Thank you for reaching out. I'll get back to you soon.
             </p>
           </div>
         )}
 
         {/* Form */}
-        <Form method="post" className="space-y-4">
+        <Form method="post" className="space-y-6">
           {/* Name Field */}
-          <div className="border border-terminal-border bg-terminal-dark p-4">
-            <label htmlFor="name" className="block text-terminal-amber mb-2">
-              $ name:
+          <div>
+            <label htmlFor="name" className="block text-terminal-cyan text-sm mb-2">
+              name
             </label>
             <input
               type="text"
@@ -100,20 +101,20 @@ Compose your message below...`}
               name="name"
               required
               disabled={isSubmitting}
-              className="w-full bg-terminal-black border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50"
+              className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50 text-sm"
               placeholder="Your name"
             />
             {actionData?.errors?.name && (
               <div className="mt-2 text-terminal-red text-sm">
-                → {actionData.errors.name[0]}
+                {actionData.errors.name[0]}
               </div>
             )}
           </div>
 
           {/* Email Field */}
-          <div className="border border-terminal-border bg-terminal-dark p-4">
-            <label htmlFor="email" className="block text-terminal-amber mb-2">
-              $ email:
+          <div>
+            <label htmlFor="email" className="block text-terminal-cyan text-sm mb-2">
+              email
             </label>
             <input
               type="email"
@@ -121,20 +122,20 @@ Compose your message below...`}
               name="email"
               required
               disabled={isSubmitting}
-              className="w-full bg-terminal-black border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50"
+              className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50 text-sm"
               placeholder="your.email@example.com"
             />
             {actionData?.errors?.email && (
               <div className="mt-2 text-terminal-red text-sm">
-                → {actionData.errors.email[0]}
+                {actionData.errors.email[0]}
               </div>
             )}
           </div>
 
           {/* Subject Field */}
-          <div className="border border-terminal-border bg-terminal-dark p-4">
-            <label htmlFor="subject" className="block text-terminal-amber mb-2">
-              $ subject:
+          <div>
+            <label htmlFor="subject" className="block text-terminal-cyan text-sm mb-2">
+              subject
             </label>
             <input
               type="text"
@@ -142,20 +143,20 @@ Compose your message below...`}
               name="subject"
               required
               disabled={isSubmitting}
-              className="w-full bg-terminal-black border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50"
+              className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50 text-sm"
               placeholder="What's this about?"
             />
             {actionData?.errors?.subject && (
               <div className="mt-2 text-terminal-red text-sm">
-                → {actionData.errors.subject[0]}
+                {actionData.errors.subject[0]}
               </div>
             )}
           </div>
 
           {/* Message Field */}
-          <div className="border border-terminal-border bg-terminal-dark p-4">
-            <label htmlFor="message" className="block text-terminal-amber mb-2">
-              $ message:
+          <div>
+            <label htmlFor="message" className="block text-terminal-cyan text-sm mb-2">
+              message
             </label>
             <textarea
               id="message"
@@ -163,22 +164,20 @@ Compose your message below...`}
               required
               disabled={isSubmitting}
               rows={8}
-              className="w-full bg-terminal-black border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none resize-none disabled:opacity-50"
+              className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none resize-none disabled:opacity-50 text-sm"
               placeholder="Type your message here..."
             />
             {actionData?.errors?.message && (
               <div className="mt-2 text-terminal-red text-sm">
-                → {actionData.errors.message[0]}
+                {actionData.errors.message[0]}
               </div>
             )}
           </div>
 
           {/* Form Error */}
           {actionData?.errors?._form && (
-            <div className="border border-terminal-red p-4 bg-terminal-black">
-              <div className="text-terminal-red">
-                ERROR: {actionData.errors._form[0]}
-              </div>
+            <div className="text-terminal-red text-sm">
+              {actionData.errors._form[0]}
             </div>
           )}
 
@@ -186,52 +185,41 @@ Compose your message below...`}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full border border-terminal-green bg-terminal-black p-4 text-terminal-green hover:bg-terminal-dark hover:text-terminal-text-bright transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-terminal-cyan hover:text-terminal-text-bright transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {isSubmitting ? (
-              <span className="flex items-center justify-center gap-2">
+              <span className="flex items-center gap-2">
                 <span className="terminal-cursor">_</span>
                 <span>Sending...</span>
               </span>
             ) : (
-              <span>$ send-message --to=chris [ENTER]</span>
+              <span>$ send</span>
             )}
           </button>
         </Form>
 
         {/* Additional Contact Info */}
-        <div className="border border-terminal-border bg-terminal-dark p-6">
-          <div className="text-terminal-amber mb-4">$ cat contact-info.txt</div>
+        <div className="border-t border-terminal-border pt-8">
+          <div className="text-terminal-cyan text-sm mb-6">$ cat contact-info.txt</div>
           <div className="space-y-3 text-sm">
-            <div className="flex items-center gap-3">
-              <span className="text-terminal-cyan">email:</span>
+            <div className="flex items-center gap-4">
+              <span className="text-terminal-gray w-20">email</span>
               <a
                 href="mailto:contact@chrisloidolt.com"
-                className="text-terminal-text hover:text-terminal-text-bright"
+                className="text-terminal-text hover:text-terminal-cyan transition-colors"
               >
                 contact@chrisloidolt.com
               </a>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-terminal-cyan">github:</span>
+            <div className="flex items-center gap-4">
+              <span className="text-terminal-gray w-20">github</span>
               <a
-                href="https://github.com"
+                href="https://github.com/chris-loidolt"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-terminal-text hover:text-terminal-text-bright"
+                className="text-terminal-text hover:text-terminal-cyan transition-colors"
               >
-                github.com/chrisloidolt
-              </a>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-terminal-cyan">linkedin:</span>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-terminal-text hover:text-terminal-text-bright"
-              >
-                linkedin.com/in/chrisloidolt
+                github.com/chris-loidolt
               </a>
             </div>
           </div>

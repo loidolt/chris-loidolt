@@ -6,14 +6,18 @@ import { Layout } from "../components/Layout";
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Chris Loidolt - Design & Engineering Portfolio" },
-    { name: "description", content: "Portfolio of Chris Loidolt showcasing design and engineering projects" },
+    { name: "description", content: "Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development." },
+    { property: "og:title", content: "Chris Loidolt - Design & Engineering Portfolio" },
+    { property: "og:description", content: "Portfolio showcasing design and engineering projects in 3D printing, woodworking, and software development." },
+    { name: "twitter:title", content: "Chris Loidolt - Design & Engineering Portfolio" },
+    { name: "twitter:description", content: "Portfolio showcasing design and engineering projects in 3D printing, woodworking, and software development." },
   ];
 }
 
 export default function Home() {
   return (
     <Layout>
-      <div className="space-y-8">
+      <div>
         <TerminalWelcome />
         <TerminalPrompt />
         <QuickLinks />
@@ -24,17 +28,12 @@ export default function Home() {
 
 function TerminalWelcome() {
   const [displayedText, setDisplayedText] = useState("");
-  const fullText = `Welcome to Chris Loidolt's Portfolio Terminal
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const fullText = `$ cat welcome.txt
 
-System initialized successfully.
-Loading portfolio data...
+Design & Engineering Portfolio
+Showcasing projects in 3D printing, woodworking, and software
 
-$ whoami
-> Design & Engineering Portfolio
-> Showcasing projects in 3D printing, woodworking, and software
-
-Type 'help' or navigate using the menu above.`;
+Navigate using the menu above or explore [projects]`;
 
   useEffect(() => {
     let index = 0;
@@ -51,8 +50,8 @@ Type 'help' or navigate using the menu above.`;
   }, []);
 
   return (
-    <div className="border border-terminal-green p-6 bg-terminal-black">
-      <pre className="text-terminal-green text-sm whitespace-pre-wrap">
+    <div className="py-8">
+      <pre className="text-terminal-text text-sm whitespace-pre-wrap leading-relaxed">
         {displayedText}
         <span className="terminal-cursor text-terminal-green">_</span>
       </pre>
@@ -62,20 +61,26 @@ Type 'help' or navigate using the menu above.`;
 
 function TerminalPrompt() {
   const commands = [
-    { cmd: "ls /projects", desc: "View all projects" },
-    { cmd: "cat about.txt", desc: "Learn more about me" },
-    { cmd: "mail contact", desc: "Get in touch" },
+    { cmd: "ls /projects", desc: "View all projects", link: "/projects" },
+    { cmd: "cat about.txt", desc: "Learn more", link: "/about" },
+    { cmd: "mail", desc: "Get in touch", link: "/contact" },
   ];
 
   return (
-    <div className="border border-terminal-border p-6 bg-terminal-dark">
-      <div className="text-terminal-amber mb-4">$ help</div>
-      <div className="space-y-2">
+    <div className="py-8 border-t border-terminal-border">
+      <div className="text-terminal-cyan mb-6 text-sm">$ help</div>
+      <div className="space-y-3">
         {commands.map((item) => (
-          <div key={item.cmd} className="flex items-start gap-4">
-            <code className="text-terminal-cyan min-w-[200px]">{item.cmd}</code>
-            <span className="text-terminal-text">{item.desc}</span>
-          </div>
+          <Link
+            key={item.cmd}
+            to={item.link}
+            className="flex items-start gap-6 text-sm hover:text-terminal-cyan transition-colors group"
+          >
+            <code className="text-terminal-text group-hover:text-terminal-cyan min-w-[140px]">
+              {item.cmd}
+            </code>
+            <span className="text-terminal-gray group-hover:text-terminal-text">{item.desc}</span>
+          </Link>
         ))}
       </div>
     </div>
@@ -90,19 +95,23 @@ function QuickLinks() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {stats.map((stat) => (
-        <Link
-          key={stat.label}
-          to={stat.href}
-          className="border border-terminal-border p-6 hover:border-terminal-cyan transition-colors bg-terminal-dark group"
-        >
-          <div className="text-terminal-amber text-sm mb-2">[{stat.label.toLowerCase()}]</div>
-          <div className="text-3xl text-terminal-green group-hover:text-terminal-cyan transition-colors">
-            {stat.value}
-          </div>
-        </Link>
-      ))}
+    <div className="py-8 border-t border-terminal-border">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {stats.map((stat) => (
+          <Link
+            key={stat.label}
+            to={stat.href}
+            className="group"
+          >
+            <div className="text-terminal-cyan text-xs mb-2 group-hover:text-terminal-text-bright transition-colors">
+              [{stat.label.toLowerCase()}]
+            </div>
+            <div className="text-4xl text-terminal-text group-hover:text-terminal-cyan transition-colors font-medium">
+              {stat.value}
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

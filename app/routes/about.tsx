@@ -20,7 +20,11 @@ export async function loader({}: Route.LoaderArgs) {
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "About - Chris Loidolt" },
-    { name: "description", content: "Learn more about Chris Loidolt" },
+    { name: "description", content: "Designer and engineer with a passion for creating innovative solutions through 3D printing, woodworking, and software development." },
+    { property: "og:title", content: "About - Chris Loidolt" },
+    { property: "og:description", content: "Designer and engineer with a passion for creating innovative solutions through 3D printing, woodworking, and software development." },
+    { name: "twitter:title", content: "About - Chris Loidolt" },
+    { name: "twitter:description", content: "Designer and engineer with a passion for creating innovative solutions through 3D printing, woodworking, and software development." },
   ];
 }
 
@@ -29,20 +33,17 @@ export default function About() {
 
   return (
     <Layout>
-      <div className="space-y-8">
-        {/* Terminal Header */}
-        <div className="border border-terminal-green p-4 bg-terminal-black">
-          <pre className="text-terminal-green">
-{`$ whoami
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Chris Loidolt - Designer & Engineer`}
-          </pre>
+      <div className="space-y-12">
+        {/* Page Header */}
+        <div>
+          <div className="text-terminal-cyan text-sm mb-4">$ whoami</div>
+          <h1 className="text-2xl text-terminal-text mb-6">Chris Loidolt - Designer & Engineer</h1>
         </div>
 
         {/* About Section */}
-        <div className="border border-terminal-border bg-terminal-dark p-6">
-          <div className="text-terminal-amber mb-4">$ cat bio.txt</div>
-          <div className="space-y-4 text-terminal-text">
+        <div className="border-t border-terminal-border pt-8">
+          <div className="text-terminal-cyan text-sm mb-6">$ cat bio.txt</div>
+          <div className="space-y-4 text-terminal-text max-w-3xl">
             <p>
               I'm a designer and engineer with a passion for creating innovative solutions
               through 3D printing, woodworking, and software development. My work combines
@@ -57,24 +58,19 @@ Chris Loidolt - Designer & Engineer`}
 
         {/* Services Section */}
         {services.length > 0 && (
-          <div className="space-y-4">
-            <div className="border border-terminal-cyan p-3 bg-terminal-black">
-              <div className="text-terminal-cyan">
-                $ ls services/ <span className="text-terminal-text">({services.length} items)</span>
-              </div>
+          <div className="border-t border-terminal-border pt-8">
+            <div className="text-terminal-cyan text-sm mb-6">
+              $ ls services/ ({services.length} items)
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {services.map((service) => (
-                <div
-                  key={service.id}
-                  className="border border-terminal-border bg-terminal-dark p-6 hover:border-terminal-cyan transition-colors"
-                >
-                  <h3 className="text-terminal-green mb-3 font-medium">
+                <div key={service.id} className="space-y-2">
+                  <h3 className="text-terminal-text text-sm">
                     {service.icon && <span className="mr-2">{service.icon}</span>}
                     {service.title}
                   </h3>
-                  <p className="text-terminal-text text-sm">
+                  <p className="text-terminal-gray text-sm">
                     {service.description}
                   </p>
                 </div>
@@ -85,32 +81,27 @@ Chris Loidolt - Designer & Engineer`}
 
         {/* Qualifications Section */}
         {qualifications.length > 0 && (
-          <div className="space-y-4">
-            <div className="border border-terminal-cyan p-3 bg-terminal-black">
-              <div className="text-terminal-cyan">
-                $ cat qualifications.log <span className="text-terminal-text">({qualifications.length} entries)</span>
-              </div>
+          <div className="border-t border-terminal-border pt-8">
+            <div className="text-terminal-cyan text-sm mb-6">
+              $ cat qualifications.log ({qualifications.length} entries)
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-6">
               {qualifications.map((qual) => (
-                <div
-                  key={qual.id}
-                  className="border border-terminal-border bg-terminal-dark p-5"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-terminal-text-bright font-medium">
+                <div key={qual.id} className="space-y-2">
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="text-terminal-text text-sm">
                       {qual.title}
                     </h3>
-                    <span className="text-terminal-amber text-sm">
+                    <span className="text-terminal-gray text-sm whitespace-nowrap">
                       [{qual.year}]
                     </span>
                   </div>
-                  <div className="text-terminal-cyan text-sm mb-2">
+                  <div className="text-terminal-cyan text-sm">
                     {qual.institution}
                   </div>
                   {qual.description && (
-                    <p className="text-terminal-text text-sm">
+                    <p className="text-terminal-gray text-sm">
                       {qual.description}
                     </p>
                   )}
@@ -121,61 +112,61 @@ Chris Loidolt - Designer & Engineer`}
         )}
 
         {/* Skills Section */}
-        <div className="border border-terminal-border bg-terminal-dark p-6">
-          <div className="text-terminal-amber mb-4">$ cat skills.json</div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="border-t border-terminal-border pt-8">
+          <div className="text-terminal-cyan text-sm mb-6">$ cat skills.json</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <div className="text-terminal-cyan mb-3 text-sm">
+              <div className="text-terminal-gray mb-3 text-sm">
                 "design": [
               </div>
-              <ul className="space-y-1 text-terminal-text text-sm ml-4">
+              <ul className="space-y-2 text-terminal-text text-sm ml-4">
                 <li>→ 3D Modeling</li>
                 <li>→ CAD Design</li>
                 <li>→ UI/UX Design</li>
                 <li>→ Woodworking</li>
               </ul>
-              <div className="text-terminal-cyan text-sm mt-2">]</div>
+              <div className="text-terminal-gray text-sm mt-2">]</div>
             </div>
 
             <div>
-              <div className="text-terminal-cyan mb-3 text-sm">
+              <div className="text-terminal-gray mb-3 text-sm">
                 "fabrication": [
               </div>
-              <ul className="space-y-1 text-terminal-text text-sm ml-4">
+              <ul className="space-y-2 text-terminal-text text-sm ml-4">
                 <li>→ 3D Printing</li>
                 <li>→ CNC Machining</li>
                 <li>→ Laser Cutting</li>
                 <li>→ Carpentry</li>
               </ul>
-              <div className="text-terminal-cyan text-sm mt-2">]</div>
+              <div className="text-terminal-gray text-sm mt-2">]</div>
             </div>
 
             <div>
-              <div className="text-terminal-cyan mb-3 text-sm">
+              <div className="text-terminal-gray mb-3 text-sm">
                 "software": [
               </div>
-              <ul className="space-y-1 text-terminal-text text-sm ml-4">
+              <ul className="space-y-2 text-terminal-text text-sm ml-4">
                 <li>→ React/TypeScript</li>
                 <li>→ Node.js</li>
                 <li>→ Python</li>
                 <li>→ Three.js</li>
               </ul>
-              <div className="text-terminal-cyan text-sm mt-2">]</div>
+              <div className="text-terminal-gray text-sm mt-2">]</div>
             </div>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="border border-terminal-green bg-terminal-black p-6">
-          <div className="text-terminal-green mb-4">
+        <div className="border-t border-terminal-border pt-8">
+          <div className="text-terminal-cyan text-sm mb-4">
             $ Available for collaboration and consulting
           </div>
-          <p className="text-terminal-text mb-4">
+          <p className="text-terminal-text mb-6 text-sm max-w-2xl">
             Interested in working together? Let's discuss your project.
           </p>
           <a
             href="/contact"
-            className="inline-block border border-terminal-cyan px-6 py-3 text-terminal-cyan hover:bg-terminal-dark hover:text-terminal-text-bright transition-colors"
+            className="inline-block text-terminal-cyan hover:text-terminal-text-bright transition-colors text-sm"
           >
             [Get in touch →]
           </a>
