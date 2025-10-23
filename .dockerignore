@@ -1,4 +1,45 @@
-.react-router
-build
+# Dependencies
 node_modules
+npm-debug.log
+
+# Build outputs (old React Router)
+build
+.react-router
+
+# Astro outputs
+dist
+.astro
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Old app directory (React Router)
+app
+
+# Documentation
 README.md
+CLAUDE.md
+
+# Wrangler (Cloudflare Workers - no longer used)
+wrangler.toml
+.dev.vars

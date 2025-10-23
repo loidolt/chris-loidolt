@@ -1,0 +1,20 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import ProjectsGrid from '@components/ProjectsGrid';
+import { getAllProjects } from '@lib/airtable';
+
+// Fetch projects at build time
+let projects = [];
+try {
+  projects = await getAllProjects();
+} catch (error) {
+  console.error('Error loading projects:', error);
+}
+---
+
+<BaseLayout
+  title="Projects - Chris Loidolt"
+  description="Browse design and engineering projects in 3D printing, woodworking, and software development."
+>
+  <ProjectsGrid projects={projects} client:load />
+</BaseLayout>

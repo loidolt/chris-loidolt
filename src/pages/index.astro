@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import TerminalWelcome from '@components/TerminalWelcome';
+
+const commands = [
+  { cmd: 'ls /projects', desc: 'View all projects', link: '/projects' },
+  { cmd: 'cat about.txt', desc: 'Learn more', link: '/about' },
+  { cmd: 'mail', desc: 'Get in touch', link: '/contact' },
+];
+
+const stats = [
+  { label: 'Projects', value: '50+', href: '/projects' },
+  { label: 'Categories', value: '8', href: '/projects' },
+  { label: '3D Models', value: '30+', href: '/projects' },
+];
+---
+
+<BaseLayout
+  title="Chris Loidolt - Design & Engineering Portfolio"
+  description="Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development."
+>
+  <div>
+    <!-- Terminal Welcome with typing animation -->
+    <TerminalWelcome client:load />
+
+    <!-- Terminal Prompt / Help Section -->
+    <div class="py-8 border-t border-terminal-border">
+      <div class="text-terminal-cyan mb-6 text-sm">$ help</div>
+      <div class="space-y-3">
+        {commands.map((item) => (
+          <a
+            href={item.link}
+            class="flex items-start gap-6 text-sm hover:text-terminal-cyan transition-colors group"
+          >
+            <code class="text-terminal-text group-hover:text-terminal-cyan min-w-[140px]">
+              {item.cmd}
+            </code>
+            <span class="text-terminal-gray group-hover:text-terminal-text">{item.desc}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="py-8 border-t border-terminal-border">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {stats.map((stat) => (
+          <a href={stat.href} class="group">
+            <div class="text-terminal-cyan text-xs mb-2 group-hover:text-terminal-text-bright transition-colors">
+              [{stat.label.toLowerCase()}]
+            </div>
+            <div class="text-4xl text-terminal-text group-hover:text-terminal-cyan transition-colors font-medium">
+              {stat.value}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

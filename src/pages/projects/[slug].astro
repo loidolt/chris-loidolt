@@ -1,0 +1,172 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { ModelViewer } from '@components/ModelViewer';
+import { getAllProjects, getProjectBySlug } from '@lib/airtable';
+
+export async function getStaticPaths() {
+  const projects = await getAllProjects();
+
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+
+if (!project) {
+  return Astro.redirect('/404');
+}
+---
+
+<BaseLayout
+  title={`${project.title} - Chris Loidolt`}
+  description={project.description}
+>
+  <div class="space-y-8">
+    <!-- Page Header -->
+    <div>
+      <div class="flex items-center gap-3 text-sm mb-4">
+        <a href="/projects" class="text-terminal-cyan hover:text-terminal-text-bright transition-colors">
+          [← back]
+        </a>
+        <span class="text-terminal-gray">$ cat project/{project.slug}</span>
+      </div>
+      <h1 class="text-2xl text-terminal-text mb-2">{project.title}</h1>
+      {project.category && (
+        <div class="text-sm text-terminal-gray">
+          [{project.category}]
+        </div>
+      )}
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <!-- Left Column: 3D Model or Image -->
+      <div class="space-y-6">
+        {project.modelFile ? (
+          <ModelViewer
+            modelPath={`/models/${project.modelFile}`}
+            className="sticky top-4"
+            client:load
+          />
+        ) : project.featuredImage ? (
+          <div class="bg-terminal-black">
+            <img
+              src={project.featuredImage}
+              alt={project.title}
+              class="w-full h-auto"
+            />
+          </div>
+        ) : (
+          <div class="bg-terminal-black p-12 flex items-center justify-center aspect-square">
+            <div class="text-terminal-gray text-6xl opacity-30">📁</div>
+          </div>
+        )}
+
+        <!-- Gallery -->
+        {project.images && project.images.length > 0 && (
+          <div>
+            <div class="text-terminal-cyan text-sm mb-4">$ ls images/</div>
+            <div class="grid grid-cols-2 gap-3">
+              {project.images.map((img: string, idx: number) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`${project.title} - ${idx + 1}`}
+                  class="w-full h-auto hover:opacity-80 transition-opacity cursor-pointer"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Right Column: Details -->
+      <div class="space-y-8">
+        <!-- Description -->
+        <div>
+          <div class="text-terminal-cyan text-sm mb-4">$ cat description.txt</div>
+          <p class="text-terminal-text text-sm whitespace-pre-wrap leading-relaxed">
+            {project.longDescription || project.description}
+          </p>
+        </div>
+
+        <!-- Metadata -->
+        <div class="border-t border-terminal-border pt-8">
+          <div class="text-terminal-cyan text-sm mb-4">$ ls -la metadata/</div>
+          <div class="space-y-3 text-sm">
+            {project.date && (
+              <div class="flex items-start gap-4">
+                <span class="text-terminal-gray min-w-[80px]">date</span>
+                <span class="text-terminal-text">
+                  {new Date(project.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
+              </div>
+            )}
+
+            {project.category && (
+              <div class="flex items-start gap-4">
+                <span class="text-terminal-gray min-w-[80px]">category</span>
+                <span class="text-terminal-text">{project.category}</span>
+              </div>
+            )}
+
+            {project.tags && project.tags.length > 0 && (
+              <div class="flex items-start gap-4">
+                <span class="text-terminal-gray min-w-[80px]">tags</span>
+                <div class="flex flex-wrap gap-2">
+                  {project.tags.map((tag: string) => (
+                    <span key={tag} class="text-terminal-gray">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {project.modelFile && (
+              <div class="flex items-start gap-4">
+                <span class="text-terminal-gray min-w-[80px]">3d_model</span>
+                <span class="text-terminal-text">{project.modelFile}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <!-- Links -->
+        {(project.github || project.website) && (
+          <div class="border-t border-terminal-border pt-8">
+            <div class="text-terminal-cyan text-sm mb-4">$ cat links.txt</div>
+            <div class="space-y-3 text-sm">
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-terminal-cyan hover:text-terminal-text-bright transition-colors block"
+                >
+                  [View on GitHub →]
+                </a>
+              )}
+              {project.website && (
+                <a
+                  href={project.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-terminal-cyan hover:text-terminal-text-bright transition-colors block"
+                >
+                  [Visit Website →]
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

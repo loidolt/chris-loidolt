@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  portfolio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4321:4321"
+    environment:
+      # Airtable Configuration
+      - AIRTABLE_API_KEY=${AIRTABLE_API_KEY}
+      - AIRTABLE_POSTS_BASEID=${AIRTABLE_POSTS_BASEID}
+      - AIRTABLE_POSTS_TABLENAME=${AIRTABLE_POSTS_TABLENAME:-Projects}
+      - AIRTABLE_QUALIFICATIONS_TABLENAME=${AIRTABLE_QUALIFICATIONS_TABLENAME:-Qualifications}
+      - AIRTABLE_WEBSITES_TABLENAME=${AIRTABLE_WEBSITES_TABLENAME:-Websites}
+      - AIRTABLE_SERVICES_TABLENAME=${AIRTABLE_SERVICES_TABLENAME:-Services}
+      - NODE_ENV=production
+    restart: unless-stopped
+    # Resource limits for low-power deployment
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M

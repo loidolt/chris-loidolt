@@ -1,0 +1,162 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getQualifications, getServices } from '@lib/airtable';
+
+// Fetch data at build time
+let qualifications = [];
+let services = [];
+
+try {
+  [qualifications, services] = await Promise.all([
+    getQualifications().catch(() => []),
+    getServices().catch(() => []),
+  ]);
+} catch (error) {
+  console.error('Error loading about page data:', error);
+}
+---
+
+<BaseLayout
+  title="About - Chris Loidolt"
+  description="Designer and engineer with a passion for creating innovative solutions through 3D printing, woodworking, and software development."
+>
+  <div class="space-y-12">
+    <!-- Page Header -->
+    <div>
+      <div class="text-terminal-cyan text-sm mb-4">$ whoami</div>
+      <h1 class="text-2xl text-terminal-text mb-6">Chris Loidolt - Designer & Engineer</h1>
+    </div>
+
+    <!-- About Section -->
+    <div class="border-t border-terminal-border pt-8">
+      <div class="text-terminal-cyan text-sm mb-6">$ cat bio.txt</div>
+      <div class="space-y-4 text-terminal-text max-w-3xl">
+        <p>
+          I'm a designer and engineer with a passion for creating innovative solutions
+          through 3D printing, woodworking, and software development. My work combines
+          technical precision with creative problem-solving to bring ideas to life.
+        </p>
+        <p>
+          From designing custom 3D-printed parts to building full-stack web applications,
+          I love tackling complex challenges and learning new technologies along the way.
+        </p>
+      </div>
+    </div>
+
+    <!-- Services Section -->
+    {services.length > 0 && (
+      <div class="border-t border-terminal-border pt-8">
+        <div class="text-terminal-cyan text-sm mb-6">
+          $ ls services/ ({services.length} items)
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {services.map((service) => (
+            <div key={service.id} class="space-y-2">
+              <h3 class="text-terminal-text text-sm">
+                {service.icon && <span class="mr-2">{service.icon}</span>}
+                {service.title}
+              </h3>
+              <p class="text-terminal-gray text-sm">
+                {service.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Qualifications Section -->
+    {qualifications.length > 0 && (
+      <div class="border-t border-terminal-border pt-8">
+        <div class="text-terminal-cyan text-sm mb-6">
+          $ cat qualifications.log ({qualifications.length} entries)
+        </div>
+
+        <div class="space-y-6">
+          {qualifications.map((qual) => (
+            <div key={qual.id} class="space-y-2">
+              <div class="flex items-start justify-between gap-4">
+                <h3 class="text-terminal-text text-sm">
+                  {qual.title}
+                </h3>
+                <span class="text-terminal-gray text-sm whitespace-nowrap">
+                  [{qual.year}]
+                </span>
+              </div>
+              <div class="text-terminal-cyan text-sm">
+                {qual.institution}
+              </div>
+              {qual.description && (
+                <p class="text-terminal-gray text-sm">
+                  {qual.description}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Skills Section -->
+    <div class="border-t border-terminal-border pt-8">
+      <div class="text-terminal-cyan text-sm mb-6">$ cat skills.json</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <div class="text-terminal-gray mb-3 text-sm">
+            "design": [
+          </div>
+          <ul class="space-y-2 text-terminal-text text-sm ml-4">
+            <li>→ 3D Modeling</li>
+            <li>→ CAD Design</li>
+            <li>→ UI/UX Design</li>
+            <li>→ Woodworking</li>
+          </ul>
+          <div class="text-terminal-gray text-sm mt-2">]</div>
+        </div>
+
+        <div>
+          <div class="text-terminal-gray mb-3 text-sm">
+            "fabrication": [
+          </div>
+          <ul class="space-y-2 text-terminal-text text-sm ml-4">
+            <li>→ 3D Printing</li>
+            <li>→ CNC Machining</li>
+            <li>→ Laser Cutting</li>
+            <li>→ Carpentry</li>
+          </ul>
+          <div class="text-terminal-gray text-sm mt-2">]</div>
+        </div>
+
+        <div>
+          <div class="text-terminal-gray mb-3 text-sm">
+            "software": [
+          </div>
+          <ul class="space-y-2 text-terminal-text text-sm ml-4">
+            <li>→ React/TypeScript</li>
+            <li>→ Node.js</li>
+            <li>→ Python</li>
+            <li>→ Three.js</li>
+          </ul>
+          <div class="text-terminal-gray text-sm mt-2">]</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="border-t border-terminal-border pt-8">
+      <div class="text-terminal-cyan text-sm mb-4">
+        $ Available for collaboration and consulting
+      </div>
+      <p class="text-terminal-text mb-6 text-sm max-w-2xl">
+        Interested in working together? Let's discuss your project.
+      </p>
+      <a
+        href="/contact"
+        class="inline-block text-terminal-cyan hover:text-terminal-text-bright transition-colors text-sm"
+      >
+        [Get in touch →]
+      </a>
+    </div>
+  </div>
+</BaseLayout>

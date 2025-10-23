@@ -1,0 +1,86 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Chris Loidolt - Design & Engineering Portfolio',
+  description = 'Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development.',
+} = Astro.props;
+
+const navItems = [
+  { href: '/', label: 'home' },
+  { href: '/projects', label: 'projects' },
+  { href: '/about', label: 'about' },
+  { href: '/contact', label: 'contact' },
+];
+
+const currentYear = new Date().getFullYear();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0d1117" />
+
+    <title>{title}</title>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Chris Loidolt Portfolio" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <div class="min-h-screen flex flex-col bg-terminal-darker">
+      <!-- Terminal Header -->
+      <header class="border-b border-terminal-border">
+        <div class="container mx-auto px-6 py-6 max-w-6xl">
+          <nav class="flex gap-6 text-sm">
+            {navItems.map((item) => (
+              <a
+                href={item.href}
+                class="text-terminal-cyan hover:text-terminal-text-bright transition-colors"
+              >
+                [{item.label}]
+              </a>
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-1 container mx-auto px-6 py-12 max-w-6xl">
+        <slot />
+      </main>
+
+      <!-- Terminal Footer -->
+      <footer class="border-t border-terminal-border">
+        <div class="container mx-auto px-6 py-8 max-w-6xl">
+          <div class="flex items-center justify-between text-sm text-terminal-text">
+            <div>© {currentYear} Chris Loidolt</div>
+            <a
+              href="https://github.com/chris-loidolt"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-terminal-cyan hover:text-terminal-text-bright transition-colors"
+            >
+              [github]
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

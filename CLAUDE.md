@@ -4,55 +4,62 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a terminal-inspired portfolio website for Chris Loidolt showcasing design and engineering projects. Built with React Router (Remix) and deployed to Cloudflare Workers, the site features a balanced terminal aesthetic with modern UI elements where needed. It uses Airtable as a CMS for project data and includes 3D model viewing, client-side search, and a contact form.
+This is a terminal-inspired portfolio website for Chris Loidolt showcasing design and engineering projects. Built with **Astro** for static site generation with React islands, optimized for low-power deployment (battery-powered server or Docker). The site features a balanced terminal aesthetic with modern UI elements where needed. It uses Airtable as a CMS for project data and includes 3D model viewing, client-side search, and a contact form.
 
 ## Common Commands
 
 ### Development
-- `npm run dev` - Start development server (runs on http://localhost:5173)
-- `npm run build` - Build production site
+- `npm run dev` - Start Astro development server (runs on http://localhost:4321)
+- `npm run build` - Build static site (fetches Airtable data at build time)
+- `npm run preview` - Preview production build locally
 - `npm run typecheck` - Run TypeScript type checking
 
 ### Deployment
-- `npm run deploy` - Build and deploy to Cloudflare Pages
-- `npm run dev:wrangler` - Test with Wrangler locally
-- `npm run start` - Serve production build locally with Wrangler
+- `docker-compose up` - Run in Docker with resource limits
+- `docker build -t portfolio .` - Build Docker image
+- `npm run start` - Start Node.js server (from built files)
 
 ## Architecture
 
 ### Data Sources
 - **Airtable**: Primary CMS for project data, websites, services, and qualifications
+  - Data is fetched **at build time** (not runtime) for optimal performance
 - **Environment Variables**: Airtable API keys and base IDs stored in `.env` files
-- **Static Files**: 3D models (.glb files) stored in `/static/models/`
+- **Static Files**: 3D models (.glb files) stored in `/public/models/` (or `/static/models/`)
 
 ### Key Technologies
-- **React Router 7** (formerly Remix): Full-stack React framework
-- **Cloudflare Workers/Pages**: Edge deployment platform
-- **React**: Component framework
-- **Tailwind CSS v4**: Utility-first CSS with custom terminal theme
+- **Astro 5**: Static site generator with React islands for interactivity
+- **React 19**: Used for interactive components (islands)
+- **Node.js**: Optional server for dynamic hosting (can also serve purely static files)
+- **Tailwind CSS v4**: Utility-first CSS with custom terminal theme (via Vite plugin)
 - **Three.js**: 3D model rendering via @react-three/fiber
 - **Fuse.js**: Client-side fuzzy search
 - **Airtable**: Headless CMS
 - **TypeScript**: Type safety throughout
+- **Docker**: Containerized deployment with resource limits
 
 ### Directory Structure
 ```
-app/
-├── app.css                       # Tailwind + terminal theme
-├── root.tsx                      # Root layout with error boundary
+src/
+├── styles/
+│   └── global.css               # Tailwind + terminal theme
+├── layouts/
+│   └── BaseLayout.astro         # Base HTML layout with terminal header/footer
 ├── components/
-│   ├── Layout.tsx               # Main layout with terminal header/footer
-│   └── ModelViewer.tsx          # Three.js 3D model viewer
-├── routes/
-│   ├── home.tsx                 # Homepage with animated terminal
-│   ├── projects.tsx             # Project grid with search/filter
-│   ├── projects.$slug.tsx       # Individual project detail page
-│   ├── about.tsx                # About page with qualifications
-│   └── contact.tsx              # Contact form
-├── services/
-│   └── airtable.server.ts       # Airtable data fetching utilities
-static/models/                    # 3D model files (.glb format)
-public/                           # Static assets
+│   ├── TerminalWelcome.tsx      # React: Typing animation (client:load)
+│   ├── ProjectsGrid.tsx         # React: Search/filter (client:load)
+│   ├── ContactForm.tsx          # React: Form with validation (client:load)
+│   └── ModelViewer.tsx          # React: Three.js 3D viewer (client:load)
+├── pages/
+│   ├── index.astro              # Homepage with animated terminal
+│   ├── projects/
+│   │   ├── index.astro          # Project grid with search/filter
+│   │   └── [slug].astro         # Dynamic project detail pages
+│   ├── about.astro              # About page with qualifications
+│   └── contact.astro            # Contact form
+├── lib/
+│   └── airtable.ts              # Airtable data fetching utilities (build time)
+public/                           # Static assets (models, images, etc.)
 ```
 
 ### Terminal Design System
@@ -84,7 +91,7 @@ public/                           # Static assets
 
 ### Environment Configuration
 
-Required environment variables:
+Required environment variables (needed during **build time**):
 ```bash
 # Airtable Configuration
 AIRTABLE_API_KEY=your_airtable_api_key
@@ -93,69 +100,82 @@ AIRTABLE_POSTS_TABLENAME=Projects
 AIRTABLE_QUALIFICATIONS_TABLENAME=Qualifications
 AIRTABLE_WEBSITES_TABLENAME=Websites
 AIRTABLE_SERVICES_TABLENAME=Services
-
-# Contact Form Email (Cloudflare Email Routing)
-CONTACT_EMAIL_TO=your-email@example.com
 ```
+
+**Important**: Airtable data is fetched at build time and baked into the static HTML. To update content, rebuild the site.
 
 ### Key Features
 
-1. **Homepage**
-   - Animated terminal typing effect
-   - Command-style help section
-   - Quick stats cards
+1. **Homepage** (index.astro)
+   - Animated terminal typing effect (React island)
+   - Command-style help section (static)
+   - Quick stats cards (static)
 
-2. **Projects Index**
+2. **Projects Index** (projects/index.astro)
    - Grid layout with terminal-styled cards
-   - Fuse.js client-side search
-   - Category filtering
+   - Fuse.js client-side search (React island)
+   - Category filtering (React island)
    - 3D model indicators
 
-3. **Project Detail**
-   - Interactive 3D model viewer (Three.js)
-   - Image gallery
-   - Metadata display
-   - Links to GitHub/website
+3. **Project Detail** (projects/[slug].astro)
+   - Dynamic routes generated at build time via `getStaticPaths()`
+   - Interactive 3D model viewer (React island with Three.js)
+   - Image gallery (static)
+   - Metadata display (static)
+   - Links to GitHub/website (static)
 
-4. **Contact Form**
-   - Terminal-styled form inputs
-   - Zod validation
-   - Form submission handling (ready for Cloudflare Email Workers)
+4. **Contact Form** (contact.astro)
+   - Terminal-styled form inputs (React island)
+   - Zod validation (client-side)
+   - Form submission (currently logs to console, ready for server endpoint)
 
-5. **About Page**
-   - Qualifications timeline from Airtable
-   - Services grid from Airtable
-   - Skills display in JSON format
+5. **About Page** (about.astro)
+   - Qualifications timeline from Airtable (static, fetched at build)
+   - Services grid from Airtable (static, fetched at build)
+   - Skills display in JSON format (static)
 
 ### Data Flow
 
-1. **Server-Side Data Loading (Loaders)**
-   - Routes use React Router loaders to fetch data server-side
-   - Airtable data fetched via `app/services/airtable.server.ts`
-   - Data available immediately on page load (SSR)
+1. **Build-Time Data Fetching**
+   - Airtable data fetched during `npm run build`
+   - All data is baked into static HTML files
+   - No runtime API calls to Airtable
+   - Optimal for low-power deployment
 
-2. **Client-Side Features**
-   - Search/filter using Fuse.js (no external service needed)
-   - 3D model viewer runs client-side only
-   - Form validation with Zod
+2. **Client-Side Interactivity (React Islands)**
+   - Search/filter using Fuse.js (client:load)
+   - 3D model viewer (client:load, only loads when needed)
+   - Terminal typing animation (client:load)
+   - Contact form validation (client:load)
 
-3. **Deployment**
-   - Builds to `./build/client` and `./build/server`
-   - Deployed to Cloudflare Pages
-   - Edge-rendered for global performance
+3. **Deployment Options**
+   - **Static hosting**: Build and serve `dist/` folder with any static host
+   - **Docker**: Multi-stage build with Node.js server
+   - **Battery-powered server**: Low resource usage with resource limits
+   - **Traditional server**: Run with `npm run start` after building
 
 ### Build Process
-- Vite-based build system
-- TypeScript compilation
-- Tailwind CSS processing with custom theme
+- **Astro** handles build orchestration
+- **Vite** for bundling and optimization
+- **TypeScript** compilation
+- **Tailwind CSS v4** processing via Vite plugin
 - Static file handling for 3D models
-- SSR builds for Cloudflare Workers
+- React islands bundled separately for optimal loading
 
 ### Development Notes
 
-- Dev server runs on port 5173 by default
+- Dev server runs on **port 4321** by default
 - Hot module replacement enabled
 - TypeScript strict mode enabled
-- All routes are SSR by default
+- React components marked with `client:load` become interactive islands
 - 3D models should be optimized .glb files
-- Images served from Airtable or static directory
+- Images served from Airtable (fetched at build) or static directory
+- To update content: modify Airtable → rebuild site
+
+### Low-Power Deployment Features
+
+- **Static-first**: Minimal server overhead
+- **Resource limits**: Docker compose includes CPU/memory limits
+- **Build-time data**: No runtime database queries
+- **Optimized bundles**: Islands architecture loads JS only where needed
+- **Health checks**: Docker health monitoring included
