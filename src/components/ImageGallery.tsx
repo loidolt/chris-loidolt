@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PixelatedImage } from './PixelatedImage';
 
 interface ImageGalleryProps {
   images: string[];
@@ -77,13 +78,16 @@ export function ImageGallery({ images, featuredImage, projectTitle }: ImageGalle
           style={{ backgroundColor: 'var(--bg-surface)' }}
           onClick={() => openLightbox(0)}
         >
-          <img
+          <PixelatedImage
             src={featuredImage}
             alt={projectTitle}
             className="w-full h-auto"
+            pixelSize={20}
+            hoverToReveal={true}
+            clickToReveal={false}
           />
           <div className="text-xs text-center py-2" style={{ color: 'var(--text-muted)' }}>
-            [click to enlarge]
+            [hover to preview | click to enlarge]
           </div>
         </div>
       )}
@@ -98,20 +102,23 @@ export function ImageGallery({ images, featuredImage, projectTitle }: ImageGalle
               return (
                 <div
                   key={idx}
-                  className="cursor-pointer hover:opacity-80 transition-opacity group relative"
+                  className="cursor-pointer group relative"
                   style={{ backgroundColor: 'var(--bg-surface)' }}
                   onClick={() => openLightbox(actualIndex)}
                 >
-                  <img
+                  <PixelatedImage
                     src={img}
                     alt={`${projectTitle} - ${idx + 1}`}
                     className="w-full h-auto"
+                    pixelSize={16}
+                    hoverToReveal={true}
+                    clickToReveal={false}
                   />
                   <div
-                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
                   >
-                    <span className="text-sm" style={{ color: 'var(--link-color)' }}>[click]</span>
+                    <span className="text-sm" style={{ color: 'var(--link-color)' }}>[click to enlarge]</span>
                   </div>
                 </div>
               );

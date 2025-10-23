@@ -9,7 +9,9 @@ dotenv.config();
 // https://astro.build/config
 export default defineConfig({
   integrations: [
-    react(),
+    react({
+      experimentalReactChildren: true,
+    }),
   ],
   output: 'static', // Static site generation for low-power deployment
   server: {
@@ -20,6 +22,9 @@ export default defineConfig({
     plugins: [tailwindcss()], // Tailwind v4 via Vite plugin
     ssr: {
       noExternal: ['three'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom'],
     },
   },
 });
