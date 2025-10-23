@@ -24,32 +24,32 @@ const stats = [
     <TerminalWelcome client:load />
 
     <!-- Terminal Prompt / Help Section -->
-    <div class="py-8 border-t border-terminal-border">
-      <div class="text-terminal-cyan mb-6 text-sm">$ help</div>
+    <div class="py-8" style="border-top: 1px solid var(--border-color);">
+      <div class="mb-6 text-sm" style="color: var(--accent-secondary);">$ help</div>
       <div class="space-y-3">
         {commands.map((item) => (
           <a
             href={item.link}
-            class="flex items-start gap-6 text-sm hover:text-terminal-cyan transition-colors group"
+            class="flex items-start gap-6 text-sm transition-opacity hover:opacity-70 group"
           >
-            <code class="text-terminal-text group-hover:text-terminal-cyan min-w-[140px]">
+            <code class="min-w-[140px]" style="color: var(--text-primary);">
               {item.cmd}
             </code>
-            <span class="text-terminal-gray group-hover:text-terminal-text">{item.desc}</span>
+            <span style="color: var(--text-muted);">{item.desc}</span>
           </a>
         ))}
       </div>
     </div>
 
     <!-- Quick Stats -->
-    <div class="py-8 border-t border-terminal-border">
+    <div class="py-8" style="border-top: 1px solid var(--border-color);">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {stats.map((stat) => (
           <a href={stat.href} class="group">
-            <div class="text-terminal-cyan text-xs mb-2 group-hover:text-terminal-text-bright transition-colors">
+            <div class="text-xs mb-2 transition-opacity" style="color: var(--link-color);">
               [{stat.label.toLowerCase()}]
             </div>
-            <div class="text-4xl text-terminal-text group-hover:text-terminal-cyan transition-colors font-medium">
+            <div class="text-4xl font-medium transition-opacity group-hover:opacity-70" style="color: var(--accent-primary);">
               {stat.value}
             </div>
           </a>

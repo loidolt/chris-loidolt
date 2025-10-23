@@ -25,9 +25,9 @@ Navigate using the menu above or explore [projects]`;
 
   return (
     <div className="py-8">
-      <pre className="text-terminal-text text-sm whitespace-pre-wrap leading-relaxed">
+      <pre className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-primary)' }}>
         {displayedText}
-        <span className="terminal-cursor text-terminal-green">_</span>
+        <span className="terminal-cursor" style={{ color: 'var(--accent-primary)' }}>_</span>
       </pre>
     </div>
   );

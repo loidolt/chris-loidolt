@@ -20,6 +20,13 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
+  // Common input styles
+  const inputStyle = {
+    backgroundColor: 'var(--bg-surface)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--text-primary)',
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -68,17 +75,17 @@ export default function ContactForm() {
     <div className="max-w-2xl space-y-8">
       {/* Page Header */}
       <div>
-        <div className="text-terminal-cyan text-sm mb-2">$ mail contact@chrisloidolt.com</div>
-        <p className="text-terminal-gray text-sm">Compose your message below</p>
+        <div className="text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>$ mail contact@chrisloidolt.com</div>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Compose your message below</p>
       </div>
 
       {/* Success Message */}
       {submitSuccess && (
-        <div className="border-t border-terminal-green pt-6">
-          <div className="text-terminal-green mb-2 text-sm">
+        <div className="pt-6" style={{ borderTop: '1px solid var(--accent-primary)' }}>
+          <div className="mb-2 text-sm" style={{ color: 'var(--accent-primary)' }}>
             Message sent successfully
           </div>
-          <p className="text-terminal-text text-sm">
+          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
             Thank you for reaching out. I'll get back to you soon.
           </p>
         </div>
@@ -88,7 +95,7 @@ export default function ContactForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Name Field */}
         <div>
-          <label htmlFor="name" className="block text-terminal-cyan text-sm mb-2">
+          <label htmlFor="name" className="block text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>
             name
           </label>
           <input
@@ -99,11 +106,12 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50 text-sm"
+            className="w-full p-3 focus:outline-none disabled:opacity-50 text-sm"
+            style={inputStyle}
             placeholder="Your name"
           />
           {errors.name && (
-            <div className="mt-2 text-terminal-red text-sm">
+            <div className="mt-2 text-sm" style={{ color: 'var(--color-terminal-red)' }}>
               {errors.name}
             </div>
           )}
@@ -111,7 +119,7 @@ export default function ContactForm() {
 
         {/* Email Field */}
         <div>
-          <label htmlFor="email" className="block text-terminal-cyan text-sm mb-2">
+          <label htmlFor="email" className="block text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>
             email
           </label>
           <input
@@ -122,11 +130,12 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50 text-sm"
+            className="w-full p-3 focus:outline-none disabled:opacity-50 text-sm"
+            style={inputStyle}
             placeholder="your.email@example.com"
           />
           {errors.email && (
-            <div className="mt-2 text-terminal-red text-sm">
+            <div className="mt-2 text-sm" style={{ color: 'var(--color-terminal-red)' }}>
               {errors.email}
             </div>
           )}
@@ -134,7 +143,7 @@ export default function ContactForm() {
 
         {/* Subject Field */}
         <div>
-          <label htmlFor="subject" className="block text-terminal-cyan text-sm mb-2">
+          <label htmlFor="subject" className="block text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>
             subject
           </label>
           <input
@@ -145,11 +154,12 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none disabled:opacity-50 text-sm"
+            className="w-full p-3 focus:outline-none disabled:opacity-50 text-sm"
+            style={inputStyle}
             placeholder="What's this about?"
           />
           {errors.subject && (
-            <div className="mt-2 text-terminal-red text-sm">
+            <div className="mt-2 text-sm" style={{ color: 'var(--color-terminal-red)' }}>
               {errors.subject}
             </div>
           )}
@@ -157,7 +167,7 @@ export default function ContactForm() {
 
         {/* Message Field */}
         <div>
-          <label htmlFor="message" className="block text-terminal-cyan text-sm mb-2">
+          <label htmlFor="message" className="block text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>
             message
           </label>
           <textarea
@@ -168,11 +178,12 @@ export default function ContactForm() {
             required
             disabled={isSubmitting}
             rows={8}
-            className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none resize-none disabled:opacity-50 text-sm"
+            className="w-full p-3 focus:outline-none resize-none disabled:opacity-50 text-sm"
+            style={inputStyle}
             placeholder="Type your message here..."
           />
           {errors.message && (
-            <div className="mt-2 text-terminal-red text-sm">
+            <div className="mt-2 text-sm" style={{ color: 'var(--color-terminal-red)' }}>
               {errors.message}
             </div>
           )}
@@ -180,7 +191,7 @@ export default function ContactForm() {
 
         {/* Form Error */}
         {errors._form && (
-          <div className="text-terminal-red text-sm">
+          <div className="text-sm" style={{ color: 'var(--color-terminal-red)' }}>
             {errors._form}
           </div>
         )}
@@ -189,11 +200,12 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="text-terminal-cyan hover:text-terminal-text-bright transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          className="transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm hover:opacity-70"
+          style={{ color: 'var(--link-color)' }}
         >
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              <span className="terminal-cursor">_</span>
+              <span className="terminal-cursor" style={{ color: 'var(--accent-primary)' }}>_</span>
               <span>Sending...</span>
             </span>
           ) : (
@@ -203,25 +215,27 @@ export default function ContactForm() {
       </form>
 
       {/* Additional Contact Info */}
-      <div className="border-t border-terminal-border pt-8">
-        <div className="text-terminal-cyan text-sm mb-6">$ cat contact-info.txt</div>
+      <div className="pt-8" style={{ borderTop: '1px solid var(--border-color)' }}>
+        <div className="text-sm mb-6" style={{ color: 'var(--accent-secondary)' }}>$ cat contact-info.txt</div>
         <div className="space-y-3 text-sm">
           <div className="flex items-center gap-4">
-            <span className="text-terminal-gray w-20">email</span>
+            <span className="w-20" style={{ color: 'var(--text-muted)' }}>email</span>
             <a
               href="mailto:contact@chrisloidolt.com"
-              className="text-terminal-text hover:text-terminal-cyan transition-colors"
+              className="transition-opacity hover:opacity-70"
+              style={{ color: 'var(--link-color)' }}
             >
               contact@chrisloidolt.com
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-terminal-gray w-20">github</span>
+            <span className="w-20" style={{ color: 'var(--text-muted)' }}>github</span>
             <a
               href="https://github.com/chris-loidolt"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-terminal-text hover:text-terminal-cyan transition-colors"
+              className="transition-opacity hover:opacity-70"
+              style={{ color: 'var(--link-color)' }}
             >
               github.com/chris-loidolt
             </a>

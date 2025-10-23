@@ -2,7 +2,27 @@
 @import "tailwindcss";
 
 @theme {
-  /* Terminal-inspired color palette */
+  /* E-Paper Light Mode Colors */
+  --color-paper-cream: #f4f1ea;
+  --color-paper-surface: #e8e5dd;
+  --color-ink-dark: #2b2926;
+  --color-ink-muted: #5a5650;
+  --color-accent-green: #4a7c59;
+  --color-accent-amber: #7b6c4f;
+  --color-link-blue: #4a6c7c;
+  --color-border-light: #d4cfc4;
+
+  /* E-Paper Dark Mode Colors */
+  --color-paper-dark: #1c1a16;
+  --color-paper-dark-surface: #252219;
+  --color-ink-light: #d4c5b0;
+  --color-ink-light-muted: #9a8f7e;
+  --color-accent-green-dark: #6b9b7f;
+  --color-accent-amber-dark: #c9a876;
+  --color-link-cyan: #7fa5b8;
+  --color-border-dark: #3a352d;
+
+  /* Legacy terminal colors (for backwards compatibility) */
   --color-terminal-black: #0a0e14;
   --color-terminal-darker: #0d1117;
   --color-terminal-dark: #161b22;
@@ -31,32 +51,67 @@
   font-variant-ligatures: none;
 }
 
+/* Root theme variables that change based on theme class */
+:root {
+  /* Default to dark theme */
+  --bg-primary: var(--color-paper-dark);
+  --bg-surface: var(--color-paper-dark-surface);
+  --text-primary: var(--color-ink-light);
+  --text-muted: var(--color-ink-light-muted);
+  --accent-primary: var(--color-accent-green-dark);
+  --accent-secondary: var(--color-accent-amber-dark);
+  --link-color: var(--color-link-cyan);
+  --border-color: var(--color-border-dark);
+}
+
+:root.light {
+  --bg-primary: var(--color-paper-cream);
+  --bg-surface: var(--color-paper-surface);
+  --text-primary: var(--color-ink-dark);
+  --text-muted: var(--color-ink-muted);
+  --accent-primary: var(--color-accent-green);
+  --accent-secondary: var(--color-accent-amber);
+  --link-color: var(--color-link-blue);
+  --border-color: var(--color-border-light);
+}
+
 html,
 body {
-  @apply bg-terminal-darker text-terminal-text;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: var(--font-mono);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+}
+
+:root.light {
+  color-scheme: light;
+}
+
+:root:not(.light) {
   color-scheme: dark;
 }
 
-/* Custom scrollbar for terminal aesthetic */
+/* Custom scrollbar for e-paper aesthetic */
 ::-webkit-scrollbar {
   width: 12px;
-  background: var(--color-terminal-dark);
+  background: var(--bg-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-terminal-border);
+  background: var(--border-color);
   border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-terminal-gray);
+  background: var(--text-muted);
 }
 
 /* Selection color */
 ::selection {
-  background: var(--color-terminal-cyan);
-  color: var(--color-terminal-black);
+  background: var(--accent-primary);
+  color: var(--bg-primary);
 }
 
 /* Terminal cursor animation */
@@ -67,4 +122,44 @@ body {
 
 .terminal-cursor {
   animation: blink 1s infinite;
+}
+
+/* Paper grain texture effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  background: transparent url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>') repeat;
+  background-size: 200px 200px;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+:root.light body::before {
+  opacity: 0.04;
+}
+
+/* Subtle vignette effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.1) 100%);
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.3;
+}
+
+:root.light body::after {
+  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.05) 100%);
+  opacity: 0.4;
 }

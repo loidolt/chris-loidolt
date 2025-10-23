@@ -47,8 +47,8 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <div className="text-terminal-cyan text-sm mb-2">$ ls /projects</div>
-        <div className="text-terminal-gray text-sm">
+        <div className="text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>$ ls /projects</div>
+        <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
           Found {filteredProjects.length} project{filteredProjects.length === 1 ? '' : 's'}
         </div>
       </div>
@@ -57,27 +57,29 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
       <div className="space-y-6">
         {/* Search */}
         <div>
-          <label className="block text-terminal-cyan text-sm mb-3">$ search</label>
+          <label className="block text-sm mb-3" style={{ color: 'var(--accent-secondary)' }}>$ search</label>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Type to search projects..."
-            className="w-full bg-terminal-darker border border-terminal-border p-3 text-terminal-text placeholder-terminal-gray focus:border-terminal-cyan focus:outline-none"
+            className="w-full p-3 focus:outline-none transition-all"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-primary)'
+            }}
           />
         </div>
 
         {/* Category Filter */}
         <div>
-          <div className="text-terminal-cyan text-sm mb-3">$ filter</div>
+          <div className="text-sm mb-3" style={{ color: 'var(--accent-secondary)' }}>$ filter</div>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setSelectedCategory(null)}
-              className={`px-3 py-1 text-sm transition-colors ${
-                selectedCategory === null
-                  ? 'text-terminal-cyan'
-                  : 'text-terminal-gray hover:text-terminal-text'
-              }`}
+              className="px-3 py-1 text-sm transition-opacity hover:opacity-70"
+              style={{ color: selectedCategory === null ? 'var(--link-color)' : 'var(--text-muted)' }}
             >
               [all]
             </button>
@@ -85,11 +87,8 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1 text-sm transition-colors ${
-                  selectedCategory === cat
-                    ? 'text-terminal-cyan'
-                    : 'text-terminal-gray hover:text-terminal-text'
-                }`}
+                className="px-3 py-1 text-sm transition-opacity hover:opacity-70"
+                style={{ color: selectedCategory === cat ? 'var(--link-color)' : 'var(--text-muted)' }}
               >
                 [{cat}]
               </button>
@@ -101,8 +100,8 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
         <div className="py-12 text-center">
-          <div className="text-terminal-gray text-sm mb-2">No results found</div>
-          <p className="text-terminal-gray text-sm">
+          <div className="text-sm mb-2" style={{ color: 'var(--text-muted)' }}>No results found</div>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             Try adjusting your search query or filters
           </p>
         </div>
@@ -125,7 +124,7 @@ function ProjectCard({ project }: { project: Project }) {
     >
       {/* Project Image or Placeholder */}
       {project.featuredImage ? (
-        <div className="mb-3 aspect-video bg-terminal-black overflow-hidden">
+        <div className="mb-3 aspect-video overflow-hidden" style={{ backgroundColor: 'var(--bg-surface)' }}>
           <img
             src={project.featuredImage}
             alt={project.title}
@@ -133,8 +132,8 @@ function ProjectCard({ project }: { project: Project }) {
           />
         </div>
       ) : (
-        <div className="mb-3 aspect-video bg-terminal-black flex items-center justify-center">
-          <div className="text-terminal-gray text-6xl opacity-30">
+        <div className="mb-3 aspect-video flex items-center justify-center" style={{ backgroundColor: 'var(--bg-surface)' }}>
+          <div className="text-6xl opacity-30" style={{ color: 'var(--text-muted)' }}>
             {project.modelFile ? '🔲' : '📁'}
           </div>
         </div>
@@ -143,22 +142,22 @@ function ProjectCard({ project }: { project: Project }) {
       {/* Project Info */}
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-terminal-text group-hover:text-terminal-cyan transition-colors text-sm">
+          <h3 className="text-sm transition-opacity group-hover:opacity-70" style={{ color: 'var(--text-primary)' }}>
             {project.title}
           </h3>
           {project.category && (
-            <div className="text-xs text-terminal-gray whitespace-nowrap">[{project.category}]</div>
+            <div className="text-xs whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>[{project.category}]</div>
           )}
         </div>
 
-        <p className="text-sm text-terminal-gray line-clamp-2">
+        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-muted)' }}>
           {project.description}
         </p>
 
         {project.tags && project.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 text-xs">
             {project.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="text-terminal-gray">
+              <span key={tag} style={{ color: 'var(--text-muted)' }}>
                 #{tag}
               </span>
             ))}
@@ -166,7 +165,7 @@ function ProjectCard({ project }: { project: Project }) {
         )}
 
         {project.modelFile && (
-          <div className="text-terminal-cyan text-xs">
+          <div className="text-xs" style={{ color: 'var(--accent-primary)' }}>
             3D model available
           </div>
         )}
