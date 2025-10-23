@@ -1,4 +1,5 @@
 import Airtable from "airtable";
+import { downloadProjectImages } from "./downloadImages";
 
 // TypeScript interfaces for Airtable records
 export interface Project {
@@ -72,8 +73,8 @@ function recordToProject(record: any): Project {
     tags: fields.Tags || fields.tags || [],
     category: fields.Category || fields.category,
     date: fields.Date || fields.date || fields.createdTime,
-    featuredImage: fields.FeaturedImage?.[0]?.url || fields.Image?.[0]?.url,
-    images: fields.Images?.map((img: any) => img.url) || [],
+    featuredImage: fields['Cover Image']?.[0]?.url || fields.FeaturedImage?.[0]?.url || fields.Image?.[0]?.url,
+    images: fields.Gallery?.map((img: any) => img.url) || fields.Images?.map((img: any) => img.url) || [],
     modelFile: fields.ModelFile || fields.Model3D || fields.GLBFile,
     github: fields.GitHub || fields.github,
     website: fields.Website || fields.website || fields.URL,
@@ -92,7 +93,28 @@ export async function getAllProjects(): Promise<Project[]> {
     })
     .all();
 
-  return records.map(recordToProject);
+  const projects = records.map(recordToProject);
+
+  // Download and cache images locally during build
+  console.log('\n📸 Downloading project images...');
+  for (const project of projects) {
+    if (project.featuredImage || (project.images && project.images.length > 0)) {
+      console.log(`\nProcessing images for: ${project.title}`);
+
+      const { featuredImage, images } = await downloadProjectImages(
+        project.slug,
+        project.featuredImage,
+        project.images || []
+      );
+
+      // Update project with local image paths
+      project.featuredImage = featuredImage;
+      project.images = images;
+    }
+  }
+  console.log('\n✓ All project images downloaded\n');
+
+  return projects;
 }
 
 // Fetch a single project by slug

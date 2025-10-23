@@ -11,6 +11,8 @@
   --color-accent-amber: #7b6c4f;
   --color-link-blue: #4a6c7c;
   --color-border-light: #d4cfc4;
+  --color-error-light: #c54a4a;
+  --color-success-light: #4a7c59;
 
   /* E-Paper Dark Mode Colors */
   --color-paper-dark: #1c1a16;
@@ -21,6 +23,8 @@
   --color-accent-amber-dark: #c9a876;
   --color-link-cyan: #7fa5b8;
   --color-border-dark: #3a352d;
+  --color-error-dark: #e87c7c;
+  --color-success-dark: #6b9b7f;
 
   /* Legacy terminal colors (for backwards compatibility) */
   --color-terminal-black: #0a0e14;
@@ -62,6 +66,8 @@
   --accent-secondary: var(--color-accent-amber-dark);
   --link-color: var(--color-link-cyan);
   --border-color: var(--color-border-dark);
+  --error-color: var(--color-error-dark);
+  --success-color: var(--color-success-dark);
 }
 
 :root.light {
@@ -73,6 +79,8 @@
   --accent-secondary: var(--color-accent-amber);
   --link-color: var(--color-link-blue);
   --border-color: var(--color-border-light);
+  --error-color: var(--color-error-light);
+  --success-color: var(--color-success-light);
 }
 
 html,

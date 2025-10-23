@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { ModelViewer } from '@components/ModelViewer';
+import { ImageGallery } from '@components/ImageGallery';
 import { getAllProjects, getProjectBySlug } from '@lib/airtable';
 
 export async function getStaticPaths() {
@@ -27,14 +28,14 @@ if (!project) {
     <!-- Page Header -->
     <div>
       <div class="flex items-center gap-3 text-sm mb-4">
-        <a href="/projects" class="text-terminal-cyan hover:text-terminal-text-bright transition-colors">
+        <a href="/projects" class="hover:opacity-70 transition-opacity" style="color: var(--link-color);">
           [← back]
         </a>
-        <span class="text-terminal-gray">$ cat project/{project.slug}</span>
+        <span style="color: var(--text-muted);">$ cat project/{project.slug}</span>
       </div>
-      <h1 class="text-2xl text-terminal-text mb-2">{project.title}</h1>
+      <h1 class="text-2xl mb-2" style="color: var(--text-primary);">{project.title}</h1>
       {project.category && (
-        <div class="text-sm text-terminal-gray">
+        <div class="text-sm" style="color: var(--text-muted);">
           [{project.category}]
         </div>
       )}
@@ -50,34 +51,16 @@ if (!project) {
             className="sticky top-4"
             client:load
           />
-        ) : project.featuredImage ? (
-          <div class="bg-terminal-black">
-            <img
-              src={project.featuredImage}
-              alt={project.title}
-              class="w-full h-auto"
-            />
-          </div>
+        ) : (project.featuredImage || (project.images && project.images.length > 0)) ? (
+          <ImageGallery
+            images={project.images || []}
+            featuredImage={project.featuredImage}
+            projectTitle={project.title}
+            client:load
+          />
         ) : (
-          <div class="bg-terminal-black p-12 flex items-center justify-center aspect-square">
-            <div class="text-terminal-gray text-6xl opacity-30">📁</div>
-          </div>
-        )}
-
-        <!-- Gallery -->
-        {project.images && project.images.length > 0 && (
-          <div>
-            <div class="text-terminal-cyan text-sm mb-4">$ ls images/</div>
-            <div class="grid grid-cols-2 gap-3">
-              {project.images.map((img: string, idx: number) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`${project.title} - ${idx + 1}`}
-                  class="w-full h-auto hover:opacity-80 transition-opacity cursor-pointer"
-                />
-              ))}
-            </div>
+          <div class="p-12 flex items-center justify-center aspect-square" style="background-color: var(--bg-surface);">
+            <div class="text-6xl opacity-30" style="color: var(--text-muted);">📁</div>
           </div>
         )}
       </div>
@@ -86,20 +69,20 @@ if (!project) {
       <div class="space-y-8">
         <!-- Description -->
         <div>
-          <div class="text-terminal-cyan text-sm mb-4">$ cat description.txt</div>
-          <p class="text-terminal-text text-sm whitespace-pre-wrap leading-relaxed">
+          <div class="text-sm mb-4" style="color: var(--link-color);">$ cat description.txt</div>
+          <p class="text-sm whitespace-pre-wrap leading-relaxed" style="color: var(--text-primary);">
             {project.longDescription || project.description}
           </p>
         </div>
 
         <!-- Metadata -->
-        <div class="border-t border-terminal-border pt-8">
-          <div class="text-terminal-cyan text-sm mb-4">$ ls -la metadata/</div>
+        <div class="pt-8" style="border-top: 1px solid var(--border-color);">
+          <div class="text-sm mb-4" style="color: var(--link-color);">$ ls -la metadata/</div>
           <div class="space-y-3 text-sm">
             {project.date && (
               <div class="flex items-start gap-4">
-                <span class="text-terminal-gray min-w-[80px]">date</span>
-                <span class="text-terminal-text">
+                <span class="min-w-[80px]" style="color: var(--text-muted);">date</span>
+                <span style="color: var(--text-primary);">
                   {new Date(project.date).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -111,17 +94,17 @@ if (!project) {
 
             {project.category && (
               <div class="flex items-start gap-4">
-                <span class="text-terminal-gray min-w-[80px]">category</span>
-                <span class="text-terminal-text">{project.category}</span>
+                <span class="min-w-[80px]" style="color: var(--text-muted);">category</span>
+                <span style="color: var(--text-primary);">{project.category}</span>
               </div>
             )}
 
             {project.tags && project.tags.length > 0 && (
               <div class="flex items-start gap-4">
-                <span class="text-terminal-gray min-w-[80px]">tags</span>
+                <span class="min-w-[80px]" style="color: var(--text-muted);">tags</span>
                 <div class="flex flex-wrap gap-2">
                   {project.tags.map((tag: string) => (
-                    <span key={tag} class="text-terminal-gray">
+                    <span key={tag} style="color: var(--text-muted);">
                       #{tag}
                     </span>
                   ))}
@@ -131,8 +114,8 @@ if (!project) {
 
             {project.modelFile && (
               <div class="flex items-start gap-4">
-                <span class="text-terminal-gray min-w-[80px]">3d_model</span>
-                <span class="text-terminal-text">{project.modelFile}</span>
+                <span class="min-w-[80px]" style="color: var(--text-muted);">3d_model</span>
+                <span style="color: var(--text-primary);">{project.modelFile}</span>
               </div>
             )}
           </div>
@@ -140,15 +123,16 @@ if (!project) {
 
         <!-- Links -->
         {(project.github || project.website) && (
-          <div class="border-t border-terminal-border pt-8">
-            <div class="text-terminal-cyan text-sm mb-4">$ cat links.txt</div>
+          <div class="pt-8" style="border-top: 1px solid var(--border-color);">
+            <div class="text-sm mb-4" style="color: var(--link-color);">$ cat links.txt</div>
             <div class="space-y-3 text-sm">
               {project.github && (
                 <a
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-terminal-cyan hover:text-terminal-text-bright transition-colors block"
+                  class="hover:opacity-70 transition-opacity block"
+                  style="color: var(--link-color);"
                 >
                   [View on GitHub →]
                 </a>
@@ -158,7 +142,8 @@ if (!project) {
                   href={project.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-terminal-cyan hover:text-terminal-text-bright transition-colors block"
+                  class="hover:opacity-70 transition-opacity block"
+                  style="color: var(--link-color);"
                 >
                   [Visit Website →]
                 </a>

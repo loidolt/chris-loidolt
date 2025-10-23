@@ -111,7 +111,7 @@ export default function ContactForm() {
             placeholder="Your name"
           />
           {errors.name && (
-            <div className="mt-2 text-sm" style={{ color: 'var(--color-terminal-red)' }}>
+            <div className="mt-2 text-sm" style={{ color: 'var(--error-color)' }}>
               {errors.name}
             </div>
           )}
@@ -135,7 +135,7 @@ export default function ContactForm() {
             placeholder="your.email@example.com"
           />
           {errors.email && (
-            <div className="mt-2 text-sm" style={{ color: 'var(--color-terminal-red)' }}>
+            <div className="mt-2 text-sm" style={{ color: 'var(--error-color)' }}>
               {errors.email}
             </div>
           )}
@@ -159,7 +159,7 @@ export default function ContactForm() {
             placeholder="What's this about?"
           />
           {errors.subject && (
-            <div className="mt-2 text-sm" style={{ color: 'var(--color-terminal-red)' }}>
+            <div className="mt-2 text-sm" style={{ color: 'var(--error-color)' }}>
               {errors.subject}
             </div>
           )}
@@ -183,7 +183,7 @@ export default function ContactForm() {
             placeholder="Type your message here..."
           />
           {errors.message && (
-            <div className="mt-2 text-sm" style={{ color: 'var(--color-terminal-red)' }}>
+            <div className="mt-2 text-sm" style={{ color: 'var(--error-color)' }}>
               {errors.message}
             </div>
           )}
@@ -191,7 +191,7 @@ export default function ContactForm() {
 
         {/* Form Error */}
         {errors._form && (
-          <div className="text-sm" style={{ color: 'var(--color-terminal-red)' }}>
+          <div className="text-sm" style={{ color: 'var(--error-color)' }}>
             {errors._form}
           </div>
         )}

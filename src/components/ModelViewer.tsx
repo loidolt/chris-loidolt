@@ -9,16 +9,16 @@ interface ModelViewerProps {
 
 export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
   return (
-    <div className={`border border-terminal-border bg-terminal-black ${className}`}>
+    <div className={`border ${className}`} style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-primary)' }}>
       {/* Terminal-style header */}
-      <div className="border-b border-terminal-border p-2 bg-terminal-dark">
+      <div className="border-b p-2" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
-            <div className="w-3 h-3 rounded-full bg-terminal-red"></div>
-            <div className="w-3 h-3 rounded-full bg-terminal-amber"></div>
-            <div className="w-3 h-3 rounded-full bg-terminal-green"></div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--error-color)' }}></div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--accent-secondary)' }}></div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--accent-primary)' }}></div>
           </div>
-          <span className="text-terminal-text text-xs">3D Model Viewer</span>
+          <span className="text-xs" style={{ color: 'var(--text-primary)' }}>3D Model Viewer</span>
         </div>
       </div>
 
@@ -26,7 +26,7 @@ export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
       <div className="aspect-square w-full">
         <Canvas
           camera={{ position: [0, 0, 5], fov: 50 }}
-          style={{ background: "#0a0e14" }}
+          style={{ background: 'transparent' }}
         >
           <Suspense fallback={<LoadingSpinner />}>
             <ambientLight intensity={0.5} />
@@ -46,18 +46,18 @@ export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
       </div>
 
       {/* Terminal-style footer with controls */}
-      <div className="border-t border-terminal-border p-3 bg-terminal-dark">
-        <div className="text-xs text-terminal-text space-y-1">
+      <div className="border-t p-3" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
+        <div className="text-xs space-y-1" style={{ color: 'var(--text-primary)' }}>
           <div className="flex items-center gap-2">
-            <span className="text-terminal-amber">$</span>
+            <span style={{ color: 'var(--accent-secondary)' }}>$</span>
             <span>Left click + drag to rotate</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-terminal-amber">$</span>
+            <span style={{ color: 'var(--accent-secondary)' }}>$</span>
             <span>Right click + drag to pan</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-terminal-amber">$</span>
+            <span style={{ color: 'var(--accent-secondary)' }}>$</span>
             <span>Scroll to zoom</span>
           </div>
         </div>
@@ -76,7 +76,7 @@ function LoadingSpinner() {
   return (
     <mesh>
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="#3fb950" wireframe />
+      <meshStandardMaterial color="#6b9b7f" wireframe />
     </mesh>
   );
 }

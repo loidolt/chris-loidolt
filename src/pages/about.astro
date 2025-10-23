@@ -23,14 +23,14 @@ try {
   <div class="space-y-12">
     <!-- Page Header -->
     <div>
-      <div class="text-terminal-cyan text-sm mb-4">$ whoami</div>
-      <h1 class="text-2xl text-terminal-text mb-6">Chris Loidolt - Designer & Engineer</h1>
+      <div class="text-sm mb-4" style="color: var(--link-color);">$ whoami</div>
+      <h1 class="text-2xl mb-6" style="color: var(--text-primary);">Chris Loidolt - Designer & Engineer</h1>
     </div>
 
     <!-- About Section -->
-    <div class="border-t border-terminal-border pt-8">
-      <div class="text-terminal-cyan text-sm mb-6">$ cat bio.txt</div>
-      <div class="space-y-4 text-terminal-text max-w-3xl">
+    <div class="pt-8" style="border-top: 1px solid var(--border-color);">
+      <div class="text-sm mb-6" style="color: var(--link-color);">$ cat bio.txt</div>
+      <div class="space-y-4 max-w-3xl" style="color: var(--text-primary);">
         <p>
           I'm a designer and engineer with a passion for creating innovative solutions
           through 3D printing, woodworking, and software development. My work combines
@@ -45,19 +45,19 @@ try {
 
     <!-- Services Section -->
     {services.length > 0 && (
-      <div class="border-t border-terminal-border pt-8">
-        <div class="text-terminal-cyan text-sm mb-6">
+      <div class="pt-8" style="border-top: 1px solid var(--border-color);">
+        <div class="text-sm mb-6" style="color: var(--link-color);">
           $ ls services/ ({services.length} items)
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           {services.map((service) => (
             <div key={service.id} class="space-y-2">
-              <h3 class="text-terminal-text text-sm">
+              <h3 class="text-sm" style="color: var(--text-primary);">
                 {service.icon && <span class="mr-2">{service.icon}</span>}
                 {service.title}
               </h3>
-              <p class="text-terminal-gray text-sm">
+              <p class="text-sm" style="color: var(--text-muted);">
                 {service.description}
               </p>
             </div>
@@ -68,8 +68,8 @@ try {
 
     <!-- Qualifications Section -->
     {qualifications.length > 0 && (
-      <div class="border-t border-terminal-border pt-8">
-        <div class="text-terminal-cyan text-sm mb-6">
+      <div class="pt-8" style="border-top: 1px solid var(--border-color);">
+        <div class="text-sm mb-6" style="color: var(--link-color);">
           $ cat qualifications.log ({qualifications.length} entries)
         </div>
 
@@ -77,18 +77,18 @@ try {
           {qualifications.map((qual) => (
             <div key={qual.id} class="space-y-2">
               <div class="flex items-start justify-between gap-4">
-                <h3 class="text-terminal-text text-sm">
+                <h3 class="text-sm" style="color: var(--text-primary);">
                   {qual.title}
                 </h3>
-                <span class="text-terminal-gray text-sm whitespace-nowrap">
+                <span class="text-sm whitespace-nowrap" style="color: var(--text-muted);">
                   [{qual.year}]
                 </span>
               </div>
-              <div class="text-terminal-cyan text-sm">
+              <div class="text-sm" style="color: var(--link-color);">
                 {qual.institution}
               </div>
               {qual.description && (
-                <p class="text-terminal-gray text-sm">
+                <p class="text-sm" style="color: var(--text-muted);">
                   {qual.description}
                 </p>
               )}
@@ -99,61 +99,62 @@ try {
     )}
 
     <!-- Skills Section -->
-    <div class="border-t border-terminal-border pt-8">
-      <div class="text-terminal-cyan text-sm mb-6">$ cat skills.json</div>
+    <div class="pt-8" style="border-top: 1px solid var(--border-color);">
+      <div class="text-sm mb-6" style="color: var(--link-color);">$ cat skills.json</div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
-          <div class="text-terminal-gray mb-3 text-sm">
+          <div class="mb-3 text-sm" style="color: var(--text-muted);">
             "design": [
           </div>
-          <ul class="space-y-2 text-terminal-text text-sm ml-4">
+          <ul class="space-y-2 text-sm ml-4" style="color: var(--text-primary);">
             <li>→ 3D Modeling</li>
             <li>→ CAD Design</li>
             <li>→ UI/UX Design</li>
             <li>→ Woodworking</li>
           </ul>
-          <div class="text-terminal-gray text-sm mt-2">]</div>
+          <div class="text-sm mt-2" style="color: var(--text-muted);">]</div>
         </div>
 
         <div>
-          <div class="text-terminal-gray mb-3 text-sm">
+          <div class="mb-3 text-sm" style="color: var(--text-muted);">
             "fabrication": [
           </div>
-          <ul class="space-y-2 text-terminal-text text-sm ml-4">
+          <ul class="space-y-2 text-sm ml-4" style="color: var(--text-primary);">
             <li>→ 3D Printing</li>
             <li>→ CNC Machining</li>
             <li>→ Laser Cutting</li>
             <li>→ Carpentry</li>
           </ul>
-          <div class="text-terminal-gray text-sm mt-2">]</div>
+          <div class="text-sm mt-2" style="color: var(--text-muted);">]</div>
         </div>
 
         <div>
-          <div class="text-terminal-gray mb-3 text-sm">
+          <div class="mb-3 text-sm" style="color: var(--text-muted);">
             "software": [
           </div>
-          <ul class="space-y-2 text-terminal-text text-sm ml-4">
+          <ul class="space-y-2 text-sm ml-4" style="color: var(--text-primary);">
             <li>→ React/TypeScript</li>
             <li>→ Node.js</li>
             <li>→ Python</li>
             <li>→ Three.js</li>
           </ul>
-          <div class="text-terminal-gray text-sm mt-2">]</div>
+          <div class="text-sm mt-2" style="color: var(--text-muted);">]</div>
         </div>
       </div>
     </div>
 
     <!-- CTA Section -->
-    <div class="border-t border-terminal-border pt-8">
-      <div class="text-terminal-cyan text-sm mb-4">
+    <div class="pt-8" style="border-top: 1px solid var(--border-color);">
+      <div class="text-sm mb-4" style="color: var(--link-color);">
         $ Available for collaboration and consulting
       </div>
-      <p class="text-terminal-text mb-6 text-sm max-w-2xl">
+      <p class="mb-6 text-sm max-w-2xl" style="color: var(--text-primary);">
         Interested in working together? Let's discuss your project.
       </p>
       <a
         href="/contact"
-        class="inline-block text-terminal-cyan hover:text-terminal-text-bright transition-colors text-sm"
+        class="inline-block text-sm hover:opacity-70 transition-opacity"
+        style="color: var(--link-color);"
       >
         [Get in touch →]
       </a>

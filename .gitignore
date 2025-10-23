@@ -5,3 +5,9 @@
 # React Router
 /.react-router/
 /build/
+
+# Astro build output
+/dist/
+
+# Downloaded/cached images from Airtable (regenerated at build time)
+/public/images/projects/
