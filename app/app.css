@@ -1,0 +1,70 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@theme {
+  /* Terminal-inspired color palette */
+  --color-terminal-black: #0a0e14;
+  --color-terminal-darker: #0d1117;
+  --color-terminal-dark: #161b22;
+  --color-terminal-gray: #21262d;
+  --color-terminal-border: #30363d;
+  --color-terminal-text: #c9d1d9;
+  --color-terminal-text-bright: #e6edf3;
+  --color-terminal-green: #3fb950;
+  --color-terminal-cyan: #39c5cf;
+  --color-terminal-amber: #d29922;
+  --color-terminal-red: #f85149;
+  --color-terminal-blue: #58a6ff;
+  --color-terminal-magenta: #bc8cff;
+
+  /* Monospace font stack */
+  --font-mono: "JetBrains Mono", "Fira Code", "Consolas", "Monaco", monospace;
+
+  /* Override default font to monospace */
+  --font-sans: var(--font-mono);
+
+  /* Custom spacing for terminal-like layouts */
+  --spacing-terminal: 1ch;
+}
+
+* {
+  font-variant-ligatures: none;
+}
+
+html,
+body {
+  @apply bg-terminal-darker text-terminal-text;
+  font-family: var(--font-mono);
+  color-scheme: dark;
+}
+
+/* Custom scrollbar for terminal aesthetic */
+::-webkit-scrollbar {
+  width: 12px;
+  background: var(--color-terminal-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-terminal-border);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-terminal-gray);
+}
+
+/* Selection color */
+::selection {
+  background: var(--color-terminal-cyan);
+  color: var(--color-terminal-black);
+}
+
+/* Terminal cursor animation */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.terminal-cursor {
+  animation: blink 1s infinite;
+}
