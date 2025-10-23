@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "wrangler pages dev --compatibility-date=2024-01-01 --live-reload -- npm run dev:react-router",
-    "dev:react-router": "react-router dev --manual",
+    "dev": "react-router dev --host",
+    "dev:wrangler": "npm run build && wrangler pages dev ./build/client",
     "start": "wrangler pages dev ./build/client",
     "deploy": "npm run build && wrangler pages deploy ./build/client",
     "typecheck": "react-router typegen && tsc"
