@@ -1,8 +1,10 @@
+'use client';
+
 import { useState, useMemo, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet';
 import Fuse from 'fuse.js';
 import L from 'leaflet';
-import type { Location } from '@lib/airtable';
+import type { Location } from '@/lib/airtable';
 import PasswordModal from './PasswordModal';
 import 'leaflet/dist/leaflet.css';
 

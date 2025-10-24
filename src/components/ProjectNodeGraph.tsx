@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
@@ -151,7 +153,7 @@ export default function ProjectNodeGraph({ projects }: ProjectNodeGraphProps) {
           .drag<SVGGElement, Node>()
           .on('start', dragstarted)
           .on('drag', dragged)
-          .on('end', dragended)
+          .on('end', dragended) as any
       );
 
     // Add circles to nodes - larger for immersive effect

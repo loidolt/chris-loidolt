@@ -1,3 +1,5 @@
+'use client';
+
 import { Component, ReactNode, ErrorInfo } from "react";
 
 interface Props {

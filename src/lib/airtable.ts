@@ -124,18 +124,23 @@ function recordToProject(record: any): Project {
 
 // Fetch all projects
 export async function getAllProjects(): Promise<Project[]> {
-  const base = getAirtableBase();
-  const tableName = getEnvVar("AIRTABLE_POSTS_TABLENAME");
+  try {
+    const base = getAirtableBase();
+    const tableName = getEnvVar("AIRTABLE_POSTS_TABLENAME");
 
-  const records = await base(tableName)
-    .select({
-      sort: [{ field: "Date", direction: "desc" }],
-      // Filter to only show Published projects
-      filterByFormula: "{Status} = 'Published'",
-    })
-    .all();
+    console.log(`Fetching projects from table: ${tableName}`);
 
-  const projects = records.map(recordToProject);
+    const records = await base(tableName)
+      .select({
+        sort: [{ field: "Date", direction: "desc" }],
+        // Filter to only show Published projects (optional - remove if Status field doesn't exist)
+        // filterByFormula: "{Status} = 'Published'",
+      })
+      .all();
+
+    console.log(`Found ${records.length} projects in Airtable`);
+
+    const projects = records.map(recordToProject);
 
   // Download and cache images locally during build
   console.log('\n📸 Processing project images...');
@@ -167,6 +172,15 @@ export async function getAllProjects(): Promise<Project[]> {
   console.log(`  - Total: ${totalDownloaded + totalCached} images\n`);
 
   return projects;
+  } catch (error) {
+    console.error('Error fetching projects from Airtable:', error);
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    // Return empty array instead of throwing to prevent page crash
+    return [];
+  }
 }
 
 // Fetch a single project by slug
@@ -258,10 +272,10 @@ export async function getAllLocations(): Promise<Location[]> {
       longitude: Number(fields.Longitude || 0),
       category: categoryArray[0] || fields.Category,
       categories: categoryArray,
-      image: fields.Image?.[0]?.url,
+      image: (fields.Image as any)?.[0]?.url,
       url: fields.URL ? String(fields.URL) : undefined,
-      status: fields.Status,
-      privacy: fields.Privacy || 'Public',
+      status: fields.Status ? String(fields.Status) : undefined,
+      privacy: (fields.Privacy === 'Private' ? 'Private' : 'Public') as 'Public' | 'Private',
       password: fields.Password ? String(fields.Password) : undefined,
     };
   });

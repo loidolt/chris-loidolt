@@ -1,3 +1,5 @@
+'use client';
+
 import { Suspense, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment, useGLTF } from "@react-three/drei";
@@ -60,7 +62,7 @@ export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
               enableZoom={true}
               enablePan={true}
             />
-            <Environment preset="apartment" intensity={0.3} />
+            <Environment preset="apartment" />
           </Suspense>
         </Canvas>
       </div>
