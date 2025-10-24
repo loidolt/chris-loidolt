@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { PixelatedImage } from './PixelatedImage';
 
 interface ImageGalleryProps {
   images: string[];
@@ -78,16 +77,13 @@ export function ImageGallery({ images, featuredImage, projectTitle }: ImageGalle
           style={{ backgroundColor: 'var(--bg-surface)' }}
           onClick={() => openLightbox(0)}
         >
-          <PixelatedImage
+          <img
             src={featuredImage}
             alt={projectTitle}
             className="w-full h-auto"
-            pixelSize={20}
-            hoverToReveal={true}
-            clickToReveal={false}
           />
           <div className="text-xs text-center py-2" style={{ color: 'var(--text-muted)' }}>
-            [hover to preview | click to enlarge]
+            [click to enlarge]
           </div>
         </div>
       )}
@@ -106,13 +102,10 @@ export function ImageGallery({ images, featuredImage, projectTitle }: ImageGalle
                   style={{ backgroundColor: 'var(--bg-surface)' }}
                   onClick={() => openLightbox(actualIndex)}
                 >
-                  <PixelatedImage
+                  <img
                     src={img}
                     alt={`${projectTitle} - ${idx + 1}`}
                     className="w-full h-auto"
-                    pixelSize={16}
-                    hoverToReveal={true}
-                    clickToReveal={false}
                   />
                   <div
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"

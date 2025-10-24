@@ -14,7 +14,7 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
   const fuse = useMemo(
     () =>
       new Fuse(projects, {
-        keys: ['title', 'description', 'tags', 'category'],
+        keys: ['title', 'description', 'tags', 'categories', 'category'],
         threshold: 0.3,
       }),
     [projects]
@@ -31,16 +31,32 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
 
     // Apply category filter
     if (selectedCategory) {
-      filtered = filtered.filter((p) => p.category === selectedCategory);
+      filtered = filtered.filter((p) => {
+        // Check both categories array and single category for backward compatibility
+        if (p.categories && p.categories.includes(selectedCategory)) {
+          return true;
+        }
+        return p.category === selectedCategory;
+      });
     }
 
     return filtered;
   }, [projects, searchQuery, selectedCategory, fuse]);
 
-  // Get unique categories
+  // Get unique categories from all projects
   const categories = useMemo(() => {
-    const cats = new Set(projects.map((p) => p.category).filter(Boolean));
-    return Array.from(cats) as string[];
+    const cats = new Set<string>();
+    projects.forEach((p) => {
+      // Add categories from categories array
+      if (p.categories && p.categories.length > 0) {
+        p.categories.forEach((cat) => cats.add(cat));
+      }
+      // Also add single category for backward compatibility
+      if (p.category) {
+        cats.add(p.category);
+      }
+    });
+    return Array.from(cats).sort();
   }, [projects]);
 
   return (
@@ -145,8 +161,12 @@ function ProjectCard({ project }: { project: Project }) {
           <h3 className="text-sm transition-opacity group-hover:opacity-70" style={{ color: 'var(--text-primary)' }}>
             {project.title}
           </h3>
-          {project.category && (
-            <div className="text-xs whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>[{project.category}]</div>
+          {project.categories && project.categories.length > 0 && (
+            <div className="flex flex-wrap gap-1 text-xs whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>
+              {project.categories.slice(0, 2).map((cat) => (
+                <span key={cat}>[{cat}]</span>
+              ))}
+            </div>
           )}
         </div>
 

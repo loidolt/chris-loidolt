@@ -1,24 +1,35 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment, useGLTF } from "@react-three/drei";
 
 interface ModelViewerProps {
   modelPath: string;
   className?: string;
+  onError?: () => void;
 }
 
-export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
+export function ModelViewer({ modelPath, className = "", onError }: ModelViewerProps) {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) {
+    return (
+      <div className={`border ${className}`} style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
+        <div className="aspect-square w-full flex items-center justify-center">
+          <div className="text-center space-y-2">
+            <div className="text-4xl opacity-30" style={{ color: 'var(--text-muted)' }}>🔲</div>
+            <div className="text-sm" style={{ color: 'var(--text-muted)' }}>3D model not available</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`border ${className}`} style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-primary)' }}>
       {/* Terminal-style header */}
-      <div className="border-b p-2" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
+      <div className="border-b px-3 py-2" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
         <div className="flex items-center gap-2">
-          <div className="flex gap-1">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--error-color)' }}></div>
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--accent-secondary)' }}></div>
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--accent-primary)' }}></div>
-          </div>
-          <span className="text-xs" style={{ color: 'var(--text-primary)' }}>3D Model Viewer</span>
+          <span className="text-xs" style={{ color: 'var(--link-color)' }}>$ 3d-model-viewer</span>
         </div>
       </div>
 
@@ -27,12 +38,29 @@ export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
         <Canvas
           camera={{ position: [0, 0, 5], fov: 50 }}
           style={{ background: 'transparent' }}
+          onCreated={() => {
+            // Check if model path exists
+            fetch(modelPath, { method: 'HEAD' })
+              .then(response => {
+                if (!response.ok) {
+                  setHasError(true);
+                  onError?.();
+                }
+              })
+              .catch(() => {
+                setHasError(true);
+                onError?.();
+              });
+          }}
         >
           <Suspense fallback={<LoadingSpinner />}>
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <directionalLight position={[-10, -10, -5]} intensity={0.3} />
-            <Model modelPath={modelPath} />
+            <Model modelPath={modelPath} onError={() => {
+              setHasError(true);
+              onError?.();
+            }} />
             <OrbitControls
               enableDamping
               dampingFactor={0.05}
@@ -66,10 +94,15 @@ export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
   );
 }
 
-function Model({ modelPath }: { modelPath: string }) {
-  const { scene } = useGLTF(modelPath);
-
-  return <primitive object={scene} />;
+function Model({ modelPath, onError }: { modelPath: string; onError?: () => void }) {
+  try {
+    const { scene } = useGLTF(modelPath);
+    return <primitive object={scene} />;
+  } catch (error) {
+    console.error('Error loading 3D model:', error);
+    onError?.();
+    return null;
+  }
 }
 
 function LoadingSpinner() {

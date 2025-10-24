@@ -34,28 +34,30 @@ if (!project) {
         <span style="color: var(--text-muted);">$ cat project/{project.slug}</span>
       </div>
       <h1 class="text-2xl mb-2" style="color: var(--text-primary);">{project.title}</h1>
-      {project.category && (
-        <div class="text-sm" style="color: var(--text-muted);">
-          [{project.category}]
+      {project.categories && project.categories.length > 0 && (
+        <div class="flex flex-wrap gap-2 text-sm" style="color: var(--text-muted);">
+          {project.categories.map((cat: string) => (
+            <span key={cat}>[{cat}]</span>
+          ))}
         </div>
       )}
     </div>
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <!-- Left Column: 3D Model or Image -->
+      <!-- Left Column: Images or 3D Model -->
       <div class="space-y-6">
-        {project.modelFile ? (
-          <ModelViewer
-            modelPath={`/models/${project.modelFile}`}
-            className="sticky top-4"
-            client:load
-          />
-        ) : (project.featuredImage || (project.images && project.images.length > 0)) ? (
+        {(project.featuredImage || (project.images && project.images.length > 0)) ? (
           <ImageGallery
             images={project.images || []}
             featuredImage={project.featuredImage}
             projectTitle={project.title}
+            client:load
+          />
+        ) : (project.modelPath || project.modelFile) ? (
+          <ModelViewer
+            modelPath={project.modelPath || `/models/${project.modelFile}`}
+            className="sticky top-4"
             client:load
           />
         ) : (
@@ -70,9 +72,13 @@ if (!project) {
         <!-- Description -->
         <div>
           <div class="text-sm mb-4" style="color: var(--link-color);">$ cat description.txt</div>
-          <p class="text-sm whitespace-pre-wrap leading-relaxed" style="color: var(--text-primary);">
-            {project.longDescription || project.description}
-          </p>
+          <div class="text-sm whitespace-pre-wrap leading-relaxed prose prose-invert max-w-none" style="color: var(--text-primary);">
+            {project.markdown ? (
+              <div set:html={project.markdown} />
+            ) : (
+              <p>{project.longDescription || project.description}</p>
+            )}
+          </div>
         </div>
 
         <!-- Metadata -->
@@ -92,10 +98,16 @@ if (!project) {
               </div>
             )}
 
-            {project.category && (
+            {project.categories && project.categories.length > 0 && (
               <div class="flex items-start gap-4">
-                <span class="min-w-[80px]" style="color: var(--text-muted);">category</span>
-                <span style="color: var(--text-primary);">{project.category}</span>
+                <span class="min-w-[80px]" style="color: var(--text-muted);">categories</span>
+                <div class="flex flex-wrap gap-2">
+                  {project.categories.map((cat: string) => (
+                    <span key={cat} style="color: var(--text-primary);">
+                      {cat}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -112,23 +124,43 @@ if (!project) {
               </div>
             )}
 
-            {project.modelFile && (
+            {(project.modelFile || project.modelPath) && (
               <div class="flex items-start gap-4">
                 <span class="min-w-[80px]" style="color: var(--text-muted);">3d_model</span>
-                <span style="color: var(--text-primary);">{project.modelFile}</span>
+                <span style="color: var(--text-primary);">{project.modelPath || project.modelFile}</span>
+              </div>
+            )}
+
+            {project.cleanRepo && (
+              <div class="flex items-start gap-4">
+                <span class="min-w-[80px]" style="color: var(--text-muted);">clean_repo</span>
+                <span style="color: var(--accent-primary);">✓</span>
+              </div>
+            )}
+
+            {project.lastModified && (
+              <div class="flex items-start gap-4">
+                <span class="min-w-[80px]" style="color: var(--text-muted);">updated</span>
+                <span style="color: var(--text-primary);">
+                  {new Date(project.lastModified).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
               </div>
             )}
           </div>
         </div>
 
         <!-- Links -->
-        {(project.github || project.website) && (
+        {(project.repository || project.website || project.modelUrl || project.attribution) && (
           <div class="pt-8" style="border-top: 1px solid var(--border-color);">
             <div class="text-sm mb-4" style="color: var(--link-color);">$ cat links.txt</div>
             <div class="space-y-3 text-sm">
-              {project.github && (
+              {project.repository && (
                 <a
-                  href={project.github}
+                  href={project.repository}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="hover:opacity-70 transition-opacity block"
@@ -146,6 +178,28 @@ if (!project) {
                   style="color: var(--link-color);"
                 >
                   [Visit Website →]
+                </a>
+              )}
+              {project.modelUrl && (
+                <a
+                  href={project.modelUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:opacity-70 transition-opacity block"
+                  style="color: var(--link-color);"
+                >
+                  [View 3D Model Source →]
+                </a>
+              )}
+              {project.attribution && (
+                <a
+                  href={project.attribution}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:opacity-70 transition-opacity block"
+                  style="color: var(--text-muted);"
+                >
+                  [Attribution/Credit →]
                 </a>
               )}
             </div>

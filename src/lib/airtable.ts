@@ -8,14 +8,23 @@ export interface Project {
   slug: string;
   description: string;
   longDescription?: string;
+  markdown?: string; // Rich markdown content from Airtable
   tags?: string[];
-  category?: string;
+  categories?: string[]; // Multiple categories from Airtable
+  category?: string; // Legacy single category for backward compatibility
   date?: string;
   featuredImage?: string;
   images?: string[];
-  modelFile?: string; // Path to 3D model file (.glb)
-  github?: string;
+  modelFile?: string; // Path to local 3D model file (.glb)
+  modelPath?: string; // Path from ModelPath field
+  modelUrl?: string; // Source URL for 3D model
+  repository?: string; // GitHub repository URL
+  github?: string; // Legacy field for backward compatibility
   website?: string;
+  attribution?: string; // Attribution/credit URL
+  status?: string; // Draft, Published, Unpublished
+  cleanRepo?: boolean; // Clean Repo checkbox
+  lastModified?: string; // Last modified timestamp
   featured?: boolean;
 }
 
@@ -64,20 +73,36 @@ function getAirtableBase() {
 function recordToProject(record: any): Project {
   const fields = record.fields;
 
+  // Handle categories - use Categories field (plural) from Airtable
+  const categories = fields.Categories || fields.Category || [];
+  const categoryArray = Array.isArray(categories) ? categories : [categories].filter(Boolean);
+
+  // Handle repository URL - map Repository field to both repository and github for compatibility
+  const repositoryUrl = fields.Repository || fields.GitHub || fields.github;
+
   return {
     id: record.id,
     title: fields.Title || fields.Name || "Untitled",
     slug: fields.Slug || fields.slug || fields.Title?.toLowerCase().replace(/\s+/g, "-") || record.id,
     description: fields.Description || fields.Excerpt || "",
     longDescription: fields.LongDescription || fields.Content || fields.Body,
+    markdown: fields.Markdown || fields.markdown,
     tags: fields.Tags || fields.tags || [],
-    category: fields.Category || fields.category,
+    categories: categoryArray,
+    category: categoryArray[0] || fields.Category || fields.category, // First category for backward compatibility
     date: fields.Date || fields.date || fields.createdTime,
     featuredImage: fields['Cover Image']?.[0]?.url || fields.FeaturedImage?.[0]?.url || fields.Image?.[0]?.url,
     images: fields.Gallery?.map((img: any) => img.url) || fields.Images?.map((img: any) => img.url) || [],
     modelFile: fields.ModelFile || fields.Model3D || fields.GLBFile,
-    github: fields.GitHub || fields.github,
+    modelPath: fields.ModelPath,
+    modelUrl: fields['Model URL'],
+    repository: repositoryUrl,
+    github: repositoryUrl, // Keep for backward compatibility
     website: fields.Website || fields.website || fields.URL,
+    attribution: fields.Attribution,
+    status: fields.Status,
+    cleanRepo: fields['Clean Repo'] || false,
+    lastModified: fields['Last Modified'],
     featured: fields.Featured || fields.featured || false,
   };
 }
@@ -90,29 +115,41 @@ export async function getAllProjects(): Promise<Project[]> {
   const records = await base(tableName)
     .select({
       sort: [{ field: "Date", direction: "desc" }],
+      // Filter to only show Published projects
+      filterByFormula: "{Status} = 'Published'",
     })
     .all();
 
   const projects = records.map(recordToProject);
 
   // Download and cache images locally during build
-  console.log('\n📸 Downloading project images...');
+  console.log('\n📸 Processing project images...');
+  let totalDownloaded = 0;
+  let totalCached = 0;
+
   for (const project of projects) {
     if (project.featuredImage || (project.images && project.images.length > 0)) {
-      console.log(`\nProcessing images for: ${project.title}`);
+      console.log(`\nProcessing: ${project.title}`);
 
-      const { featuredImage, images } = await downloadProjectImages(
+      const { featuredImage, images, stats } = await downloadProjectImages(
         project.slug,
         project.featuredImage,
         project.images || []
       );
+
+      totalDownloaded += stats.downloaded;
+      totalCached += stats.cached;
 
       // Update project with local image paths
       project.featuredImage = featuredImage;
       project.images = images;
     }
   }
-  console.log('\n✓ All project images downloaded\n');
+
+  console.log('\n✓ Image processing complete!');
+  console.log(`  - Downloaded: ${totalDownloaded} images`);
+  console.log(`  - Cached: ${totalCached} images`);
+  console.log(`  - Total: ${totalDownloaded + totalCached} images\n`);
 
   return projects;
 }
@@ -142,10 +179,10 @@ export async function getQualifications(): Promise<Qualification[]> {
 
   return records.map((record) => ({
     id: record.id,
-    title: record.fields.Title || "",
-    institution: record.fields.Institution || "",
-    year: record.fields.Year || "",
-    description: record.fields.Description,
+    title: String(record.fields.Title || ""),
+    institution: String(record.fields.Institution || ""),
+    year: String(record.fields.Year || ""),
+    description: record.fields.Description ? String(record.fields.Description) : undefined,
   }));
 }
 
@@ -158,9 +195,9 @@ export async function getServices(): Promise<Service[]> {
 
   return records.map((record) => ({
     id: record.id,
-    title: record.fields.Title || record.fields.Name || "",
-    description: record.fields.Description || "",
-    icon: record.fields.Icon,
+    title: String(record.fields.Title || record.fields.Name || ""),
+    description: String(record.fields.Description || ""),
+    icon: record.fields.Icon ? String(record.fields.Icon) : undefined,
   }));
 }
 
@@ -173,8 +210,8 @@ export async function getWebsites(): Promise<Website[]> {
 
   return records.map((record) => ({
     id: record.id,
-    name: record.fields.Name || record.fields.Title || "",
-    url: record.fields.URL || record.fields.Link || "",
-    description: record.fields.Description,
+    name: String(record.fields.Name || record.fields.Title || ""),
+    url: String(record.fields.URL || record.fields.Link || ""),
+    description: record.fields.Description ? String(record.fields.Description) : undefined,
   }));
 }
