@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a terminal-inspired portfolio website for Chris Loidolt showcasing design and engineering projects. Built with **Astro** for static site generation with React islands, optimized for low-power deployment (battery-powered server or Docker). The site features a balanced terminal aesthetic with modern UI elements where needed. It uses Airtable as a CMS for project data and includes 3D model viewing, client-side search, and a contact form.
+This is a portfolio website for Chris Loidolt showcasing design and engineering projects. Built with **Astro** for static site generation with React islands, optimized for low-power deployment (battery-powered server or Docker). The site features a clean, monospace aesthetic inspired by developer tools and code editors, with a dark color palette and modern UI elements. It uses Airtable as a CMS for project data and includes 3D model viewing, client-side search, and a contact form.
 
 ## Common Commands
 
@@ -46,23 +46,23 @@ src/
 ├── layouts/
 │   └── BaseLayout.astro         # Base HTML layout with terminal header/footer
 ├── components/
-│   ├── TerminalWelcome.tsx      # React: Typing animation (client:load)
-│   ├── ProjectsGrid.tsx         # React: Search/filter (client:load)
-│   ├── ContactForm.tsx          # React: Form with validation (client:load)
+│   ├── TerminalWelcome.tsx      # React: Welcome text typing animation (client:load)
+│   ├── ProjectsGrid.tsx         # React: Project search/filter (client:load)
+│   ├── ContactForm.tsx          # React: Contact form with validation (client:load)
 │   └── ModelViewer.tsx          # React: Three.js 3D viewer (client:load)
 ├── pages/
-│   ├── index.astro              # Homepage with animated terminal
+│   ├── index.astro              # Homepage with welcome animation
 │   ├── projects/
 │   │   ├── index.astro          # Project grid with search/filter
 │   │   └── [slug].astro         # Dynamic project detail pages
 │   ├── about.astro              # About page with qualifications
-│   └── contact.astro            # Contact form
+│   └── contact.astro            # Contact form page
 ├── lib/
 │   └── airtable.ts              # Airtable data fetching utilities (build time)
 public/                           # Static assets (models, images, etc.)
 ```
 
-### Terminal Design System
+### Design System
 
 **Color Palette:**
 - `terminal-black`: #0a0e14 (darkest)
@@ -74,20 +74,20 @@ public/                           # Static assets (models, images, etc.)
 - `terminal-text-bright`: #e6edf3
 - `terminal-green`: #3fb950 (primary accent)
 - `terminal-cyan`: #39c5cf (links, interactive)
-- `terminal-amber`: #d29922 (labels, prompts)
+- `terminal-amber`: #d29922 (labels, section headers)
 - `terminal-red`: #f85149 (errors)
 - `terminal-blue`: #58a6ff
 
 **Typography:**
 - Font: JetBrains Mono (monospace throughout)
-- No ligatures for authentic terminal feel
+- No ligatures for clean readability
 
 **UI Patterns:**
-- Bracketed links: `[like this]`
-- Command prompts: `$ command`
-- ASCII box-drawing characters for borders
-- Terminal window chrome (colored dots)
-- Blinking cursor animation
+- Bracketed links: `[like this →]`
+- Simple section headers with accent colors
+- Clean borders and dividers
+- Tab-style navigation
+- Blinking cursor animation on loading states
 
 ### Environment Configuration
 
@@ -107,12 +107,12 @@ AIRTABLE_SERVICES_TABLENAME=Services
 ### Key Features
 
 1. **Homepage** (index.astro)
-   - Animated terminal typing effect (React island)
-   - Command-style help section (static)
-   - Quick stats cards (static)
+   - Animated welcome text with typing effect (React island)
+   - Quick links to main sections (static)
+   - Project statistics overview (static)
 
 2. **Projects Index** (projects/index.astro)
-   - Grid layout with terminal-styled cards
+   - Grid layout with project cards
    - Fuse.js client-side search (React island)
    - Category filtering (React island)
    - 3D model indicators
@@ -125,14 +125,14 @@ AIRTABLE_SERVICES_TABLENAME=Services
    - Links to GitHub/website (static)
 
 4. **Contact Form** (contact.astro)
-   - Terminal-styled form inputs (React island)
+   - Clean form inputs (React island)
    - Zod validation (client-side)
    - Form submission (currently logs to console, ready for server endpoint)
 
 5. **About Page** (about.astro)
    - Qualifications timeline from Airtable (static, fetched at build)
    - Services grid from Airtable (static, fetched at build)
-   - Skills display in JSON format (static)
+   - Skills display organized by category (static)
 
 ### Data Flow
 
@@ -145,7 +145,7 @@ AIRTABLE_SERVICES_TABLENAME=Services
 2. **Client-Side Interactivity (React Islands)**
    - Search/filter using Fuse.js (client:load)
    - 3D model viewer (client:load, only loads when needed)
-   - Terminal typing animation (client:load)
+   - Welcome text typing animation (client:load)
    - Contact form validation (client:load)
 
 3. **Deployment Options**

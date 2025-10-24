@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 
 export default function TerminalWelcome() {
   const [displayedText, setDisplayedText] = useState('');
-  const fullText = `$ cat welcome.txt
+  const fullText = `Design & Engineering Portfolio
 
-Design & Engineering Portfolio
 Showcasing projects in 3D printing, woodworking, and software
 
 Navigate using the menu above or explore [projects]`;

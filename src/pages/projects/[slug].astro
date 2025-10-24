@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { ModelViewer } from '@components/ModelViewer';
 import { ImageGallery } from '@components/ImageGallery';
-import { getAllProjects, getProjectBySlug } from '@lib/airtable';
+import { ProjectDetailsSection } from '@components/ProjectDetailsSection';
+import { getAllProjects } from '@lib/airtable';
 
 export async function getStaticPaths() {
   const projects = await getAllProjects();
@@ -25,187 +25,128 @@ if (!project) {
   description={project.description}
 >
   <div class="space-y-8">
-    <!-- Page Header -->
-    <div>
-      <div class="flex items-center gap-3 text-sm mb-4">
-        <a href="/projects" class="hover:opacity-70 transition-opacity" style="color: var(--link-color);">
-          [← back]
-        </a>
-        <span style="color: var(--text-muted);">$ cat project/{project.slug}</span>
+    <!-- Back Button -->
+    <div class="flex items-center gap-3 text-sm">
+      <a href="/projects" class="hover:opacity-70 transition-opacity" style="color: var(--link-color);">
+        [← back to projects]
+      </a>
+    </div>
+
+    <!-- Page Header with Details -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Left: Title and Categories -->
+      <div>
+        <h1 class="text-2xl mb-3" style="color: var(--text-primary);">{project.title}</h1>
+        {project.categories && project.categories.length > 0 && (
+          <div class="flex flex-wrap gap-2 text-sm mb-4" style="color: var(--text-muted);">
+            {project.categories.map((cat: string) => (
+              <span key={cat}>[{cat}]</span>
+            ))}
+          </div>
+        )}
       </div>
-      <h1 class="text-2xl mb-2" style="color: var(--text-primary);">{project.title}</h1>
-      {project.categories && project.categories.length > 0 && (
-        <div class="flex flex-wrap gap-2 text-sm" style="color: var(--text-muted);">
-          {project.categories.map((cat: string) => (
-            <span key={cat}>[{cat}]</span>
-          ))}
-        </div>
-      )}
+
+      <!-- Right: Details and Links -->
+      <div class="space-y-6 lg:text-right">
+        <!-- Date -->
+        {project.date && (
+          <div class="text-sm" style="color: var(--text-primary);">
+            {new Date(project.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </div>
+        )}
+
+        <!-- Links -->
+        {(project.repository || project.website || project.attribution) && (
+          <div class="space-y-2 text-sm lg:flex lg:flex-col lg:items-end">
+            {project.repository && (
+              <a
+                href={project.repository}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:opacity-70 transition-opacity flex items-center gap-2 lg:justify-end"
+                style="color: var(--link-color);"
+              >
+                {/* Placeholder for pixel art GitHub logo - update src when ready */}
+                <img
+                  src="/icons/github-pixel.png"
+                  alt="GitHub"
+                  class="w-4 h-4"
+                  style="image-rendering: pixelated;"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';"
+                />
+                <span style="display: none;">[GitHub →]</span>
+              </a>
+            )}
+            {project.website && (
+              <a
+                href={project.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:opacity-70 transition-opacity block"
+                style="color: var(--link-color);"
+              >
+                [Visit Website →]
+              </a>
+            )}
+            {project.attribution && (
+              <a
+                href={project.attribution}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:opacity-70 transition-opacity block"
+                style="color: var(--text-muted);"
+              >
+                [Attribution/Credit →]
+              </a>
+            )}
+          </div>
+        )}
+      </div>
     </div>
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <!-- Left Column: Images or 3D Model -->
+      <!-- Left Column: Featured Image -->
       <div class="space-y-6">
-        {(project.featuredImage || (project.images && project.images.length > 0)) ? (
-          <ImageGallery
-            images={project.images || []}
-            featuredImage={project.featuredImage}
-            projectTitle={project.title}
-            client:load
-          />
-        ) : (project.modelPath || project.modelFile) ? (
-          <ModelViewer
-            modelPath={project.modelPath || `/models/${project.modelFile}`}
-            className="sticky top-4"
-            client:load
-          />
-        ) : (
+        {project.featuredImage && (
+          <div class="border" style="border-color: var(--border-color);">
+            <img
+              src={project.featuredImage}
+              alt={project.title}
+              class="w-full h-auto"
+              loading="eager"
+            />
+          </div>
+        )}
+
+        {!project.featuredImage && !(project.images && project.images.length > 0) && !(project.modelPath || project.modelFile) && (
           <div class="p-12 flex items-center justify-center aspect-square" style="background-color: var(--bg-surface);">
             <div class="text-6xl opacity-30" style="color: var(--text-muted);">📁</div>
           </div>
         )}
       </div>
 
-      <!-- Right Column: Details -->
-      <div class="space-y-8">
-        <!-- Description -->
-        <div>
-          <div class="text-sm mb-4" style="color: var(--link-color);">$ cat description.txt</div>
-          <div class="text-sm whitespace-pre-wrap leading-relaxed prose prose-invert max-w-none" style="color: var(--text-primary);">
-            {project.markdown ? (
-              <div set:html={project.markdown} />
-            ) : (
-              <p>{project.longDescription || project.description}</p>
-            )}
-          </div>
+      <!-- Right Column: Description -->
+      <div>
+        <div class="text-sm mb-4" style="color: var(--accent-secondary);">Description</div>
+        <div class="text-sm whitespace-pre-wrap leading-relaxed prose prose-invert max-w-none" style="color: var(--text-primary);">
+          {project.markdown ? (
+            <div set:html={project.markdown} />
+          ) : (
+            <p>{project.longDescription || project.description}</p>
+          )}
         </div>
-
-        <!-- Metadata -->
-        <div class="pt-8" style="border-top: 1px solid var(--border-color);">
-          <div class="text-sm mb-4" style="color: var(--link-color);">$ ls -la metadata/</div>
-          <div class="space-y-3 text-sm">
-            {project.date && (
-              <div class="flex items-start gap-4">
-                <span class="min-w-[80px]" style="color: var(--text-muted);">date</span>
-                <span style="color: var(--text-primary);">
-                  {new Date(project.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>
-              </div>
-            )}
-
-            {project.categories && project.categories.length > 0 && (
-              <div class="flex items-start gap-4">
-                <span class="min-w-[80px]" style="color: var(--text-muted);">categories</span>
-                <div class="flex flex-wrap gap-2">
-                  {project.categories.map((cat: string) => (
-                    <span key={cat} style="color: var(--text-primary);">
-                      {cat}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {project.tags && project.tags.length > 0 && (
-              <div class="flex items-start gap-4">
-                <span class="min-w-[80px]" style="color: var(--text-muted);">tags</span>
-                <div class="flex flex-wrap gap-2">
-                  {project.tags.map((tag: string) => (
-                    <span key={tag} style="color: var(--text-muted);">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {(project.modelFile || project.modelPath) && (
-              <div class="flex items-start gap-4">
-                <span class="min-w-[80px]" style="color: var(--text-muted);">3d_model</span>
-                <span style="color: var(--text-primary);">{project.modelPath || project.modelFile}</span>
-              </div>
-            )}
-
-            {project.cleanRepo && (
-              <div class="flex items-start gap-4">
-                <span class="min-w-[80px]" style="color: var(--text-muted);">clean_repo</span>
-                <span style="color: var(--accent-primary);">✓</span>
-              </div>
-            )}
-
-            {project.lastModified && (
-              <div class="flex items-start gap-4">
-                <span class="min-w-[80px]" style="color: var(--text-muted);">updated</span>
-                <span style="color: var(--text-primary);">
-                  {new Date(project.lastModified).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <!-- Links -->
-        {(project.repository || project.website || project.modelUrl || project.attribution) && (
-          <div class="pt-8" style="border-top: 1px solid var(--border-color);">
-            <div class="text-sm mb-4" style="color: var(--link-color);">$ cat links.txt</div>
-            <div class="space-y-3 text-sm">
-              {project.repository && (
-                <a
-                  href={project.repository}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hover:opacity-70 transition-opacity block"
-                  style="color: var(--link-color);"
-                >
-                  [View on GitHub →]
-                </a>
-              )}
-              {project.website && (
-                <a
-                  href={project.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hover:opacity-70 transition-opacity block"
-                  style="color: var(--link-color);"
-                >
-                  [Visit Website →]
-                </a>
-              )}
-              {project.modelUrl && (
-                <a
-                  href={project.modelUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hover:opacity-70 transition-opacity block"
-                  style="color: var(--link-color);"
-                >
-                  [View 3D Model Source →]
-                </a>
-              )}
-              {project.attribution && (
-                <a
-                  href={project.attribution}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hover:opacity-70 transition-opacity block"
-                  style="color: var(--text-muted);"
-                >
-                  [Attribution/Credit →]
-                </a>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
+
+    <!-- Expandable Details Section -->
+    <ProjectDetailsSection
+      project={project}
+      client:load
+    />
   </div>
 </BaseLayout>

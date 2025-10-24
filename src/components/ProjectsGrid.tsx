@@ -63,9 +63,9 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <div className="text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>$ ls /projects</div>
+        <div className="text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>Projects</div>
         <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          Found {filteredProjects.length} project{filteredProjects.length === 1 ? '' : 's'}
+          {filteredProjects.length} project{filteredProjects.length === 1 ? '' : 's'}
         </div>
       </div>
 
@@ -73,7 +73,7 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
       <div className="space-y-6">
         {/* Search */}
         <div>
-          <label className="block text-sm mb-3" style={{ color: 'var(--accent-secondary)' }}>$ search</label>
+          <label className="block text-sm mb-3" style={{ color: 'var(--accent-secondary)' }}>Search</label>
           <input
             type="text"
             value={searchQuery}
@@ -90,7 +90,7 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
 
         {/* Category Filter */}
         <div>
-          <div className="text-sm mb-3" style={{ color: 'var(--accent-secondary)' }}>$ filter</div>
+          <div className="text-sm mb-3" style={{ color: 'var(--accent-secondary)' }}>Filter by category</div>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setSelectedCategory(null)}

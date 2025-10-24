@@ -75,8 +75,8 @@ export default function ContactForm() {
     <div className="max-w-2xl space-y-8">
       {/* Page Header */}
       <div>
-        <div className="text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>$ mail contact@chrisloidolt.com</div>
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Compose your message below</p>
+        <div className="text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>Contact</div>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Send me a message using the form below</p>
       </div>
 
       {/* Success Message */}
@@ -209,14 +209,14 @@ export default function ContactForm() {
               <span>Sending...</span>
             </span>
           ) : (
-            <span>$ send</span>
+            <span>[Send message →]</span>
           )}
         </button>
       </form>
 
       {/* Additional Contact Info */}
       <div className="pt-8" style={{ borderTop: '1px solid var(--border-color)' }}>
-        <div className="text-sm mb-6" style={{ color: 'var(--accent-secondary)' }}>$ cat contact-info.txt</div>
+        <div className="text-sm mb-6" style={{ color: 'var(--accent-secondary)' }}>Other ways to reach me</div>
         <div className="space-y-3 text-sm">
           <div className="flex items-center gap-4">
             <span className="w-20" style={{ color: 'var(--text-muted)' }}>email</span>

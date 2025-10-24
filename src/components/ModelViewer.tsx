@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment, useGLTF } from "@react-three/drei";
 
@@ -8,21 +8,10 @@ interface ModelViewerProps {
   onError?: () => void;
 }
 
-export function ModelViewer({ modelPath, className = "", onError }: ModelViewerProps) {
-  const [hasError, setHasError] = useState(false);
-
-  if (hasError) {
-    return (
-      <div className={`border ${className}`} style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
-        <div className="aspect-square w-full flex items-center justify-center">
-          <div className="text-center space-y-2">
-            <div className="text-4xl opacity-30" style={{ color: 'var(--text-muted)' }}>🔲</div>
-            <div className="text-sm" style={{ color: 'var(--text-muted)' }}>3D model not available</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
+  useEffect(() => {
+    console.log('[ModelViewer] Loading model from:', modelPath);
+  }, [modelPath]);
 
   return (
     <div className={`border ${className}`} style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-primary)' }}>
@@ -38,29 +27,32 @@ export function ModelViewer({ modelPath, className = "", onError }: ModelViewerP
         <Canvas
           camera={{ position: [0, 0, 5], fov: 50 }}
           style={{ background: 'transparent' }}
-          onCreated={() => {
-            // Check if model path exists
-            fetch(modelPath, { method: 'HEAD' })
-              .then(response => {
-                if (!response.ok) {
-                  setHasError(true);
-                  onError?.();
-                }
-              })
-              .catch(() => {
-                setHasError(true);
-                onError?.();
-              });
+          gl={{
+            antialias: true,
+            alpha: true,
+            preserveDrawingBuffer: true,
+            powerPreference: 'high-performance',
+          }}
+          onCreated={({ gl }) => {
+            gl.setClearColor(0x000000, 0);
           }}
         >
           <Suspense fallback={<LoadingSpinner />}>
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <directionalLight position={[-10, -10, -5]} intensity={0.3} />
-            <Model modelPath={modelPath} onError={() => {
-              setHasError(true);
-              onError?.();
-            }} />
+            {/* Soft ambient fill light */}
+            <ambientLight intensity={0.8} />
+
+            {/* Softer directional lights from multiple angles */}
+            <directionalLight position={[5, 5, 5]} intensity={0.4} />
+            <directionalLight position={[-5, 3, -5]} intensity={0.3} />
+            <directionalLight position={[0, -5, 0]} intensity={0.2} />
+
+            {/* Subtle hemisphere light for natural feel */}
+            <hemisphereLight
+              args={['#ffffff', '#444444', 0.4]}
+              position={[0, 1, 0]}
+            />
+
+            <Model modelPath={modelPath} />
             <OrbitControls
               enableDamping
               dampingFactor={0.05}
@@ -68,7 +60,7 @@ export function ModelViewer({ modelPath, className = "", onError }: ModelViewerP
               enableZoom={true}
               enablePan={true}
             />
-            <Environment preset="studio" />
+            <Environment preset="apartment" intensity={0.3} />
           </Suspense>
         </Canvas>
       </div>
@@ -94,15 +86,18 @@ export function ModelViewer({ modelPath, className = "", onError }: ModelViewerP
   );
 }
 
-function Model({ modelPath, onError }: { modelPath: string; onError?: () => void }) {
-  try {
-    const { scene } = useGLTF(modelPath);
-    return <primitive object={scene} />;
-  } catch (error) {
-    console.error('Error loading 3D model:', error);
-    onError?.();
-    return null;
+function Model({ modelPath }: { modelPath: string; onError?: () => void }) {
+  console.log('[Model] Attempting to load:', modelPath);
+
+  const gltf = useGLTF(modelPath);
+  console.log('[Model] Successfully loaded model');
+
+  // Center and scale the model
+  if (gltf.scene) {
+    gltf.scene.position.set(0, 0, 0);
   }
+
+  return <primitive object={gltf.scene} />;
 }
 
 function LoadingSpinner() {

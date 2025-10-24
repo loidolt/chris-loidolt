@@ -23,13 +23,12 @@ try {
   <div class="space-y-12">
     <!-- Page Header -->
     <div>
-      <div class="text-sm mb-4" style="color: var(--link-color);">$ whoami</div>
       <h1 class="text-2xl mb-6" style="color: var(--text-primary);">Chris Loidolt - Designer & Engineer</h1>
     </div>
 
     <!-- About Section -->
     <div class="pt-8" style="border-top: 1px solid var(--border-color);">
-      <div class="text-sm mb-6" style="color: var(--link-color);">$ cat bio.txt</div>
+      <div class="text-sm mb-6" style="color: var(--accent-secondary);">About</div>
       <div class="space-y-4 max-w-3xl" style="color: var(--text-primary);">
         <p>
           I'm a designer and engineer with a passion for creating innovative solutions
@@ -46,8 +45,8 @@ try {
     <!-- Services Section -->
     {services.length > 0 && (
       <div class="pt-8" style="border-top: 1px solid var(--border-color);">
-        <div class="text-sm mb-6" style="color: var(--link-color);">
-          $ ls services/ ({services.length} items)
+        <div class="text-sm mb-6" style="color: var(--accent-secondary);">
+          Services ({services.length})
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -69,8 +68,8 @@ try {
     <!-- Qualifications Section -->
     {qualifications.length > 0 && (
       <div class="pt-8" style="border-top: 1px solid var(--border-color);">
-        <div class="text-sm mb-6" style="color: var(--link-color);">
-          $ cat qualifications.log ({qualifications.length} entries)
+        <div class="text-sm mb-6" style="color: var(--accent-secondary);">
+          Qualifications ({qualifications.length})
         </div>
 
         <div class="space-y-6">
@@ -100,7 +99,7 @@ try {
 
     <!-- Skills Section -->
     <div class="pt-8" style="border-top: 1px solid var(--border-color);">
-      <div class="text-sm mb-6" style="color: var(--link-color);">$ cat skills.json</div>
+      <div class="text-sm mb-6" style="color: var(--accent-secondary);">Skills</div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <div class="mb-3 text-sm" style="color: var(--text-muted);">
@@ -145,11 +144,11 @@ try {
 
     <!-- CTA Section -->
     <div class="pt-8" style="border-top: 1px solid var(--border-color);">
-      <div class="text-sm mb-4" style="color: var(--link-color);">
-        $ Available for collaboration and consulting
+      <div class="text-sm mb-4" style="color: var(--accent-secondary);">
+        Collaboration & Consulting
       </div>
       <p class="mb-6 text-sm max-w-2xl" style="color: var(--text-primary);">
-        Interested in working together? Let's discuss your project.
+        I'm available for collaboration and consulting. Interested in working together? Let's discuss your project.
       </p>
       <a
         href="/contact"

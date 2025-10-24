@@ -11,3 +11,6 @@
 
 # Downloaded/cached images from Airtable (regenerated at build time)
 /public/images/projects/
+
+# Models (copied from /static/models/ at build/dev time)
+/public/models/
