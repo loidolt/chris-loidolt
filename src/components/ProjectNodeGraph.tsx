@@ -44,10 +44,8 @@ export default function ProjectNodeGraph({ projects }: ProjectNodeGraphProps) {
   const gRef = useRef<SVGGElement>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [focusedNode, setFocusedNode] = useState<string | null>(null);
-  const [dimensions, setDimensions] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1920,
-    height: typeof window !== 'undefined' ? window.innerHeight : 1080
-  });
+  const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 });
+  const [isMounted, setIsMounted] = useState(false);
   const simulationRef = useRef<d3.Simulation<Node, Edge> | null>(null);
 
   // Physics constants - tuned for immersive, close-up effect
@@ -62,6 +60,15 @@ export default function ProjectNodeGraph({ projects }: ProjectNodeGraphProps) {
   const getCategoryColor = (category: string): string => {
     return CATEGORY_COLORS[category] || CATEGORY_COLORS['Uncategorized'];
   };
+
+  // Set actual dimensions after hydration to avoid mismatch
+  useEffect(() => {
+    setDimensions({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+    setIsMounted(true);
+  }, []);
 
   // Initialize D3 force simulation
   useEffect(() => {

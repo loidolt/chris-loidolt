@@ -1,16 +1,19 @@
 ---
 import '../styles/global.css';
 import ThemeToggle from '../components/ThemeToggle';
+import MapViewer from '@components/MapViewer';
+import { getAllLocations } from '@lib/airtable';
 
-export interface Props {
-  title?: string;
-  description?: string;
+// Fetch locations at build time
+let locations = [];
+try {
+  locations = await getAllLocations();
+} catch (error) {
+  console.error('Error loading locations:', error);
 }
 
-const {
-  title = 'Chris Loidolt - Design & Engineering Portfolio',
-  description = 'Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development.',
-} = Astro.props;
+const title = 'GIS Map - Chris Loidolt';
+const description = 'Interactive topographic map showing points of interest and locations.';
 
 const navItems = [
   { href: '/', label: 'home' },
@@ -57,7 +60,7 @@ const currentYear = new Date().getFullYear();
               style={`
                 color: var(--text-primary);
                 border-right: ${index < navItems.length - 1 ? '1px solid var(--border-color)' : 'none'};
-                background-color: ${Astro.url.pathname === item.href || (item.href === '/projects' && Astro.url.pathname.startsWith('/projects')) ? 'var(--bg-primary)' : 'var(--bg-surface)'};
+                background-color: ${item.href === '/gis' ? 'var(--bg-primary)' : 'var(--bg-surface)'};
               `}
             >
               {item.label}
@@ -69,33 +72,10 @@ const currentYear = new Date().getFullYear();
         </nav>
       </header>
 
-      <!-- Main Content -->
-      <main class="flex-1 container mx-auto px-6 py-12 max-w-6xl">
-        <slot />
+      <!-- Full-height Main Content (no padding) -->
+      <main class="flex-1" style="position: relative; overflow: hidden;">
+        <MapViewer locations={locations} client:only="react" />
       </main>
-
-      <!-- Terminal Footer -->
-      <footer class="relative" style="z-index: 10; border-top: 1px solid var(--border-color); background-color: var(--bg-surface);">
-        <div class="container mx-auto px-6 py-6 max-w-6xl">
-          <div class="flex items-center justify-between text-xs" style="color: var(--text-muted);">
-            <div class="flex items-center gap-6">
-              <span>© {currentYear} Chris Loidolt</span>
-              <a
-                href="https://github.com/chris-loidolt"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="color: var(--link-color);"
-                class="hover:opacity-70 transition-opacity"
-              >
-                github
-              </a>
-            </div>
-            <div style="color: var(--text-muted);">
-              <span class="opacity-50">~/portfolio</span>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   </body>
 </html>

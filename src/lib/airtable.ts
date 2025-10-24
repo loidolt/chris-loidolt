@@ -50,6 +50,21 @@ export interface Website {
   description?: string;
 }
 
+export interface Location {
+  id: string;
+  name: string;
+  description?: string;
+  latitude: number;
+  longitude: number;
+  category?: string;
+  categories?: string[];
+  image?: string;
+  url?: string;
+  status?: string;
+  privacy?: 'Public' | 'Private';
+  password?: string;
+}
+
 // Environment variable validation
 function getEnvVar(key: string): string {
   // Use process.env for server-side code (dotenv loads .env file in astro.config.mjs)
@@ -214,4 +229,40 @@ export async function getWebsites(): Promise<Website[]> {
     url: String(record.fields.URL || record.fields.Link || ""),
     description: record.fields.Description ? String(record.fields.Description) : undefined,
   }));
+}
+
+// Fetch locations/POIs
+export async function getAllLocations(): Promise<Location[]> {
+  const base = getAirtableBase();
+  const tableName = getEnvVar("AIRTABLE_LOCATIONS_TABLENAME");
+
+  const records = await base(tableName)
+    .select({
+      // Filter to only show Published locations
+      filterByFormula: "{Status} = 'Published'",
+    })
+    .all();
+
+  return records.map((record) => {
+    const fields = record.fields;
+
+    // Handle categories - support both single and multiple
+    const categories = fields.Categories || fields.Category || [];
+    const categoryArray = Array.isArray(categories) ? categories : [categories].filter(Boolean);
+
+    return {
+      id: record.id,
+      name: String(fields.Name || fields.Title || "Untitled Location"),
+      description: fields.Description ? String(fields.Description) : undefined,
+      latitude: Number(fields.Latitude || 0),
+      longitude: Number(fields.Longitude || 0),
+      category: categoryArray[0] || fields.Category,
+      categories: categoryArray,
+      image: fields.Image?.[0]?.url,
+      url: fields.URL ? String(fields.URL) : undefined,
+      status: fields.Status,
+      privacy: fields.Privacy || 'Public',
+      password: fields.Password ? String(fields.Password) : undefined,
+    };
+  });
 }
