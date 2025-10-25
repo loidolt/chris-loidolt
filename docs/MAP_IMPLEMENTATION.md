@@ -16,7 +16,8 @@ GISMapClient (Error Boundary Wrapper)
     ├── MapInvalidationHandler (Responsive Resizing)
     ├── TileErrorHandler (Retry Logic)
     ├── TilePrefetcher (Background Prefetching)
-    └── TileLoadingTracker (Progress Monitoring)
+    ├── TileLoadingTracker (Progress Monitoring)
+    └── MarkerClusterGroup (Marker Clustering - Optional)
 ```
 
 ### Key Files
@@ -24,9 +25,12 @@ GISMapClient (Error Boundary Wrapper)
 - `src/components/MapViewer.tsx` - Main map component (1200+ lines)
 - `src/components/GISMapClient.tsx` - Client wrapper with dynamic loading
 - `src/components/MapErrorBoundary.tsx` - Error boundary for graceful failures
+- `src/components/MarkerClusterGroup.tsx` - Marker clustering component
+- `src/components/LocateButton.tsx` - Geolocation button component
+- `src/components/PasswordModal.tsx` - Private location password modal
 - `src/app/gis/page.tsx` - Server-side page (fetches locations)
 - `public/map-sw.js` - Service Worker for tile caching
-- `src/app/globals.css` - Map-specific CSS (lines 178-343)
+- `src/app/globals.css` - Map-specific CSS (lines 178-432)
 
 ## Tile Strategy
 
@@ -198,6 +202,115 @@ const isDark = useTheme(); // MutationObserver on document.documentElement
 - **invalidateSize**: Fixes map dimensions on resize
 - **Mobile-friendly**: Touch controls, responsive panels
 
+## Marker Clustering
+
+### Implementation
+
+The map includes intelligent marker clustering to improve performance and user experience with many locations.
+
+**Library**: `leaflet.markercluster` (directly integrated, compatible with react-leaflet v5)
+
+**Component**: `src/components/MarkerClusterGroup.tsx`
+
+```tsx
+<MarkerClusterGroup
+  maxClusterRadius={80}
+  spiderfyOnMaxZoom={true}
+  showCoverageOnHover={false}
+  zoomToBoundsOnClick={true}
+  chunkedLoading={true}
+  removeOutsideVisibleBounds={true}
+/>
+```
+
+### Features
+
+**Automatic Activation**
+- Clustering enabled by default when **50+ locations** present
+- User can toggle clustering on/off via control panel button
+- State persists during session
+
+**Visual Design**
+- **Small clusters** (< 10 markers): Green accent (`var(--accent-primary)`)
+- **Medium clusters** (10-99 markers): Cyan (`var(--link-color)`)
+- **Large clusters** (100+ markers): Amber (`var(--accent-secondary)`)
+- Terminal theme integration with monospace font
+- Smooth appearance animation (0.3s scale + fade)
+
+**Performance Optimizations**
+- **Chunked loading**: Markers added in batches to prevent UI blocking
+- **Outside bounds removal**: Markers outside view removed from DOM
+- **Spiderfy on max zoom**: Markers fan out when fully zoomed
+- **Click to zoom**: Clicking cluster zooms to bounds of markers
+
+### Configuration Options
+
+| Option | Default | Purpose |
+|--------|---------|---------|
+| `maxClusterRadius` | 80 | Maximum radius (px) for clustering markers |
+| `spiderfyOnMaxZoom` | true | Fan out markers at maximum zoom |
+| `showCoverageOnHover` | false | Show cluster bounds on hover |
+| `zoomToBoundsOnClick` | true | Zoom to show all clustered markers |
+| `chunkedLoading` | true | Load markers in chunks (better performance) |
+| `removeOutsideVisibleBounds` | true | Remove off-screen markers from DOM |
+| `disableClusteringAtZoom` | undefined | Disable clustering at specific zoom level |
+
+### Styling (globals.css:347-432)
+
+```css
+/* Terminal-themed cluster markers */
+.marker-cluster-small div {
+  background-color: var(--accent-primary);
+  width: 36px;
+  height: 36px;
+}
+
+.marker-cluster-medium div {
+  background-color: var(--link-color);
+  width: 40px;
+  height: 40px;
+}
+
+.marker-cluster-large div {
+  background-color: var(--accent-secondary);
+  width: 44px;
+  height: 44px;
+}
+
+.marker-cluster span {
+  color: var(--bg-primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+```
+
+### User Controls
+
+**Toggle Button** (in overlay control panel)
+```
+[✓ Clustering On]  // When enabled
+[Clustering Off]    // When disabled
+```
+
+Location: Control panel, between "Locate Me" and "Show Locations List"
+
+### Implementation Notes
+
+**react-leaflet v5 Compatibility**
+- Built custom wrapper component using `useMap()` hook
+- Uses event-based marker detection (`layeradd` event)
+- Automatically clusters markers as they're added to map
+- Cleanup on unmount removes clusters and restores markers
+
+**Search/Filter Integration**
+- Clustering respects filtered locations
+- Clusters update when search query changes
+- Clusters update when category filter changes
+
+**Private Location Support**
+- Clustered markers maintain lock icons
+- Fuzzy coordinates preserved in clusters
+- Password modal works with clustered markers
+
 ## Error Handling
 
 ### Error Boundary
@@ -223,36 +336,22 @@ const isDark = useTheme(); // MutationObserver on document.documentElement
 
 ### Recommended Enhancements
 
-1. **Geolocation Support**
-   ```tsx
-   const handleLocateMe = () => {
-     navigator.geolocation.getCurrentPosition((pos) => {
-       setMapCenter([pos.coords.latitude, pos.coords.longitude]);
-       setMapZoom(14);
-     });
-   };
-   ```
-
-2. **Drawing Tools**
+1. **Drawing Tools**
    - Add react-leaflet-draw for user-drawn shapes
    - Save drawn features to Airtable
    - Export as GeoJSON
 
-3. **Clustering**
-   - Use react-leaflet-cluster for many markers
-   - Improves performance with 100+ locations
-
-4. **Custom Tile Layers**
+2. **Custom Tile Layers**
    - Satellite imagery (MapBox, ESRI)
    - Historical maps
    - Weather overlays
 
-5. **Offline Support**
+3. **Offline Support**
    - Download tile regions for offline use
    - IndexedDB for location data
    - Background sync for new data
 
-6. **Performance Monitoring**
+4. **Performance Monitoring**
    ```tsx
    const [metrics, setMetrics] = useState({
      tilesLoaded: 0,
@@ -261,7 +360,7 @@ const isDark = useTheme(); // MutationObserver on document.documentElement
    });
    ```
 
-7. **Accessibility**
+5. **Accessibility**
    - Keyboard navigation for markers
    - Screen reader announcements
    - High contrast mode
@@ -362,6 +461,7 @@ interface Location {
 
 ## Testing Checklist
 
+### Core Functionality
 - [ ] Zoom from 3 to 19 smoothly
 - [ ] OSM fallback appears at zoom 13+
 - [ ] No jumping during zoom/pan
@@ -373,10 +473,38 @@ interface Location {
 - [ ] Theme toggle works (light/dark tiles)
 - [ ] Mobile responsive (test touch zoom/pan)
 - [ ] Map resizes correctly (toggle devtools, resize window)
+- [ ] Geolocation "Locate Me" button works
+
+### Marker Clustering
+- [x] Clustering enabled by default with 50+ locations
+- [x] Toggle button switches clustering on/off
+- [x] Small clusters (< 10) show green accent color
+- [x] Medium clusters (10-99) show cyan color
+- [x] Large clusters (100+) show amber color
+- [ ] Clicking cluster zooms to show all markers
+- [ ] Spiderfy works at maximum zoom level
+- [ ] Cluster counts update with search/filter
+- [ ] Clustered markers maintain lock icons (private locations)
+- [ ] Smooth animation when clusters appear/disappear
 
 ## Credits
 
 - **Leaflet**: BSD-2-Clause license
+- **Leaflet.markercluster**: MIT license
 - **OpenTopoMap**: CC-BY-SA 3.0
 - **OpenStreetMap**: ODbL
 - **React-Leaflet**: Hippocratic License 2.1
+
+## Changelog
+
+### 2025-10-25: Marker Clustering Implemented
+- ✅ Added `leaflet.markercluster` library
+- ✅ Created custom `MarkerClusterGroup` component for react-leaflet v5
+- ✅ Implemented automatic clustering (enabled for 50+ locations)
+- ✅ Added toggle button in control panel
+- ✅ Terminal-themed cluster styling with color-coded sizes
+- ✅ Integrated with search/filter functionality
+- ✅ Support for private locations in clusters
+- ✅ Updated documentation and testing checklist
+- ✅ Removed development-only zoom level debug indicator
+- ✅ Fixed clustering initialization to properly capture existing markers

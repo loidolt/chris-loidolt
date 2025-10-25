@@ -7,6 +7,7 @@ import L from 'leaflet';
 import type { Location } from '@/lib/airtable';
 import PasswordModal from './PasswordModal';
 import LocateButton from './LocateButton';
+import MarkerClusterGroup from './MarkerClusterGroup';
 import 'leaflet/dist/leaflet.css';
 
 interface MapViewerProps {
@@ -119,6 +120,38 @@ function fuzzCoordinates(lat: number, lng: number, locationId: string): [number,
   const lngOffset = Math.sin(angle) * distance;
 
   return [lat + latOffset, lng + lngOffset];
+}
+
+// Component to fit map bounds to markers on initial load
+function MapBoundsInitializer({ locations }: { locations: Location[] }) {
+  const map = useMap();
+  const hasInitialized = useRef(false);
+
+  useEffect(() => {
+    // Only run once on mount
+    if (hasInitialized.current || locations.length === 0) return;
+
+    // Get all valid coordinates
+    const validLocations = locations.filter(loc => loc.latitude && loc.longitude);
+
+    if (validLocations.length === 0) return;
+
+    // Create bounds from all locations
+    const bounds = L.latLngBounds(
+      validLocations.map(loc => [loc.latitude, loc.longitude] as [number, number])
+    );
+
+    // Fit map to bounds with padding
+    map.fitBounds(bounds, {
+      padding: [50, 50], // Add 50px padding on all sides
+      maxZoom: 13, // Don't zoom in too far if there's only one marker
+      animate: false, // Don't animate on initial load
+    });
+
+    hasInitialized.current = true;
+  }, [map, locations]);
+
+  return null;
 }
 
 // Component to handle map view changes and track zoom
@@ -566,8 +599,14 @@ export default function MapViewer({
   const [isLoading, setIsLoading] = useState(true);
   const [tilesLoading, setTilesLoading] = useState(false);
   const [tileProgress, setTileProgress] = useState(0);
+  const [clusteringEnabled, setClusteringEnabled] = useState(locations.length > 10);
   const isDark = useTheme();
   const { quality: networkQuality, isOnline } = useNetworkQuality();
+
+  // Debug clustering state
+  useEffect(() => {
+    console.log('[MapViewer] Clustering enabled:', clusteringEnabled, 'Locations count:', locations.length);
+  }, [clusteringEnabled, locations.length]);
 
   // Handle tile loading progress (memoized to prevent re-creating)
   const handleTileProgress = useCallback((loading: boolean, progress: number) => {
@@ -665,19 +704,6 @@ export default function MapViewer({
     return Array.from(cats).sort();
   }, [locations]);
 
-  // Calculate center from all locations if not provided (only once on mount)
-  const hasSetInitialCenter = useRef(false);
-  useEffect(() => {
-    if (!hasSetInitialCenter.current && locations.length > 0) {
-      const validLocations = locations.filter(loc => loc.latitude && loc.longitude);
-      if (validLocations.length > 0) {
-        const avgLat = validLocations.reduce((sum, loc) => sum + loc.latitude, 0) / validLocations.length;
-        const avgLng = validLocations.reduce((sum, loc) => sum + loc.longitude, 0) / validLocations.length;
-        setMapCenter([avgLat, avgLng]);
-        hasSetInitialCenter.current = true;
-      }
-    }
-  }, [locations]);
 
   // Check if location is locked (memoized)
   const isLocationLocked = useCallback((location: Location) => {
@@ -735,6 +761,7 @@ export default function MapViewer({
         // Add attributionControl at bottom
         attributionControl={true}
       >
+        <MapBoundsInitializer locations={locations} />
         <MapController center={mapCenter} zoom={mapZoom} onZoomChange={handleZoomChange} />
         <MapLoadingHandler onLoad={() => setIsLoading(false)} />
         <MapInvalidationHandler />
@@ -797,8 +824,32 @@ export default function MapViewer({
           />
         )}
 
-        {/* Markers for filtered locations */}
-        {filteredLocations.map((location) => {
+        {/* Marker Clustering - renders markers programmatically */}
+        {clusteringEnabled ? (
+          <MarkerClusterGroup
+            locations={filteredLocations}
+            isLocationLocked={isLocationLocked}
+            createCustomIcon={createCustomIcon}
+            handleLocationClick={handleLocationClick}
+            fuzzCoordinates={fuzzCoordinates}
+            maxClusterRadius={(zoom: number) => {
+              // Increase cluster radius at lower zoom levels for wide geographic spread
+              // At zoom 3: 400px radius, at zoom 10: 80px radius
+              if (zoom <= 3) return 400;
+              if (zoom <= 5) return 300;
+              if (zoom <= 7) return 200;
+              if (zoom <= 10) return 120;
+              return 80;
+            }}
+            spiderfyOnMaxZoom={true}
+            showCoverageOnHover={false}
+            zoomToBoundsOnClick={true}
+            chunkedLoading={true}
+            removeOutsideVisibleBounds={false}
+          />
+        ) : (
+          /* Markers for filtered locations - React components */
+          filteredLocations.map((location) => {
           if (!location.latitude || !location.longitude) return null;
 
           const isLocked = isLocationLocked(location);
@@ -884,7 +935,8 @@ export default function MapViewer({
               </Popup>
             </Marker>
           );
-        })}
+        })
+        )}
       </MapContainer>
 
       {/* Overlay Control Panel */}
@@ -1000,6 +1052,20 @@ export default function MapViewer({
               }}
             />
           </div>
+
+          {/* Toggle Clustering */}
+          <button
+            onClick={() => setClusteringEnabled(!clusteringEnabled)}
+            className="w-full p-2 text-sm transition-opacity hover:opacity-70 mb-3"
+            style={{
+              border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--bg-primary)',
+              color: 'var(--link-color)',
+            }}
+            title={clusteringEnabled ? 'Disable marker clustering' : 'Enable marker clustering'}
+          >
+            [{clusteringEnabled ? '✓ Clustering On' : 'Clustering Off'}]
+          </button>
 
           {/* Toggle Location List */}
           <button
@@ -1200,24 +1266,6 @@ export default function MapViewer({
         </div>
       )}
 
-      {/* Debug: Current Zoom Level Indicator - only in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '80px',
-            left: '20px',
-            zIndex: 1000,
-            padding: '4px 8px',
-            backgroundColor: 'var(--bg-surface)',
-            border: '1px solid var(--border-color)',
-            fontSize: '11px',
-            color: 'var(--text-muted)',
-          }}
-        >
-          Zoom: {mapZoom.toFixed(1)} {mapZoom >= 13 ? '(OSM active)' : '(OpenTopoMap only)'}
-        </div>
-      )}
     </div>
   );
 }
