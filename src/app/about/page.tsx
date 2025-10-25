@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getQualifications, getServices } from '@/lib/airtable';
+import { getQualifications, getServices, type Qualification, type Service } from '@/lib/airtable';
 
 export const metadata: Metadata = {
   title: 'About - Chris Loidolt',
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   // Fetch data at build/request time
-  let qualifications: any[] = [];
-  let services: any[] = [];
+  let qualifications: Qualification[] = [];
+  let services: Service[] = [];
 
   try {
     [qualifications, services] = await Promise.all([
@@ -57,7 +57,7 @@ export default async function AboutPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {services.map((service: any) => (
+            {services.map((service) => (
               <div key={service.id} className="space-y-2">
                 <h3 className="text-sm" style={{ color: 'var(--text-primary)' }}>
                   {service.icon && <span className="mr-2">{service.icon}</span>}
@@ -80,7 +80,7 @@ export default async function AboutPage() {
           </div>
 
           <div className="space-y-6">
-            {qualifications.map((qual: any) => (
+            {qualifications.map((qual) => (
               <div key={qual.id} className="space-y-2">
                 <div className="flex items-start justify-between gap-4">
                   <h3 className="text-sm" style={{ color: 'var(--text-primary)' }}>

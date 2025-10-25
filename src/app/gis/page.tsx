@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getAllLocations } from '@/lib/airtable';
+import { getAllLocations, type Location } from '@/lib/airtable';
 import GISMapClient from '@/components/GISMapClient';
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function GISPage() {
   // Fetch locations at build/request time
-  let locations: any[] = [];
+  let locations: Location[] = [];
   try {
     locations = await getAllLocations();
   } catch (error) {

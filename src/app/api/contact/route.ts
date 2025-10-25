@@ -34,8 +34,10 @@ export async function POST(request: NextRequest) {
     // 3. Mailgun API: https://www.mailgun.com/
     // 4. SendGrid API: https://sendgrid.com/
 
-    // For now, just log the message (replace with actual email sending)
-    console.log('Contact form submission:', { name, email, message });
+    // For now, just log the message in development (replace with actual email sending)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Contact form submission:', { name, email, message });
+    }
 
     // Simulate email sending
     await new Promise((resolve) => setTimeout(resolve, 500));

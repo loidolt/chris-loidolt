@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Navigation from '@/components/Navigation';
+import LayoutContent from '@/components/LayoutContent';
 
 export const metadata: Metadata = {
   title: 'Chris Loidolt - Design & Engineering Portfolio',
@@ -50,10 +51,8 @@ export default function RootLayout({
           {/* Navigation Header */}
           <Navigation />
 
-          {/* Main Content */}
-          <main className="flex-1 container mx-auto px-6 py-12 max-w-6xl">
-            {children}
-          </main>
+          {/* Main Content - conditionally styled based on route */}
+          <LayoutContent>{children}</LayoutContent>
 
           {/* Terminal Footer */}
           <footer

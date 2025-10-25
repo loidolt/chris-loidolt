@@ -16,21 +16,17 @@ next-env.d.ts
 /wrangler.toml.local
 
 # Environment variables
-.env
 .env*.local
 .env.production
-
-# Build output (legacy - can be removed after cleanup)
-/build/
-/dist/
 
 # Downloaded/cached images from Airtable (regenerated at build time)
 /public/images/projects/
 
-# Models (copied from /static/models/ at build/dev time)
-/public/models/
-
-# Backup directories
+# Legacy directories (no longer used)
+/build/
+/dist/
+/.astro/
+/.react-router/
 /app.backup/
-/src/pages.astro.backup/
+/static/
 *.backup

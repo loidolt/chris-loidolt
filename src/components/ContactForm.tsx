@@ -51,8 +51,10 @@ export default function ContactForm() {
 
     try {
       // TODO: Implement server endpoint for email sending
-      // For now, just log the data
-      console.log('Contact form submission:', validation.data);
+      // For now, just log the data in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Contact form submission:', validation.data);
+      }
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));

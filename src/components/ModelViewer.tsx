@@ -12,7 +12,9 @@ interface ModelViewerProps {
 
 export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
   useEffect(() => {
-    console.log('[ModelViewer] Loading model from:', modelPath);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[ModelViewer] Loading model from:', modelPath);
+    }
   }, [modelPath]);
 
   return (
@@ -89,10 +91,15 @@ export function ModelViewer({ modelPath, className = "" }: ModelViewerProps) {
 }
 
 function Model({ modelPath }: { modelPath: string; onError?: () => void }) {
-  console.log('[Model] Attempting to load:', modelPath);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[Model] Attempting to load:', modelPath);
+  }
 
   const gltf = useGLTF(modelPath);
-  console.log('[Model] Successfully loaded model');
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[Model] Successfully loaded model');
+  }
 
   // Center and scale the model
   if (gltf.scene) {

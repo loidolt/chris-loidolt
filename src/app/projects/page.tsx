@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import ProjectsGrid from '@/components/ProjectsGrid';
-import { getAllProjects } from '@/lib/airtable';
+import { getAllProjects, type Project } from '@/lib/airtable';
 
 export const metadata: Metadata = {
   title: 'Projects - Chris Loidolt',
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function ProjectsPage() {
   // Fetch projects at build/request time
-  let projects: any[] = [];
+  let projects: Project[] = [];
   try {
     projects = await getAllProjects();
   } catch (error) {

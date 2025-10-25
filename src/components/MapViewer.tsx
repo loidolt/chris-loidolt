@@ -76,6 +76,164 @@ function MapController({ center, zoom }: { center: [number, number]; zoom: numbe
   return null;
 }
 
+// Component to handle map loading events
+function MapLoadingHandler({ onLoad }: { onLoad: () => void }) {
+  const map = useMap();
+
+  useEffect(() => {
+    // Set loading to false when tiles are loaded
+    const handleLoad = () => {
+      onLoad();
+    };
+
+    // Listen for when all tiles have loaded
+    map.whenReady(() => {
+      handleLoad();
+    });
+
+    // Also handle subsequent tile loads
+    map.on('load', handleLoad);
+
+    return () => {
+      map.off('load', handleLoad);
+    };
+  }, [map, onLoad]);
+
+  return null;
+}
+
+// Component to handle tile loading errors and retries
+function TileErrorHandler() {
+  const map = useMap();
+
+  useEffect(() => {
+    const retryTile = (event: any) => {
+      const tile = event.tile;
+      const coords = event.coords;
+
+      // Retry failed tiles up to 3 times
+      if (!tile._retryCount) {
+        tile._retryCount = 0;
+      }
+
+      if (tile._retryCount < 3) {
+        tile._retryCount++;
+        setTimeout(() => {
+          tile.src = tile.src; // Reload the tile
+        }, 1000 * tile._retryCount); // Exponential backoff
+      }
+    };
+
+    map.on('tileerror', retryTile);
+
+    return () => {
+      map.off('tileerror', retryTile);
+    };
+  }, [map]);
+
+  return null;
+}
+
+// Component to prefetch tiles in the background
+function TilePrefetcher() {
+  const map = useMap();
+
+  useEffect(() => {
+    let prefetchTimeout: NodeJS.Timeout;
+
+    const prefetchTiles = () => {
+      // Clear any pending prefetch
+      clearTimeout(prefetchTimeout);
+
+      // Debounce prefetching to avoid excessive requests during pan/zoom
+      prefetchTimeout = setTimeout(() => {
+        const bounds = map.getBounds();
+        const currentZoom = Math.floor(map.getZoom());
+        const tileUrls: string[] = [];
+
+        // Prefetch surrounding tiles at current zoom level first
+        // This helps when panning at high zoom levels
+        if (currentZoom >= 8) {
+          const currentBounds = getTileBounds(bounds, currentZoom);
+
+          // Expand bounds by 1 tile in each direction for surrounding tiles
+          for (let x = currentBounds.minX - 1; x <= currentBounds.maxX + 1; x++) {
+            for (let y = currentBounds.minY - 1; y <= currentBounds.maxY + 1; y++) {
+              if (x >= 0 && y >= 0) {
+                const subdomain = ['a', 'b', 'c'][Math.abs(x + y) % 3];
+                tileUrls.push(`https://${subdomain}.tile.opentopomap.org/${currentZoom}/${x}/${y}.png`);
+              }
+            }
+          }
+        }
+
+        // Also prefetch tiles at zoom + 1 for smooth zooming in
+        if (currentZoom < 16 && currentZoom >= 8) {
+          const nextZoom = currentZoom + 1;
+          const nextBounds = getTileBounds(bounds, nextZoom);
+
+          // Limit the number of tiles to prefetch at next zoom
+          const tileCount = (nextBounds.maxX - nextBounds.minX + 1) * (nextBounds.maxY - nextBounds.minY + 1);
+
+          // Only prefetch if reasonable number of tiles
+          if (tileCount <= 24) {
+            for (let x = nextBounds.minX; x <= nextBounds.maxX; x++) {
+              for (let y = nextBounds.minY; y <= nextBounds.maxY; y++) {
+                const subdomain = ['a', 'b', 'c'][Math.abs(x + y) % 3];
+                tileUrls.push(`https://${subdomain}.tile.opentopomap.org/${nextZoom}/${x}/${y}.png`);
+              }
+            }
+          }
+        }
+
+        // Send prefetch request to service worker (limited to 40 tiles)
+        if (tileUrls.length > 0 && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'PREFETCH_TILES',
+            tiles: tileUrls.slice(0, 40) // Increased to 40 for better coverage
+          });
+        }
+      }, 1000); // Reduced to 1s for faster prefetching
+    };
+
+    // Helper function to calculate tile bounds for a zoom level
+    const getTileBounds = (bounds: L.LatLngBounds, zoom: number) => {
+      const nwPoint = latLngToTile(bounds.getNorthWest(), zoom);
+      const sePoint = latLngToTile(bounds.getSouthEast(), zoom);
+
+      return {
+        minX: Math.max(0, Math.floor(nwPoint.x)),
+        maxX: Math.floor(sePoint.x),
+        minY: Math.max(0, Math.floor(nwPoint.y)),
+        maxY: Math.floor(sePoint.y)
+      };
+    };
+
+    // Convert lat/lng to tile coordinates
+    const latLngToTile = (latLng: L.LatLng, zoom: number) => {
+      const lat = latLng.lat;
+      const lng = latLng.lng;
+      const n = Math.pow(2, zoom);
+      const x = ((lng + 180) / 360) * n;
+      const y = (1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) / 2 * n;
+      return { x, y };
+    };
+
+    // Trigger prefetch on moveend (after pan/zoom completes)
+    map.on('moveend', prefetchTiles);
+
+    // Initial prefetch
+    prefetchTiles();
+
+    return () => {
+      map.off('moveend', prefetchTiles);
+      clearTimeout(prefetchTimeout);
+    };
+  }, [map]);
+
+  return null;
+}
+
 // Custom marker icon with e-ink styling
 function createCustomIcon(category?: string, isLocked: boolean = false): L.Icon {
   // Use different icons/colors based on category
@@ -129,7 +287,23 @@ export default function MapViewer({
   const [showLocationList, setShowLocationList] = useState(false);
   const [unlockedLocations, setUnlockedLocations] = useState<Set<string>>(new Set());
   const [passwordModal, setPasswordModal] = useState<{ location: Location; error?: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const isDark = useTheme();
+
+  // Register service worker for tile caching
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/map-sw.js', { scope: '/' })
+        .then((registration) => {
+          if (process.env.NODE_ENV !== 'production') {
+            console.log('Map tile cache service worker registered:', registration.scope);
+          }
+        })
+        .catch((error) => {
+          console.error('Service worker registration failed:', error);
+        });
+    }
+  }, []);
 
   // Load unlocked locations from localStorage on mount
   useEffect(() => {
@@ -252,7 +426,7 @@ export default function MapViewer({
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}>
       {/* Full-page Map */}
       <MapContainer
         center={mapCenter}
@@ -260,8 +434,12 @@ export default function MapViewer({
         style={{ height: '100%', width: '100%' }}
         className={`e-ink-map ${isDark ? 'theme-dark' : 'theme-light'}`}
         zoomControl={false}
+        preferCanvas={false}
       >
         <MapController center={mapCenter} zoom={mapZoom} />
+        <MapLoadingHandler onLoad={() => setIsLoading(false)} />
+        <TileErrorHandler />
+        <TilePrefetcher />
 
         {/* Zoom controls positioned in bottom-right */}
         <ZoomControl position="bottomright" />
@@ -271,7 +449,24 @@ export default function MapViewer({
           attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>'
           url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
           maxZoom={17}
+          minZoom={3}
           className="theme-tiles"
+          // Optimized for responsive loading
+          keepBuffer={3}
+          updateWhenZooming={true}
+          updateWhenIdle={false}
+          updateInterval={50}
+          tileSize={256}
+          zoomOffset={0}
+          // Caching and loading
+          crossOrigin="anonymous"
+          // Subdomains for parallel loading (OpenTopoMap uses a, b, c)
+          subdomains={['a', 'b', 'c']}
+          // Maximum simultaneous tile loads
+          maxNativeZoom={17}
+          // Tile loading optimization
+          noWrap={false}
+          bounds={undefined}
         />
 
         {/* Markers for filtered locations */}
@@ -548,6 +743,40 @@ export default function MapViewer({
           onCancel={() => setPasswordModal(null)}
           error={passwordModal.error}
         />
+      )}
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'var(--bg-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10000,
+            transition: 'opacity 0.3s ease',
+          }}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <div
+              className="text-sm mb-2"
+              style={{ color: 'var(--accent-secondary)' }}
+            >
+              Loading map tiles...
+            </div>
+            <div
+              className="text-xs"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              [Initializing topographic data]
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

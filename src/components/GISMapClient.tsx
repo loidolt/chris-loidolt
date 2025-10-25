@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import type { Location } from '@/lib/airtable';
 
 // Dynamic import to avoid SSR issues with Leaflet
 const MapViewer = dynamic(() => import('@/components/MapViewer'), {
@@ -13,7 +14,7 @@ const MapViewer = dynamic(() => import('@/components/MapViewer'), {
 });
 
 interface GISMapClientProps {
-  locations: any[];
+  locations: Location[];
 }
 
 export default function GISMapClient({ locations }: GISMapClientProps) {

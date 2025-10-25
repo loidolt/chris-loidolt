@@ -280,3 +280,45 @@ body::after {
     max-width: 100% !important;
   }
 }
+
+/* Ensure full height for Leaflet map containers */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+/* Override default Leaflet tile loading background */
+.leaflet-tile-container {
+  background-color: transparent !important;
+}
+
+/* Performance optimizations for tile rendering */
+.leaflet-tile {
+  /* Use GPU acceleration for smoother tile rendering */
+  transform: translateZ(0);
+  will-change: transform;
+  /* Improve image rendering quality */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Smooth tile loading transitions */
+.leaflet-tile-loaded {
+  animation: fadeInTile 0.1s ease-in;
+}
+
+@keyframes fadeInTile {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Optimize canvas rendering for markers */
+.leaflet-canvas-pane canvas {
+  transform: translateZ(0);
+  will-change: transform;
+}
