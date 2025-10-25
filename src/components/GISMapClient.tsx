@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import type { Location } from '@/lib/airtable';
+import MapErrorBoundary from '@/components/MapErrorBoundary';
 
 // Dynamic import to avoid SSR issues with Leaflet
 const MapViewer = dynamic(() => import('@/components/MapViewer'), {
@@ -18,5 +19,9 @@ interface GISMapClientProps {
 }
 
 export default function GISMapClient({ locations }: GISMapClientProps) {
-  return <MapViewer locations={locations} />;
+  return (
+    <MapErrorBoundary>
+      <MapViewer locations={locations} />
+    </MapErrorBoundary>
+  );
 }

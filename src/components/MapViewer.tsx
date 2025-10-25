@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet';
 import Fuse from 'fuse.js';
 import L from 'leaflet';
 import type { Location } from '@/lib/airtable';
 import PasswordModal from './PasswordModal';
+import LocateButton from './LocateButton';
 import 'leaflet/dist/leaflet.css';
 
 interface MapViewerProps {
@@ -40,6 +41,61 @@ function useTheme() {
   return isDark;
 }
 
+// Hook to detect network quality
+function useNetworkQuality() {
+  const [quality, setQuality] = useState<'fast' | 'slow' | 'offline'>('fast');
+  const [effectiveType, setEffectiveType] = useState<string>('4g');
+
+  useEffect(() => {
+    // Check if Network Information API is available
+    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+
+    const updateNetworkQuality = () => {
+      if (!navigator.onLine) {
+        setQuality('offline');
+        return;
+      }
+
+      if (connection) {
+        const type = connection.effectiveType || '4g';
+        setEffectiveType(type);
+
+        // Classify network quality
+        if (type === '4g' || type === '3g') {
+          setQuality('fast');
+        } else if (type === '2g' || type === 'slow-2g') {
+          setQuality('slow');
+        } else {
+          setQuality('fast'); // Default to fast
+        }
+      } else {
+        setQuality('fast'); // Default if API not available
+      }
+    };
+
+    // Initial check
+    updateNetworkQuality();
+
+    // Listen for network changes
+    window.addEventListener('online', updateNetworkQuality);
+    window.addEventListener('offline', updateNetworkQuality);
+
+    if (connection) {
+      connection.addEventListener('change', updateNetworkQuality);
+    }
+
+    return () => {
+      window.removeEventListener('online', updateNetworkQuality);
+      window.removeEventListener('offline', updateNetworkQuality);
+      if (connection) {
+        connection.removeEventListener('change', updateNetworkQuality);
+      }
+    };
+  }, []);
+
+  return { quality, effectiveType, isOnline: quality !== 'offline' };
+}
+
 // Function to fuzz coordinates for private locations
 // Returns coordinates offset by a random amount within a radius
 function fuzzCoordinates(lat: number, lng: number, locationId: string): [number, number] {
@@ -65,13 +121,62 @@ function fuzzCoordinates(lat: number, lng: number, locationId: string): [number,
   return [lat + latOffset, lng + lngOffset];
 }
 
-// Component to handle map view changes
-function MapController({ center, zoom }: { center: [number, number]; zoom: number }) {
+// Component to handle map view changes and track zoom
+function MapController({
+  center,
+  zoom,
+  onZoomChange
+}: {
+  center: [number, number];
+  zoom: number;
+  onZoomChange?: (zoom: number) => void;
+}) {
   const map = useMap();
+  const isProgrammaticChange = useRef(false);
+  const lastCenterRef = useRef<string>(JSON.stringify(center));
 
   useEffect(() => {
-    map.setView(center, zoom);
+    // Only call setView if the CENTER changed from outside
+    // (clicking a location, not user pan/zoom)
+    const centerKey = JSON.stringify(center);
+
+    if (centerKey !== lastCenterRef.current) {
+      // Center changed programmatically (user clicked a location)
+      isProgrammaticChange.current = true;
+      map.setView(center, zoom);
+      lastCenterRef.current = centerKey;
+
+      // Reset flag after a brief delay
+      setTimeout(() => {
+        isProgrammaticChange.current = false;
+      }, 100);
+    }
+    // If only zoom changed (from our own state update), do nothing
+    // Let Leaflet handle zoom naturally
   }, [center, zoom, map]);
+
+  // Listen for zoom changes and update parent state
+  useEffect(() => {
+    if (!onZoomChange) return;
+
+    const handleZoomEnd = () => {
+      // Only update state if this wasn't triggered by our own setView
+      if (!isProgrammaticChange.current) {
+        const currentZoom = map.getZoom();
+        onZoomChange(currentZoom);
+      }
+    };
+
+    map.on('zoomend', handleZoomEnd);
+
+    // Set initial zoom
+    const currentZoom = map.getZoom();
+    onZoomChange(currentZoom);
+
+    return () => {
+      map.off('zoomend', handleZoomEnd);
+    };
+  }, [map, onZoomChange]);
 
   return null;
 }
@@ -81,14 +186,21 @@ function MapLoadingHandler({ onLoad }: { onLoad: () => void }) {
   const map = useMap();
 
   useEffect(() => {
+    let loadTimeout: NodeJS.Timeout;
+    let hasLoaded = false;
+
     // Set loading to false when tiles are loaded
     const handleLoad = () => {
-      onLoad();
+      if (!hasLoaded) {
+        hasLoaded = true;
+        onLoad();
+      }
     };
 
     // Listen for when all tiles have loaded
     map.whenReady(() => {
-      handleLoad();
+      // Give tiles a moment to render before removing loading screen
+      loadTimeout = setTimeout(handleLoad, 500);
     });
 
     // Also handle subsequent tile loads
@@ -96,8 +208,72 @@ function MapLoadingHandler({ onLoad }: { onLoad: () => void }) {
 
     return () => {
       map.off('load', handleLoad);
+      clearTimeout(loadTimeout);
     };
   }, [map, onLoad]);
+
+  return null;
+}
+
+// Component to handle map visibility and invalidation
+function MapInvalidationHandler() {
+  const map = useMap();
+
+  useEffect(() => {
+    let invalidateTimeout: NodeJS.Timeout;
+    let resizeObserver: ResizeObserver;
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // When page becomes visible, invalidate map size after a brief delay
+        invalidateTimeout = setTimeout(() => {
+          map.invalidateSize();
+          // Force tile layer refresh
+          map.eachLayer((layer: any) => {
+            if (layer._url) { // This is a TileLayer
+              layer.redraw();
+            }
+          });
+        }, 100);
+      }
+    };
+
+    const handleResize = () => {
+      // Debounce resize invalidation
+      clearTimeout(invalidateTimeout);
+      invalidateTimeout = setTimeout(() => {
+        map.invalidateSize();
+      }, 150);
+    };
+
+    // Listen for visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Use ResizeObserver for responsive container changes
+    const mapContainer = map.getContainer();
+    if (mapContainer && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(handleResize);
+      resizeObserver.observe(mapContainer.parentElement || mapContainer);
+    } else {
+      // Fallback to window resize
+      window.addEventListener('resize', handleResize);
+    }
+
+    // Invalidate on mount to ensure proper sizing
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      } else {
+        window.removeEventListener('resize', handleResize);
+      }
+      clearTimeout(invalidateTimeout);
+    };
+  }, [map]);
 
   return null;
 }
@@ -107,27 +283,64 @@ function TileErrorHandler() {
   const map = useMap();
 
   useEffect(() => {
-    const retryTile = (event: any) => {
-      const tile = event.tile;
-      const coords = event.coords;
+    const failedTiles = new Set<string>();
 
-      // Retry failed tiles up to 3 times
+    const retryTile = (event: L.TileErrorEvent) => {
+      const tile = event.tile;
+      const tileUrl = tile.src;
+
+      // Extract zoom level from tile URL
+      const zoomMatch = tileUrl.match(/\/(\d+)\/\d+\/\d+\.png/);
+      const zoomLevel = zoomMatch ? parseInt(zoomMatch[1], 10) : 0;
+
+      // Track failed tiles
       if (!tile._retryCount) {
         tile._retryCount = 0;
       }
 
-      if (tile._retryCount < 3) {
+      // Retry strategy based on zoom level and tile source
+      const isOSM = tileUrl.includes('openstreetmap.org');
+
+      // OSM tiles are more reliable - retry them more aggressively
+      // OpenTopoMap at high zoom has spotty coverage - fewer retries since fallback exists
+      const maxRetries = isOSM ? 3 : (zoomLevel >= 14 ? 1 : 2);
+
+      if (tile._retryCount < maxRetries) {
         tile._retryCount++;
+
+        // Try different subdomain if available
+        const currentSubdomain = tileUrl.match(/https:\/\/([abc])\./)?.[1];
+        const subdomains = ['a', 'b', 'c'];
+        const nextSubdomain = subdomains[(subdomains.indexOf(currentSubdomain || 'a') + 1) % 3];
+
+        // Adaptive delay based on tile source and zoom
+        const baseDelay = isOSM ? 300 : (zoomLevel >= 14 ? 1000 : 500);
+
         setTimeout(() => {
-          tile.src = tile.src; // Reload the tile
-        }, 1000 * tile._retryCount); // Exponential backoff
+          // Try with different subdomain
+          const newUrl = tileUrl.replace(/https:\/\/[abc]\./, `https://${nextSubdomain}.`);
+          tile.src = newUrl;
+        }, baseDelay * tile._retryCount);
+      } else {
+        failedTiles.add(tileUrl);
+        // Only log failures for low zoom or OSM tiles (unexpected failures)
+        if (zoomLevel < 13 || isOSM) {
+          console.warn('[MapViewer] Tile failed after retries:', tileUrl);
+        }
       }
     };
 
+    const clearFailed = () => {
+      // Clear failed tiles list when map successfully loads tiles
+      failedTiles.clear();
+    };
+
     map.on('tileerror', retryTile);
+    map.on('load', clearFailed);
 
     return () => {
       map.off('tileerror', retryTile);
+      map.off('load', clearFailed);
     };
   }, [map]);
 
@@ -135,10 +348,15 @@ function TileErrorHandler() {
 }
 
 // Component to prefetch tiles in the background
-function TilePrefetcher() {
+function TilePrefetcher({ networkQuality }: { networkQuality: 'fast' | 'slow' | 'offline' }) {
   const map = useMap();
 
   useEffect(() => {
+    // Skip prefetching if offline or slow connection
+    if (networkQuality === 'offline' || networkQuality === 'slow') {
+      return;
+    }
+
     let prefetchTimeout: NodeJS.Timeout;
 
     const prefetchTiles = () => {
@@ -151,9 +369,11 @@ function TilePrefetcher() {
         const currentZoom = Math.floor(map.getZoom());
         const tileUrls: string[] = [];
 
-        // Prefetch surrounding tiles at current zoom level first
-        // This helps when panning at high zoom levels
-        if (currentZoom >= 8) {
+        // Don't prefetch beyond zoom 13 (OpenTopoMap's reliable coverage limit)
+        const maxPrefetchZoom = 13;
+
+        // Only prefetch if zoom is within reasonable range
+        if (currentZoom >= 8 && currentZoom <= maxPrefetchZoom) {
           const currentBounds = getTileBounds(bounds, currentZoom);
 
           // Expand bounds by 1 tile in each direction for surrounding tiles
@@ -167,30 +387,36 @@ function TilePrefetcher() {
           }
         }
 
-        // Also prefetch tiles at zoom + 1 for smooth zooming in
-        if (currentZoom < 16 && currentZoom >= 8) {
+        // Also prefetch tiles at zoom + 1 for smooth zooming in (fast network only)
+        // But never prefetch beyond maxPrefetchZoom
+        if (networkQuality === 'fast' && currentZoom < maxPrefetchZoom && currentZoom >= 8) {
           const nextZoom = currentZoom + 1;
-          const nextBounds = getTileBounds(bounds, nextZoom);
 
-          // Limit the number of tiles to prefetch at next zoom
-          const tileCount = (nextBounds.maxX - nextBounds.minX + 1) * (nextBounds.maxY - nextBounds.minY + 1);
+          // Skip if next zoom exceeds our limit
+          if (nextZoom <= maxPrefetchZoom) {
+            const nextBounds = getTileBounds(bounds, nextZoom);
 
-          // Only prefetch if reasonable number of tiles
-          if (tileCount <= 24) {
-            for (let x = nextBounds.minX; x <= nextBounds.maxX; x++) {
-              for (let y = nextBounds.minY; y <= nextBounds.maxY; y++) {
-                const subdomain = ['a', 'b', 'c'][Math.abs(x + y) % 3];
-                tileUrls.push(`https://${subdomain}.tile.opentopomap.org/${nextZoom}/${x}/${y}.png`);
+            // Limit the number of tiles to prefetch at next zoom
+            const tileCount = (nextBounds.maxX - nextBounds.minX + 1) * (nextBounds.maxY - nextBounds.minY + 1);
+
+            // Only prefetch if reasonable number of tiles
+            if (tileCount <= 24) {
+              for (let x = nextBounds.minX; x <= nextBounds.maxX; x++) {
+                for (let y = nextBounds.minY; y <= nextBounds.maxY; y++) {
+                  const subdomain = ['a', 'b', 'c'][Math.abs(x + y) % 3];
+                  tileUrls.push(`https://${subdomain}.tile.opentopomap.org/${nextZoom}/${x}/${y}.png`);
+                }
               }
             }
           }
         }
 
-        // Send prefetch request to service worker (limited to 40 tiles)
+        // Send prefetch request to service worker (limit based on network quality)
+        const maxPrefetch = networkQuality === 'fast' ? 40 : 20;
         if (tileUrls.length > 0 && navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.postMessage({
             type: 'PREFETCH_TILES',
-            tiles: tileUrls.slice(0, 40) // Increased to 40 for better coverage
+            tiles: tileUrls.slice(0, maxPrefetch)
           });
         }
       }, 1000); // Reduced to 1s for faster prefetching
@@ -229,7 +455,7 @@ function TilePrefetcher() {
       map.off('moveend', prefetchTiles);
       clearTimeout(prefetchTimeout);
     };
-  }, [map]);
+  }, [map, networkQuality]);
 
   return null;
 }
@@ -275,6 +501,56 @@ function createCustomIcon(category?: string, isLocked: boolean = false): L.Icon 
   });
 }
 
+// Component to track tile loading progress
+function TileLoadingTracker({ onProgress }: { onProgress: (loading: boolean, progress: number) => void }) {
+  const map = useMap();
+
+  useEffect(() => {
+    let loadingTiles = 0;
+    let totalTiles = 0;
+
+    const handleTileLoadStart = () => {
+      totalTiles++;
+      loadingTiles++;
+      onProgress(true, totalTiles > 0 ? (totalTiles - loadingTiles) / totalTiles : 0);
+    };
+
+    const handleTileLoad = () => {
+      loadingTiles = Math.max(0, loadingTiles - 1);
+      const progress = totalTiles > 0 ? (totalTiles - loadingTiles) / totalTiles : 1;
+      onProgress(loadingTiles > 0, progress);
+
+      // Reset counters when all tiles are loaded
+      if (loadingTiles === 0) {
+        totalTiles = 0;
+      }
+    };
+
+    const handleTileError = () => {
+      loadingTiles = Math.max(0, loadingTiles - 1);
+      const progress = totalTiles > 0 ? (totalTiles - loadingTiles) / totalTiles : 1;
+      onProgress(loadingTiles > 0, progress);
+
+      // Reset counters when all tiles are done (including errors)
+      if (loadingTiles === 0) {
+        totalTiles = 0;
+      }
+    };
+
+    map.on('tileloadstart', handleTileLoadStart);
+    map.on('tileload', handleTileLoad);
+    map.on('tileerror', handleTileError);
+
+    return () => {
+      map.off('tileloadstart', handleTileLoadStart);
+      map.off('tileload', handleTileLoad);
+      map.off('tileerror', handleTileError);
+    };
+  }, [map, onProgress]);
+
+  return null;
+}
+
 export default function MapViewer({
   locations,
   initialCenter = [37.7749, -122.4194], // Default to San Francisco
@@ -288,7 +564,24 @@ export default function MapViewer({
   const [unlockedLocations, setUnlockedLocations] = useState<Set<string>>(new Set());
   const [passwordModal, setPasswordModal] = useState<{ location: Location; error?: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [tilesLoading, setTilesLoading] = useState(false);
+  const [tileProgress, setTileProgress] = useState(0);
   const isDark = useTheme();
+  const { quality: networkQuality, isOnline } = useNetworkQuality();
+
+  // Handle tile loading progress (memoized to prevent re-creating)
+  const handleTileProgress = useCallback((loading: boolean, progress: number) => {
+    setTilesLoading(loading);
+    setTileProgress(progress);
+  }, []);
+
+  // Handle zoom changes from map interaction (memoized)
+  const handleZoomChange = useCallback((newZoom: number) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[MapViewer] Zoom changed to:', newZoom, 'OSM fallback active:', newZoom >= 13);
+    }
+    setMapZoom(newZoom);
+  }, []);
 
   // Register service worker for tile caching
   useEffect(() => {
@@ -372,25 +665,27 @@ export default function MapViewer({
     return Array.from(cats).sort();
   }, [locations]);
 
-  // Calculate center from all locations if not provided
+  // Calculate center from all locations if not provided (only once on mount)
+  const hasSetInitialCenter = useRef(false);
   useEffect(() => {
-    if (locations.length > 0 && initialCenter === initialCenter) {
+    if (!hasSetInitialCenter.current && locations.length > 0) {
       const validLocations = locations.filter(loc => loc.latitude && loc.longitude);
       if (validLocations.length > 0) {
         const avgLat = validLocations.reduce((sum, loc) => sum + loc.latitude, 0) / validLocations.length;
         const avgLng = validLocations.reduce((sum, loc) => sum + loc.longitude, 0) / validLocations.length;
         setMapCenter([avgLat, avgLng]);
+        hasSetInitialCenter.current = true;
       }
     }
-  }, [locations, initialCenter]);
+  }, [locations]);
 
-  // Check if location is locked
-  const isLocationLocked = (location: Location) => {
+  // Check if location is locked (memoized)
+  const isLocationLocked = useCallback((location: Location) => {
     return location.privacy === 'Private' && !unlockedLocations.has(location.id);
-  };
+  }, [unlockedLocations]);
 
-  // Handle password submission
-  const handlePasswordSubmit = (password: string) => {
+  // Handle password submission (memoized)
+  const handlePasswordSubmit = useCallback((password: string) => {
     if (!passwordModal) return;
 
     const { location } = passwordModal;
@@ -410,11 +705,13 @@ export default function MapViewer({
         error: 'Incorrect password. Please try again.'
       });
     }
-  };
+  }, [passwordModal]);
 
-  // Handle location click from search/list or marker
-  const handleLocationClick = (location: Location) => {
-    if (isLocationLocked(location)) {
+  // Handle location click from search/list or marker (memoized)
+  const handleLocationClick = useCallback((location: Location) => {
+    const locked = location.privacy === 'Private' && !unlockedLocations.has(location.id);
+
+    if (locked) {
       // Show password modal for locked locations
       setPasswordModal({ location });
     } else {
@@ -423,7 +720,7 @@ export default function MapViewer({
       setMapZoom(14);
       setShowLocationList(false);
     }
-  };
+  }, [unlockedLocations]);
 
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}>
@@ -435,39 +732,70 @@ export default function MapViewer({
         className={`e-ink-map ${isDark ? 'theme-dark' : 'theme-light'}`}
         zoomControl={false}
         preferCanvas={false}
+        // Add attributionControl at bottom
+        attributionControl={true}
       >
-        <MapController center={mapCenter} zoom={mapZoom} />
+        <MapController center={mapCenter} zoom={mapZoom} onZoomChange={handleZoomChange} />
         <MapLoadingHandler onLoad={() => setIsLoading(false)} />
+        <MapInvalidationHandler />
         <TileErrorHandler />
-        <TilePrefetcher />
+        <TilePrefetcher networkQuality={networkQuality} />
+        <TileLoadingTracker onProgress={handleTileProgress} />
 
         {/* Zoom controls positioned in bottom-right */}
         <ZoomControl position="bottomright" />
 
-        {/* OpenTopoMap tiles with theme-aware styling */}
+        {/* OpenTopoMap tiles - primary layer */}
         <TileLayer
+          key={`topo-layer-${isDark ? 'dark' : 'light'}`}
           attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>'
           url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
           maxZoom={17}
           minZoom={3}
           className="theme-tiles"
-          // Optimized for responsive loading
           keepBuffer={3}
-          updateWhenZooming={true}
-          updateWhenIdle={false}
-          updateInterval={50}
+          updateWhenZooming={false}
+          updateWhenIdle={true}
+          updateInterval={200}
           tileSize={256}
           zoomOffset={0}
-          // Caching and loading
           crossOrigin="anonymous"
-          // Subdomains for parallel loading (OpenTopoMap uses a, b, c)
           subdomains={['a', 'b', 'c']}
-          // Maximum simultaneous tile loads
-          maxNativeZoom={17}
-          // Tile loading optimization
+          // OpenTopoMap has very spotty coverage above zoom 13
+          // Most areas only have tiles up to zoom 13 reliably
+          maxNativeZoom={13}
           noWrap={false}
           bounds={undefined}
+          // Don't show error tiles - let the fallback layer handle it
+          errorTileUrl=""
+          // Add retry logic
+          retryDelay={1000}
+          retryAttempts={2}
         />
+
+        {/* OpenStreetMap fallback layer for high zoom */}
+        {mapZoom >= 13 && (
+          <TileLayer
+            key={`osm-fallback-${isDark ? 'dark' : 'light'}`}
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxZoom={19}
+            minZoom={13}
+            className="theme-tiles osm-fallback"
+            keepBuffer={3}
+            updateWhenZooming={false}
+            updateWhenIdle={true}
+            updateInterval={200}
+            tileSize={256}
+            crossOrigin="anonymous"
+            subdomains={['a', 'b', 'c']}
+            // OSM has better high-zoom coverage
+            maxNativeZoom={19}
+            opacity={0.8} // Slightly transparent to blend with topo layer
+            // Add pane to ensure proper layering
+            pane="tilePane"
+          />
+        )}
 
         {/* Markers for filtered locations */}
         {filteredLocations.map((location) => {
@@ -576,8 +904,35 @@ export default function MapViewer({
         <div style={{ padding: '16px' }}>
           {/* Header */}
           <div style={{ marginBottom: '16px' }}>
-            <div className="text-sm mb-1" style={{ color: 'var(--accent-secondary)' }}>
-              GIS Map
+            <div className="flex items-center justify-between mb-1">
+              <div className="text-sm" style={{ color: 'var(--accent-secondary)' }}>
+                GIS Map
+              </div>
+              {/* Network status indicator */}
+              {!isOnline && (
+                <div
+                  className="text-xs px-2 py-1"
+                  style={{
+                    color: 'var(--error-color)',
+                    border: '1px solid var(--error-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                  }}
+                >
+                  [Offline]
+                </div>
+              )}
+              {isOnline && networkQuality === 'slow' && (
+                <div
+                  className="text-xs px-2 py-1"
+                  style={{
+                    color: 'var(--accent-secondary)',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                  }}
+                >
+                  [Slow connection]
+                </div>
+              )}
             </div>
             <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
               {filteredLocations.length} location{filteredLocations.length === 1 ? '' : 's'}
@@ -635,6 +990,16 @@ export default function MapViewer({
               </div>
             </div>
           )}
+
+          {/* Locate Me Button */}
+          <div style={{ marginBottom: '12px' }}>
+            <LocateButton
+              onLocate={(lat, lng) => {
+                setMapCenter([lat, lng]);
+                setMapZoom(16);
+              }}
+            />
+          </div>
 
           {/* Toggle Location List */}
           <button
@@ -776,6 +1141,81 @@ export default function MapViewer({
               [Initializing topographic data]
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Tile Loading Indicator */}
+      {!isLoading && tilesLoading && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '30px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            padding: '8px 16px',
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          }}
+        >
+          <div
+            className="text-xs"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Loading tiles...
+          </div>
+          <div
+            style={{
+              width: '80px',
+              height: '4px',
+              backgroundColor: 'var(--bg-primary)',
+              border: '1px solid var(--border-color)',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: `${tileProgress * 100}%`,
+                backgroundColor: 'var(--accent-primary)',
+                transition: 'width 0.2s ease',
+              }}
+            />
+          </div>
+          <div
+            className="text-xs"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            {Math.round(tileProgress * 100)}%
+          </div>
+        </div>
+      )}
+
+      {/* Debug: Current Zoom Level Indicator - only in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '80px',
+            left: '20px',
+            zIndex: 1000,
+            padding: '4px 8px',
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border-color)',
+            fontSize: '11px',
+            color: 'var(--text-muted)',
+          }}
+        >
+          Zoom: {mapZoom.toFixed(1)} {mapZoom >= 13 ? '(OSM active)' : '(OpenTopoMap only)'}
         </div>
       )}
     </div>
