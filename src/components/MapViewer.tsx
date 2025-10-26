@@ -1,21 +1,24 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet';
-import Fuse from 'fuse.js';
-import L from 'leaflet';
 import type { LocationPublic } from '@/lib/airtable';
 import PasswordModal from './PasswordModal';
-import LocateButton from './LocateButton';
 import MarkerClusterGroup from './MarkerClusterGroup';
 import MapKeyboardNav from './MapKeyboardNav';
 import MapAnnouncer from './MapAnnouncer';
 import MapDrawingTools from './MapDrawingTools';
 import MapActionControls from './MapActionControls';
-import Tooltip from './Tooltip';
 import OverlayPanel, { PanelTab } from './OverlayPanel';
-import LocationShareButton from './LocationShareButton';
+import SearchPanel from './map/SearchPanel';
+import LocationsListPanel from './map/LocationsListPanel';
+import LocationInfoPanel from './map/LocationInfoPanel';
 import { useDrawings } from '@/hooks/useDrawings';
+import { useTheme } from '@/hooks/useTheme';
+import { useNetworkQuality } from '@/hooks/useNetworkQuality';
+import { useLocationFilters } from '@/hooks/useLocationFilters';
+import { fuzzCoordinates, createCustomIcon } from '@/lib/mapUtils';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 interface MapViewerProps {
@@ -26,153 +29,6 @@ interface MapViewerProps {
   shareToken?: string | null;
 }
 
-// Hook to detect theme changes
-function useTheme() {
-  const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
-    // Check initial theme
-    const checkTheme = () => {
-      const isLight = document.documentElement.classList.contains('light');
-      setIsDark(!isLight);
-    };
-
-    checkTheme();
-
-    // Watch for theme changes
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return isDark;
-}
-
-// Hook to detect network quality
-function useNetworkQuality() {
-  const [quality, setQuality] = useState<'fast' | 'slow' | 'offline'>('fast');
-  const [effectiveType, setEffectiveType] = useState<string>('4g');
-
-  useEffect(() => {
-    // Check if Network Information API is available
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
-
-    const updateNetworkQuality = () => {
-      if (!navigator.onLine) {
-        setQuality('offline');
-        return;
-      }
-
-      if (connection) {
-        const type = connection.effectiveType || '4g';
-        setEffectiveType(type);
-
-        // Classify network quality
-        if (type === '4g' || type === '3g') {
-          setQuality('fast');
-        } else if (type === '2g' || type === 'slow-2g') {
-          setQuality('slow');
-        } else {
-          setQuality('fast'); // Default to fast
-        }
-      } else {
-        setQuality('fast'); // Default if API not available
-      }
-    };
-
-    // Initial check
-    updateNetworkQuality();
-
-    // Listen for network changes
-    window.addEventListener('online', updateNetworkQuality);
-    window.addEventListener('offline', updateNetworkQuality);
-
-    if (connection) {
-      connection.addEventListener('change', updateNetworkQuality);
-    }
-
-    return () => {
-      window.removeEventListener('online', updateNetworkQuality);
-      window.removeEventListener('offline', updateNetworkQuality);
-      if (connection) {
-        connection.removeEventListener('change', updateNetworkQuality);
-      }
-    };
-  }, []);
-
-  return { quality, effectiveType, isOnline: quality !== 'offline' };
-}
-
-// Function to fuzz coordinates for private locations using cryptographically secure random offsets
-// Returns coordinates offset by a random amount within a radius
-// Offsets are stored in localStorage to ensure consistency within the same browser/device
-function fuzzCoordinates(lat: number, lng: number, locationId: string): [number, number] {
-  const STORAGE_KEY = 'map_location_offsets';
-  const MAX_OFFSET_KM = 2; // Maximum offset in kilometers
-  const KM_TO_DEGREES = 0.009; // Approximate conversion (1km ≈ 0.009 degrees)
-  const radiusInDegrees = MAX_OFFSET_KM * KM_TO_DEGREES;
-
-  try {
-    // Retrieve or initialize offset storage
-    const storedData = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-    const offsetMap: Record<string, { latOffset: number; lngOffset: number }> = storedData
-      ? JSON.parse(storedData)
-      : {};
-
-    // Check if we already have an offset for this location
-    if (offsetMap[locationId]) {
-      const { latOffset, lngOffset } = offsetMap[locationId];
-      return [lat + latOffset, lng + lngOffset];
-    }
-
-    // Generate new cryptographically secure random offset
-    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
-      const randomArray = new Uint32Array(2);
-      window.crypto.getRandomValues(randomArray);
-
-      // Convert to angle and distance
-      const angle = (randomArray[0] / 0xFFFFFFFF) * 2 * Math.PI;
-      const distance = (randomArray[1] / 0xFFFFFFFF) * radiusInDegrees;
-
-      const latOffset = Math.cos(angle) * distance;
-      const lngOffset = Math.sin(angle) * distance;
-
-      // Store for future use
-      offsetMap[locationId] = { latOffset, lngOffset };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(offsetMap));
-
-      return [lat + latOffset, lng + lngOffset];
-    }
-
-    // Fallback for server-side rendering or browsers without crypto API
-    // Use a different method that's still unpredictable but consistent per session
-    const sessionSeed = Date.now() + Math.random();
-    const hash = (seed: number) => {
-      let h = seed;
-      for (let i = 0; i < locationId.length; i++) {
-        h = ((h << 5) - h) + locationId.charCodeAt(i);
-        h = h & h; // Convert to 32-bit integer
-      }
-      return Math.abs(h);
-    };
-
-    const angle = (hash(sessionSeed) % 360) * (Math.PI / 180);
-    const distance = ((hash(sessionSeed * 2) / 0x7FFFFFFF) * radiusInDegrees);
-
-    const latOffset = Math.cos(angle) * distance;
-    const lngOffset = Math.sin(angle) * distance;
-
-    return [lat + latOffset, lng + lngOffset];
-  } catch (error) {
-    console.error('[fuzzCoordinates] Error fuzzing coordinates:', error);
-    // If all else fails, return original coordinates
-    return [lat, lng];
-  }
-}
 
 // Component to fit map bounds to filtered locations when filters change
 function MapFilterExtentsHandler({
@@ -423,7 +279,7 @@ function TileErrorHandler() {
     const failedTiles = new Set<string>();
 
     const retryTile = (event: L.TileErrorEvent) => {
-      const tile = event.tile;
+      const tile = event.tile as HTMLImageElement & { _retryCount?: number };
       const tileUrl = tile.src;
 
       // Extract zoom level from tile URL
@@ -597,46 +453,6 @@ function TilePrefetcher({ networkQuality }: { networkQuality: 'fast' | 'slow' | 
   return null;
 }
 
-// Custom marker icon with e-ink styling
-function createCustomIcon(category?: string, isLocked: boolean = false): L.Icon {
-  // Use different icons/colors based on category
-  const categoryColors: Record<string, string> = {
-    landmark: 'var(--accent-primary)',
-    trail: 'var(--accent-secondary)',
-    camp: 'var(--link-color)',
-    default: 'var(--text-primary)',
-  };
-
-  const color = isLocked
-    ? 'var(--text-muted)'
-    : (categoryColors[category?.toLowerCase() || 'default'] || categoryColors.default);
-
-  const lockIcon = isLocked ? `
-    <g transform="translate(7.5, 7.5)">
-      <rect x="3" y="5" width="7" height="6" rx="1" fill="var(--bg-primary)" stroke="${color}" stroke-width="1"/>
-      <path d="M4.5 5 V3.5 A2 2 0 0 1 8.5 3.5 V5" fill="none" stroke="${color}" stroke-width="1"/>
-      <circle cx="6.5" cy="8" r="1" fill="${color}"/>
-    </g>
-  ` : `<circle cx="12.5" cy="12.5" r="4" fill="var(--bg-primary)"/>`;
-
-  const svgIcon = `
-    <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12.5 0C5.596 0 0 5.596 0 12.5c0 9.375 12.5 28.5 12.5 28.5S25 21.875 25 12.5C25 5.596 19.404 0 12.5 0z"
-            fill="${color}"
-            stroke="var(--bg-primary)"
-            stroke-width="2"
-            opacity="${isLocked ? '0.6' : '1'}"/>
-      ${lockIcon}
-    </svg>
-  `;
-
-  return L.icon({
-    iconUrl: `data:image/svg+xml;base64,${btoa(svgIcon)}`,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-  });
-}
 
 // Component to track tile loading progress
 function TileLoadingTracker({ onProgress }: { onProgress: (loading: boolean, progress: number) => void }) {
@@ -695,10 +511,26 @@ export default function MapViewer({
   sharedLocationId = null,
   shareToken = null
 }: MapViewerProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
-  const [privacyFilter, setPrivacyFilter] = useState<'all' | 'public' | 'private'>('all');
-  const [hasImageFilter, setHasImageFilter] = useState<boolean | null>(null);
+  // Use extracted hooks
+  const isDark = useTheme();
+  const { quality: networkQuality, isOnline } = useNetworkQuality();
+  const {
+    searchQuery,
+    setSearchQuery,
+    selectedCategories,
+    setSelectedCategories,
+    privacyFilter,
+    setPrivacyFilter,
+    hasImageFilter,
+    setHasImageFilter,
+    filteredLocations,
+    categories,
+    filterKey,
+    activeFilterCount,
+    clearAllFilters,
+  } = useLocationFilters(locations);
+
+  // Map state
   const [autoZoomToExtents, setAutoZoomToExtents] = useState(true);
   const [mapCenter, setMapCenter] = useState<[number, number]>(initialCenter);
   const [mapZoom, setMapZoom] = useState(initialZoom);
@@ -715,9 +547,6 @@ export default function MapViewer({
   // Panel visibility state
   const [activeTab, setActiveTab] = useState<'search' | 'locations' | 'info'>('search');
   const [isPanelOpen, setIsPanelOpen] = useState(true);
-
-  const isDark = useTheme();
-  const { quality: networkQuality, isOnline } = useNetworkQuality();
 
   // Drawing tools state
   const {
@@ -836,91 +665,6 @@ export default function MapViewer({
       setIsPanelOpen(true);
     }, 500);
   }, [sharedLocationId, shareToken, locations]);
-
-  // Initialize Fuse.js for fuzzy searching
-  const fuse = useMemo(
-    () =>
-      new Fuse(locations, {
-        keys: ['name', 'description', 'category', 'categories'],
-        threshold: 0.3,
-      }),
-    [locations]
-  );
-
-  // Filter locations based on search and category
-  const filteredLocations = useMemo(() => {
-    let filtered = locations;
-
-    // Apply search filter
-    if (searchQuery) {
-      filtered = fuse.search(searchQuery).map((result) => result.item);
-    }
-
-    // Apply category filter (multi-select)
-    if (selectedCategories.size > 0) {
-      filtered = filtered.filter((loc) => {
-        // Check if location has any of the selected categories
-        if (loc.categories && loc.categories.some(cat => selectedCategories.has(cat))) {
-          return true;
-        }
-        return loc.category && selectedCategories.has(loc.category);
-      });
-    }
-
-    // Apply privacy filter
-    if (privacyFilter !== 'all') {
-      filtered = filtered.filter((loc) => {
-        if (privacyFilter === 'public') {
-          return loc.privacy !== 'Private';
-        } else {
-          return loc.privacy === 'Private';
-        }
-      });
-    }
-
-    // Apply has image filter
-    if (hasImageFilter !== null) {
-      filtered = filtered.filter((loc) => {
-        return hasImageFilter ? !!loc.image : !loc.image;
-      });
-    }
-
-    return filtered;
-  }, [locations, searchQuery, selectedCategories, privacyFilter, hasImageFilter, fuse]);
-
-  // Get unique categories from all locations
-  const categories = useMemo(() => {
-    const cats = new Set<string>();
-    locations.forEach((loc) => {
-      if (loc.categories && loc.categories.length > 0) {
-        loc.categories.forEach((cat) => cats.add(cat));
-      }
-      if (loc.category) {
-        cats.add(loc.category);
-      }
-    });
-    return Array.from(cats).sort();
-  }, [locations]);
-
-  // Create a filter key to detect when filters change
-  const filterKey = useMemo(() => {
-    return JSON.stringify({
-      search: searchQuery,
-      categories: Array.from(selectedCategories).sort(),
-      privacy: privacyFilter,
-      hasImage: hasImageFilter,
-    });
-  }, [searchQuery, selectedCategories, privacyFilter, hasImageFilter]);
-
-  // Count active filters
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (searchQuery) count++;
-    if (selectedCategories.size > 0) count++;
-    if (privacyFilter !== 'all') count++;
-    if (hasImageFilter !== null) count++;
-    return count;
-  }, [searchQuery, selectedCategories, privacyFilter, hasImageFilter]);
 
 
   // Check if location is locked (memoized)
@@ -1076,502 +820,56 @@ export default function MapViewer({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedLocation, passwordModal, showLocationList, activeTab]);
 
-  // Define panel tabs
+  // Define panel tabs using extracted panel components
   const panelTabs: PanelTab[] = [
     {
       id: 'search',
       label: 'Search',
       content: (
-        <>
-          {/* Network status indicator */}
-          {(!isOnline || networkQuality === 'slow') && (
-            <div
-              style={{
-                padding: '6px 8px',
-                borderBottom: '1px solid var(--border-color)',
-              }}
-            >
-              {!isOnline && (
-                <div
-                  className="text-xs px-1.5 py-0.5"
-                  style={{
-                    color: 'var(--error-color)',
-                    border: '1px solid var(--error-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                    display: 'inline-block',
-                  }}
-                >
-                  Offline
-                </div>
-              )}
-              {isOnline && networkQuality === 'slow' && (
-                <div
-                  className="text-xs px-1.5 py-0.5"
-                  style={{
-                    color: 'var(--accent-secondary)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                    display: 'inline-block',
-                  }}
-                >
-                  Slow
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Search & Filter Section */}
-          <div style={{ padding: '8px 8px 12px', borderBottom: '1px solid var(--border-color)' }}>
-            {/* Compact Search */}
-            <div style={{ position: 'relative', marginBottom: '8px' }}>
-              <input
-                id="location-search"
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="input-terminal-primary pl-9 text-sm sm:text-xs sm:p-1.5 sm:pl-7 focus:ring-1 transition-all"
-                aria-label="Search locations by name or description"
-              />
-              <span
-                style={{
-                  position: 'absolute',
-                  left: '6px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'var(--text-muted)',
-                  pointerEvents: 'none',
-                  fontSize: '11px',
-                }}
-                aria-hidden="true"
-              >
-                🔍
-              </span>
-            </div>
-
-            {/* Multi-select Category Filter */}
-            {categories.length > 0 && (
-              <div>
-                <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                  Categories {selectedCategories.size > 0 && `(${selectedCategories.size})`}
-                </div>
-                <div
-                  role="group"
-                  aria-label="Category filters"
-                  className="flex flex-wrap gap-1"
-                >
-                  {categories.map((cat) => {
-                    const isSelected = selectedCategories.has(cat);
-                    return (
-                      <button
-                        key={cat}
-                        onClick={() => {
-                          const newCategories = new Set(selectedCategories);
-                          if (isSelected) {
-                            newCategories.delete(cat);
-                          } else {
-                            newCategories.add(cat);
-                          }
-                          setSelectedCategories(newCategories);
-                        }}
-                        className={`px-2.5 py-2 sm:px-1.5 sm:py-0.5 ${isSelected ? 'btn-terminal-selected' : 'btn-terminal-muted'}`}
-                        style={{ minHeight: '36px', fontWeight: isSelected ? 600 : 400 }}
-                        aria-pressed={isSelected}
-                        aria-label={`${isSelected ? 'Remove' : 'Add'} ${cat} filter`}
-                      >
-                        {isSelected && '✓ '}{cat}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Advanced Filters Section */}
-          <details style={{ padding: '8px', backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)' }}>
-            <summary
-              className="text-xs cursor-pointer transition-opacity hover:opacity-70 mb-2"
-              style={{ color: 'var(--accent-secondary)', listStyle: 'none', userSelect: 'none' }}
-            >
-              ⚙️ Advanced Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
-            </summary>
-            <div className="space-y-3">
-              {/* Privacy Filter */}
-              <div>
-                <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                  Privacy
-                </div>
-                <div className="flex gap-1">
-                  {['all', 'public', 'private'].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => setPrivacyFilter(option as 'all' | 'public' | 'private')}
-                      className={`px-2 py-2 sm:py-1 ${privacyFilter === option ? 'btn-terminal-selected' : 'btn-terminal-muted'}`}
-                      style={{ flex: 1, minHeight: '40px', fontWeight: privacyFilter === option ? 600 : 400 }}
-                      aria-pressed={privacyFilter === option}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Has Image Filter */}
-              <div>
-                <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                  Images
-                </div>
-                <div className="flex gap-1">
-                  {[
-                    { label: 'all', value: null },
-                    { label: 'with image', value: true },
-                    { label: 'no image', value: false },
-                  ].map((option) => (
-                    <button
-                      key={option.label}
-                      onClick={() => setHasImageFilter(option.value)}
-                      className={`px-2 py-2 sm:py-1 ${hasImageFilter === option.value ? 'btn-terminal-selected' : 'btn-terminal-muted'}`}
-                      style={{ flex: 1, minHeight: '40px', fontWeight: hasImageFilter === option.value ? 600 : 400 }}
-                      aria-pressed={hasImageFilter === option.value}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Auto-zoom Toggle */}
-              <div>
-                <label className="flex items-center justify-between cursor-pointer">
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    Auto-zoom to extents
-                  </span>
-                  <button
-                    onClick={() => setAutoZoomToExtents(!autoZoomToExtents)}
-                    className="btn-terminal px-3 py-2 sm:px-2 sm:py-1"
-                    style={{
-                      color: autoZoomToExtents ? 'var(--accent-primary)' : 'var(--text-muted)',
-                      minWidth: '52px',
-                      minHeight: '36px',
-                    }}
-                    aria-pressed={autoZoomToExtents}
-                  >
-                    {autoZoomToExtents ? 'ON' : 'OFF'}
-                  </button>
-                </label>
-                <div className="text-xs mt-1" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
-                  Automatically zoom to fit filtered locations
-                </div>
-              </div>
-            </div>
-          </details>
-
-          {/* Drawing Actions - shown when drawing is enabled and there are drawings */}
-          {drawingEnabled && drawingCount > 0 && (
-            <div style={{ padding: '8px', borderBottom: '1px solid var(--border-color)' }}>
-              <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                Drawings ({drawingCount})
-              </div>
-              <div className="grid grid-cols-3 gap-1">
-                <Tooltip content="Save to storage" position="bottom">
-                  <button
-                    onClick={() => saveDrawings()}
-                    className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
-                    style={{
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: 'var(--bg-primary)',
-                      color: 'var(--link-color)',
-                      outline: 'none',
-                    }}
-                    aria-label="Save drawings to browser storage"
-                  >
-                    Save
-                  </button>
-                </Tooltip>
-                <Tooltip content="Export GeoJSON" position="bottom">
-                  <button
-                    onClick={() => exportGeoJSON()}
-                    className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
-                    style={{
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: 'var(--bg-primary)',
-                      color: 'var(--link-color)',
-                      outline: 'none',
-                    }}
-                    aria-label="Export drawings as GeoJSON file"
-                  >
-                    Export
-                  </button>
-                </Tooltip>
-                <Tooltip content="Clear all" position="bottom">
-                  <button
-                    onClick={() => {
-                      if (confirm('Clear all drawings?')) {
-                        clearDrawings();
-                      }
-                    }}
-                    className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
-                    style={{
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: 'var(--bg-primary)',
-                      color: 'var(--error-color)',
-                      outline: 'none',
-                    }}
-                    aria-label="Clear all drawings"
-                  >
-                    Clear
-                  </button>
-                </Tooltip>
-              </div>
-            </div>
-          )}
-
-          {/* Compact Keyboard Shortcuts */}
-          <details style={{ padding: '6px 8px', backgroundColor: 'var(--bg-primary)' }}>
-            <summary
-              className="text-xs cursor-pointer transition-opacity hover:opacity-70"
-              style={{ color: 'var(--text-muted)', listStyle: 'none', userSelect: 'none' }}
-            >
-              ⌨️ Shortcuts
-            </summary>
-            <div className="mt-1.5 space-y-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>
-              <div className="flex justify-between">
-                <span>Locate</span>
-                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>L</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span>List</span>
-                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>⇧L</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span>Cluster</span>
-                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>C</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span>Draw</span>
-                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>D</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span>Search</span>
-                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>/</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span>Close</span>
-                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>Esc</kbd>
-              </div>
-            </div>
-          </details>
-        </>
+        <SearchPanel
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
+          categories={categories}
+          selectedCategories={selectedCategories}
+          onSelectedCategoriesChange={setSelectedCategories}
+          privacyFilter={privacyFilter}
+          onPrivacyFilterChange={setPrivacyFilter}
+          hasImageFilter={hasImageFilter}
+          onHasImageFilterChange={setHasImageFilter}
+          autoZoomToExtents={autoZoomToExtents}
+          onAutoZoomToExtentsChange={setAutoZoomToExtents}
+          activeFilterCount={activeFilterCount}
+          isOnline={isOnline}
+          networkQuality={networkQuality}
+          drawingEnabled={drawingEnabled}
+          drawingCount={drawingCount}
+          onSaveDrawings={saveDrawings}
+          onExportGeoJSON={exportGeoJSON}
+          onClearDrawings={clearDrawings}
+        />
       ),
     },
     {
       id: 'locations',
       label: 'Locations',
       content: (
-        <div style={{ padding: '8px' }}>
-          {filteredLocations.length === 0 ? (
-            <div style={{ padding: '24px', textAlign: 'center' }}>
-              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                No results found
-              </div>
-            </div>
-          ) : (
-            <>
-              {filteredLocations.map((location) => {
-                const isLocked = isLocationLocked(location);
-                return (
-                  <button
-                    key={location.id}
-                    onClick={() => handleLocationClick(location)}
-                    className="btn-terminal w-full text-left p-3 sm:p-2 mb-2"
-                    style={{
-                      opacity: isLocked ? 0.7 : 1,
-                      minHeight: '56px',
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      {isLocked && <span style={{ color: 'var(--text-muted)' }}>🔒</span>}
-                      <div className="text-base sm:text-sm flex-1" style={{ color: 'var(--text-primary)' }}>
-                        {location.name}
-                      </div>
-                    </div>
-                    {location.category && (
-                      <div className="text-sm sm:text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                        [{location.category}]
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </>
-          )}
-        </div>
+        <LocationsListPanel
+          filteredLocations={filteredLocations}
+          isLocationLocked={isLocationLocked}
+          onLocationClick={handleLocationClick}
+        />
       ),
     },
     {
       id: 'info',
       label: 'Info',
       disabled: !selectedLocation,
-      content: selectedLocation ? (
-        <div style={{ padding: '16px' }}>
-          {/* Featured Image */}
-          {selectedLocation.image && (
-            <div style={{ marginBottom: '20px' }}>
-              <img
-                src={selectedLocation.image}
-                alt={selectedLocation.name}
-                className="w-full object-cover h-48 sm:h-60"
-                style={{
-                  border: '1px solid var(--border-color)',
-                  filter: isDark ? 'grayscale(100%)' : 'grayscale(50%)',
-                }}
-              />
-            </div>
-          )}
-
-          {/* Name */}
-          <div style={{ marginBottom: '16px' }}>
-            <h2
-              className="text-lg font-semibold mb-1"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              {selectedLocation.name}
-            </h2>
-          </div>
-
-          {/* Categories */}
-          {(selectedLocation.categories && selectedLocation.categories.length > 0) && (
-            <div style={{ marginBottom: '20px' }}>
-              <div
-                className="text-xs mb-2"
-                style={{ color: 'var(--accent-secondary)' }}
-              >
-                Categories
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {selectedLocation.categories.map((cat, idx) => (
-                  <span
-                    key={idx}
-                    className="text-xs px-2 py-1"
-                    style={{
-                      color: 'var(--text-muted)',
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: 'var(--bg-primary)',
-                    }}
-                  >
-                    [{cat}]
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Coordinates */}
-          <div style={{ marginBottom: '20px' }}>
-            <div
-              className="text-xs mb-2"
-              style={{ color: 'var(--accent-secondary)' }}
-            >
-              Coordinates
-            </div>
-            <div className="text-sm" style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-              {selectedLocation.latitude.toFixed(6)}, {selectedLocation.longitude.toFixed(6)}
-            </div>
-          </div>
-
-          {/* Description */}
-          {selectedLocation.description && (
-            <div style={{ marginBottom: '20px' }}>
-              <div
-                className="text-xs mb-2"
-                style={{ color: 'var(--accent-secondary)' }}
-              >
-                Description
-              </div>
-              <div
-                className="text-sm leading-relaxed"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                {selectedLocation.description}
-              </div>
-            </div>
-          )}
-
-          {/* External Link */}
-          {selectedLocation.url && (
-            <div style={{ marginBottom: '20px' }}>
-              <a
-                href={selectedLocation.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-sm hover:opacity-70 transition-opacity px-3 py-2"
-                style={{
-                  color: 'var(--link-color)',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: 'var(--bg-primary)',
-                }}
-              >
-                [Learn more →]
-              </a>
-            </div>
-          )}
-
-          {/* Privacy */}
-          {selectedLocation.privacy && (
-            <div style={{ marginBottom: '12px' }}>
-              <div
-                className="text-xs mb-2"
-                style={{ color: 'var(--accent-secondary)' }}
-              >
-                Privacy
-              </div>
-              <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                {selectedLocation.privacy}
-              </div>
-            </div>
-          )}
-
-          {/* Footer with action buttons */}
-          <div className="space-y-2 mt-4">
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  const coords = `${selectedLocation.latitude}, ${selectedLocation.longitude}`;
-                  navigator.clipboard.writeText(coords);
-                }}
-                className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
-                style={{
-                  color: 'var(--link-color)',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: 'var(--bg-primary)',
-                }}
-                aria-label="Copy coordinates to clipboard"
-              >
-                [Copy Coords]
-              </button>
-              {selectedLocation.url && (
-                <button
-                  onClick={() => {
-                    window.open(selectedLocation.url, '_blank', 'noopener,noreferrer');
-                  }}
-                  className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
-                  style={{
-                    color: 'var(--accent-primary)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                  }}
-                  aria-label="Visit external link"
-                >
-                  [Visit Link]
-                </button>
-              )}
-            </div>
-            {/* Share button */}
-            <LocationShareButton location={selectedLocation} />
-          </div>
-        </div>
-      ) : null,
+      content: (
+        <LocationInfoPanel
+          selectedLocation={selectedLocation}
+          isDark={isDark}
+        />
+      ),
     },
   ];
 
@@ -1586,12 +884,7 @@ export default function MapViewer({
       </span>
       {activeFilterCount > 0 && (
         <button
-          onClick={() => {
-            setSearchQuery('');
-            setSelectedCategories(new Set());
-            setPrivacyFilter('all');
-            setHasImageFilter(null);
-          }}
+          onClick={clearAllFilters}
           className="btn-terminal text-xs px-2.5 py-1.5"
           style={{
             color: 'var(--error-color)',
@@ -1716,9 +1009,6 @@ export default function MapViewer({
           bounds={undefined}
           // Don't show error tiles - let the fallback layer handle it
           errorTileUrl=""
-          // Add retry logic
-          retryDelay={1000}
-          retryAttempts={2}
         />
 
         {/* OpenStreetMap fallback layer for high zoom */}
