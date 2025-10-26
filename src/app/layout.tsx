@@ -21,6 +21,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#1c1a16',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({
@@ -47,7 +51,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg-primary)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
           {/* Navigation Header */}
           <Navigation />
 
@@ -61,9 +65,10 @@ export default function RootLayout({
               zIndex: 10,
               borderTop: '1px solid var(--border-color)',
               backgroundColor: 'var(--bg-surface)',
+              paddingBottom: 'env(safe-area-inset-bottom)',
             }}
           >
-            <div className="container mx-auto px-6 py-6 max-w-6xl">
+            <div className="container mx-auto px-6 py-6 max-w-6xl" style={{ paddingLeft: 'max(1.5rem, env(safe-area-inset-left))', paddingRight: 'max(1.5rem, env(safe-area-inset-right))' }}>
               <div
                 className="flex items-center justify-between text-xs"
                 style={{ color: 'var(--text-muted)' }}

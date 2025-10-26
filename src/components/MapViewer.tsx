@@ -1,13 +1,19 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet';
 import Fuse from 'fuse.js';
 import L from 'leaflet';
 import type { Location } from '@/lib/airtable';
 import PasswordModal from './PasswordModal';
 import LocateButton from './LocateButton';
 import MarkerClusterGroup from './MarkerClusterGroup';
+import MapKeyboardNav from './MapKeyboardNav';
+import MapAnnouncer from './MapAnnouncer';
+import MapDrawingTools from './MapDrawingTools';
+import MapActionControls from './MapActionControls';
+import Tooltip from './Tooltip';
+import { useDrawings } from '@/hooks/useDrawings';
 import 'leaflet/dist/leaflet.css';
 
 interface MapViewerProps {
@@ -120,6 +126,58 @@ function fuzzCoordinates(lat: number, lng: number, locationId: string): [number,
   const lngOffset = Math.sin(angle) * distance;
 
   return [lat + latOffset, lng + lngOffset];
+}
+
+// Component to fit map bounds to filtered locations when filters change
+function MapFilterExtentsHandler({
+  locations,
+  enabled,
+  filterKey
+}: {
+  locations: Location[];
+  enabled: boolean;
+  filterKey: string; // Used to detect filter changes
+}) {
+  const map = useMap();
+  const previousFilterKey = useRef(filterKey);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    // Skip on initial mount (let MapBoundsInitializer handle that)
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      previousFilterKey.current = filterKey;
+      return;
+    }
+
+    // Only run if auto-zoom is enabled and filters actually changed
+    if (!enabled || filterKey === previousFilterKey.current || locations.length === 0) {
+      previousFilterKey.current = filterKey;
+      return;
+    }
+
+    // Get all valid coordinates
+    const validLocations = locations.filter(loc => loc.latitude && loc.longitude);
+
+    if (validLocations.length === 0) return;
+
+    // Create bounds from filtered locations
+    const bounds = L.latLngBounds(
+      validLocations.map(loc => [loc.latitude, loc.longitude] as [number, number])
+    );
+
+    // Fit map to bounds with padding
+    map.fitBounds(bounds, {
+      padding: [50, 50], // Add 50px padding on all sides
+      maxZoom: 13, // Don't zoom in too far if there are few markers
+      animate: true, // Animate for filter changes
+      duration: 0.5, // Smooth animation
+    });
+
+    previousFilterKey.current = filterKey;
+  }, [map, locations, enabled, filterKey]);
+
+  return null;
 }
 
 // Component to fit map bounds to markers on initial load
@@ -590,23 +648,56 @@ export default function MapViewer({
   initialZoom = 10
 }: MapViewerProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [privacyFilter, setPrivacyFilter] = useState<'all' | 'public' | 'private'>('all');
+  const [hasImageFilter, setHasImageFilter] = useState<boolean | null>(null);
+  const [autoZoomToExtents, setAutoZoomToExtents] = useState(true);
   const [mapCenter, setMapCenter] = useState<[number, number]>(initialCenter);
   const [mapZoom, setMapZoom] = useState(initialZoom);
   const [showLocationList, setShowLocationList] = useState(false);
   const [unlockedLocations, setUnlockedLocations] = useState<Set<string>>(new Set());
   const [passwordModal, setPasswordModal] = useState<{ location: Location; error?: string } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [tilesLoading, setTilesLoading] = useState(false);
   const [tileProgress, setTileProgress] = useState(0);
   const [clusteringEnabled, setClusteringEnabled] = useState(locations.length > 10);
+  const [drawingEnabled, setDrawingEnabled] = useState(false);
+
+  // Panel visibility state
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState<'search' | 'locations' | 'info'>('search');
+  const [isMobile, setIsMobile] = useState(false);
+
   const isDark = useTheme();
   const { quality: networkQuality, isOnline } = useNetworkQuality();
+
+  // Drawing tools state
+  const {
+    drawings,
+    setDrawings,
+    saveDrawings,
+    exportGeoJSON,
+    clearDrawings,
+    drawingCount
+  } = useDrawings();
 
   // Debug clustering state
   useEffect(() => {
     console.log('[MapViewer] Clustering enabled:', clusteringEnabled, 'Locations count:', locations.length);
   }, [clusteringEnabled, locations.length]);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Handle tile loading progress (memoized to prevent re-creating)
   const handleTileProgress = useCallback((loading: boolean, progress: number) => {
@@ -649,6 +740,27 @@ export default function MapViewer({
     }
   }, []);
 
+  // Load auto-zoom preference from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('mapAutoZoomToExtents');
+      if (stored !== null) {
+        setAutoZoomToExtents(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error('Error loading auto-zoom preference:', error);
+    }
+  }, []);
+
+  // Save auto-zoom preference to localStorage when changed
+  useEffect(() => {
+    try {
+      localStorage.setItem('mapAutoZoomToExtents', JSON.stringify(autoZoomToExtents));
+    } catch (error) {
+      console.error('Error saving auto-zoom preference:', error);
+    }
+  }, [autoZoomToExtents]);
+
   // Save unlocked locations to localStorage when changed
   useEffect(() => {
     try {
@@ -677,18 +789,37 @@ export default function MapViewer({
       filtered = fuse.search(searchQuery).map((result) => result.item);
     }
 
-    // Apply category filter
-    if (selectedCategory) {
+    // Apply category filter (multi-select)
+    if (selectedCategories.size > 0) {
       filtered = filtered.filter((loc) => {
-        if (loc.categories && loc.categories.includes(selectedCategory)) {
+        // Check if location has any of the selected categories
+        if (loc.categories && loc.categories.some(cat => selectedCategories.has(cat))) {
           return true;
         }
-        return loc.category === selectedCategory;
+        return loc.category && selectedCategories.has(loc.category);
+      });
+    }
+
+    // Apply privacy filter
+    if (privacyFilter !== 'all') {
+      filtered = filtered.filter((loc) => {
+        if (privacyFilter === 'public') {
+          return loc.privacy !== 'Private';
+        } else {
+          return loc.privacy === 'Private';
+        }
+      });
+    }
+
+    // Apply has image filter
+    if (hasImageFilter !== null) {
+      filtered = filtered.filter((loc) => {
+        return hasImageFilter ? !!loc.image : !loc.image;
       });
     }
 
     return filtered;
-  }, [locations, searchQuery, selectedCategory, fuse]);
+  }, [locations, searchQuery, selectedCategories, privacyFilter, hasImageFilter, fuse]);
 
   // Get unique categories from all locations
   const categories = useMemo(() => {
@@ -703,6 +834,26 @@ export default function MapViewer({
     });
     return Array.from(cats).sort();
   }, [locations]);
+
+  // Create a filter key to detect when filters change
+  const filterKey = useMemo(() => {
+    return JSON.stringify({
+      search: searchQuery,
+      categories: Array.from(selectedCategories).sort(),
+      privacy: privacyFilter,
+      hasImage: hasImageFilter,
+    });
+  }, [searchQuery, selectedCategories, privacyFilter, hasImageFilter]);
+
+  // Count active filters
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (searchQuery) count++;
+    if (selectedCategories.size > 0) count++;
+    if (privacyFilter !== 'all') count++;
+    if (hasImageFilter !== null) count++;
+    return count;
+  }, [searchQuery, selectedCategories, privacyFilter, hasImageFilter]);
 
 
   // Check if location is locked (memoized)
@@ -724,6 +875,9 @@ export default function MapViewer({
       // Navigate to exact location
       setMapCenter([location.latitude, location.longitude]);
       setMapZoom(14);
+
+      // Show location details in panel
+      setSelectedLocation(location);
     } else {
       // Password incorrect
       setPasswordModal({
@@ -745,8 +899,86 @@ export default function MapViewer({
       setMapCenter([location.latitude, location.longitude]);
       setMapZoom(14);
       setShowLocationList(false);
+      // Set selected location and switch to info tab
+      setSelectedLocation(location);
+      setActiveTab('info');
+      setIsPanelOpen(true);
     }
   }, [unlockedLocations]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        // Allow "/" to focus search even when not in an input
+        if (e.key === '/' && e.target.id !== 'location-search') {
+          e.preventDefault();
+          document.getElementById('location-search')?.focus();
+        }
+        return;
+      }
+
+      switch (e.key.toLowerCase()) {
+        case 'l':
+          if (e.shiftKey) {
+            // Shift+L: Switch to locations tab
+            e.preventDefault();
+            setActiveTab('locations');
+            setIsPanelOpen(true);
+            setShowLocationList(true); // Keep for backward compat
+          } else {
+            // L: Locate user
+            e.preventDefault();
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  setMapCenter([position.coords.latitude, position.coords.longitude]);
+                  setMapZoom(16);
+                },
+                (error) => {
+                  console.error('Error getting location:', error);
+                }
+              );
+            }
+          }
+          break;
+        case 'c':
+          // C: Toggle clustering
+          e.preventDefault();
+          setClusteringEnabled(prev => !prev);
+          break;
+        case 'd':
+          // D: Toggle drawing
+          e.preventDefault();
+          setDrawingEnabled(prev => !prev);
+          break;
+        case '/':
+          // /: Focus search and switch to search tab
+          e.preventDefault();
+          setActiveTab('search');
+          setIsPanelOpen(true);
+          setTimeout(() => {
+            document.getElementById('location-search')?.focus();
+          }, 100);
+          break;
+        case 'escape':
+          // Escape: Close modals/panels
+          if (passwordModal) {
+            setPasswordModal(null);
+          } else if (selectedLocation && activeTab === 'info') {
+            setSelectedLocation(null);
+            setActiveTab('search');
+          } else if (isPanelOpen && isMobile) {
+            setIsPanelOpen(false);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedLocation, passwordModal, showLocationList, activeTab, isPanelOpen, isMobile]);
 
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}>
@@ -760,14 +992,59 @@ export default function MapViewer({
         preferCanvas={false}
         // Add attributionControl at bottom
         attributionControl={true}
+        // Accessibility attributes
+        // @ts-ignore - role is not in the types but is valid HTML
+        role="application"
+        aria-label="Interactive map showing geographic locations"
+        aria-roledescription="Map with markers and controls"
       >
         <MapBoundsInitializer locations={locations} />
+        <MapFilterExtentsHandler
+          locations={filteredLocations}
+          enabled={autoZoomToExtents}
+          filterKey={filterKey}
+        />
         <MapController center={mapCenter} zoom={mapZoom} onZoomChange={handleZoomChange} />
         <MapLoadingHandler onLoad={() => setIsLoading(false)} />
         <MapInvalidationHandler />
         <TileErrorHandler />
         <TilePrefetcher networkQuality={networkQuality} />
         <TileLoadingTracker onProgress={handleTileProgress} />
+
+        {/* Accessibility components */}
+        <MapKeyboardNav initialCenter={initialCenter} initialZoom={initialZoom} />
+        <MapAnnouncer />
+
+        {/* Drawing tools */}
+        <MapDrawingTools
+          drawings={drawings}
+          onDrawingsChange={setDrawings}
+          enabled={drawingEnabled}
+        />
+
+        {/* Action controls on the right side */}
+        <MapActionControls
+          onLocate={() => {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  setMapCenter([position.coords.latitude, position.coords.longitude]);
+                  setMapZoom(16);
+                },
+                (error) => {
+                  console.error('Error getting location:', error);
+                  alert('Unable to access your location. Please check browser permissions.');
+                }
+              );
+            } else {
+              alert('Geolocation is not supported by your browser.');
+            }
+          }}
+          clusteringEnabled={clusteringEnabled}
+          onToggleClustering={() => setClusteringEnabled(!clusteringEnabled)}
+          drawingEnabled={drawingEnabled}
+          onToggleDrawing={() => setDrawingEnabled(!drawingEnabled)}
+        />
 
         {/* Zoom controls positioned in bottom-right */}
         <ZoomControl position="bottomright" />
@@ -867,264 +1144,516 @@ export default function MapViewer({
               eventHandlers={{
                 click: () => handleLocationClick(location)
               }}
-            >
-              <Popup className="e-ink-popup">
-                <div style={{ minWidth: '200px' }}>
-                  <h3
-                    className="text-sm font-semibold mb-2"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    {location.name}
-                  </h3>
-
-                  {isLocked && (
-                    <div
-                      className="text-xs mb-2 p-2"
-                      style={{
-                        color: 'var(--text-muted)',
-                        backgroundColor: 'var(--bg-primary)',
-                        border: '1px solid var(--border-color)'
-                      }}
-                    >
-                      🔒 This is a private location. Click the marker to unlock with password.
-                    </div>
-                  )}
-
-                  {location.category && (
-                    <div
-                      className="text-xs mb-2"
-                      style={{ color: 'var(--accent-secondary)' }}
-                    >
-                      [{location.category}]
-                    </div>
-                  )}
-
-                  {!isLocked && location.description && (
-                    <p
-                      className="text-sm mb-2"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      {location.description}
-                    </p>
-                  )}
-
-                  {!isLocked && location.image && (
-                    <img
-                      src={location.image}
-                      alt={location.name}
-                      className="w-full h-32 object-cover mb-2"
-                      style={{
-                        border: '1px solid var(--border-color)',
-                        filter: isDark ? 'grayscale(100%)' : 'grayscale(50%)'
-                      }}
-                    />
-                  )}
-
-                  {!isLocked && location.url && (
-                    <a
-                      href={location.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm hover:opacity-70 transition-opacity"
-                      style={{ color: 'var(--link-color)' }}
-                    >
-                      [Learn more →]
-                    </a>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
+            />
           );
         })
         )}
       </MapContainer>
 
-      {/* Overlay Control Panel */}
+      {/* Left Panel Tab Button - shown when panel is closed */}
+      {!isPanelOpen && (
+        <button
+          onClick={() => setIsPanelOpen(true)}
+          className="absolute top-5 left-0 z-[1001] px-3 py-5 text-sm sm:text-xs transition-all hover:opacity-70"
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border-color)',
+            borderLeft: 'none',
+            borderTopRightRadius: '4px',
+            borderBottomRightRadius: '4px',
+            color: 'var(--accent-secondary)',
+            boxShadow: '2px 0 8px rgba(0,0,0,0.2)',
+            writingMode: 'vertical-rl',
+            textOrientation: 'mixed',
+            minHeight: '80px',
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+          aria-label="Show panel"
+        >
+          {activeTab === 'search' && 'Search'}
+          {activeTab === 'locations' && 'Locations'}
+          {activeTab === 'info' && 'Info'}
+        </button>
+      )}
+
+      {/* Unified Left Panel with Tabs */}
       <div
-        className="map-overlay-panel"
+        className={`absolute top-2 left-2 right-2 bottom-2 sm:right-auto sm:top-5 sm:left-5 sm:bottom-5
+                   w-auto sm:w-80 lg:w-96 max-w-full sm:max-w-[calc(100vw-40px)] lg:max-w-[400px]
+                   flex flex-col overflow-hidden z-[1000]
+                   transition-transform duration-300 ease-in-out
+                   ${!isPanelOpen ? '-translate-x-full sm:-translate-x-[calc(100%+20px)]' : 'translate-x-0'}`}
+        role="complementary"
+        aria-label="Map panel"
         style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          zIndex: 1000,
-          maxWidth: '360px',
           backgroundColor: 'var(--bg-surface)',
           border: '1px solid var(--border-color)',
           boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
         }}
       >
-        <div style={{ padding: '16px' }}>
-          {/* Header */}
-          <div style={{ marginBottom: '16px' }}>
-            <div className="flex items-center justify-between mb-1">
-              <div className="text-sm" style={{ color: 'var(--accent-secondary)' }}>
-                GIS Map
-              </div>
-              {/* Network status indicator */}
-              {!isOnline && (
-                <div
-                  className="text-xs px-2 py-1"
-                  style={{
-                    color: 'var(--error-color)',
-                    border: '1px solid var(--error-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                  }}
-                >
-                  [Offline]
-                </div>
-              )}
-              {isOnline && networkQuality === 'slow' && (
-                <div
-                  className="text-xs px-2 py-1"
-                  style={{
-                    color: 'var(--accent-secondary)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                  }}
-                >
-                  [Slow connection]
-                </div>
-              )}
-            </div>
-            <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              {filteredLocations.length} location{filteredLocations.length === 1 ? '' : 's'}
-            </div>
-          </div>
-
-          {/* Search */}
-          <div style={{ marginBottom: '12px' }}>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search locations..."
-              className="w-full p-2 text-sm focus:outline-none transition-all"
-              style={{
-                backgroundColor: 'var(--bg-primary)',
-                border: '1px solid var(--border-color)',
-                color: 'var(--text-primary)'
-              }}
-            />
-          </div>
-
-          {/* Category Filter */}
-          {categories.length > 0 && (
-            <div style={{ marginBottom: '12px' }}>
-              <div className="text-xs mb-2" style={{ color: 'var(--accent-secondary)' }}>
-                Category
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedCategory(null)}
-                  className="px-2 py-1 text-xs transition-opacity hover:opacity-70"
-                  style={{
-                    color: selectedCategory === null ? 'var(--link-color)' : 'var(--text-muted)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: selectedCategory === null ? 'var(--bg-primary)' : 'transparent'
-                  }}
-                >
-                  [all]
-                </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className="px-2 py-1 text-xs transition-opacity hover:opacity-70"
-                    style={{
-                      color: selectedCategory === cat ? 'var(--link-color)' : 'var(--text-muted)',
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: selectedCategory === cat ? 'var(--bg-primary)' : 'transparent'
-                    }}
-                  >
-                    [{cat}]
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Locate Me Button */}
-          <div style={{ marginBottom: '12px' }}>
-            <LocateButton
-              onLocate={(lat, lng) => {
-                setMapCenter([lat, lng]);
-                setMapZoom(16);
-              }}
-            />
-          </div>
-
-          {/* Toggle Clustering */}
-          <button
-            onClick={() => setClusteringEnabled(!clusteringEnabled)}
-            className="w-full p-2 text-sm transition-opacity hover:opacity-70 mb-3"
-            style={{
-              border: '1px solid var(--border-color)',
-              backgroundColor: 'var(--bg-primary)',
-              color: 'var(--link-color)',
-            }}
-            title={clusteringEnabled ? 'Disable marker clustering' : 'Enable marker clustering'}
-          >
-            [{clusteringEnabled ? '✓ Clustering On' : 'Clustering Off'}]
-          </button>
-
-          {/* Toggle Location List */}
-          <button
-            onClick={() => setShowLocationList(!showLocationList)}
-            className="w-full p-2 text-sm transition-opacity hover:opacity-70"
-            style={{
-              border: '1px solid var(--border-color)',
-              backgroundColor: 'var(--bg-primary)',
-              color: 'var(--link-color)',
-            }}
-          >
-            [{showLocationList ? 'Hide' : 'Show'} Locations List]
-          </button>
-        </div>
-      </div>
-
-      {/* Collapsible Location List Sidebar */}
-      {showLocationList && (
+        {/* Tab Header */}
         <div
-          className="map-overlay-sidebar"
           style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            zIndex: 1000,
-            width: '320px',
-            maxHeight: 'calc(100vh - 40px)',
-            backgroundColor: 'var(--bg-surface)',
-            border: '1px solid var(--border-color)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-            overflow: 'hidden',
+            borderBottom: '1px solid var(--border-color)',
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          {/* Sidebar Header */}
-          <div
-            style={{
-              padding: '12px 16px',
-              borderBottom: '1px solid var(--border-color)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div className="text-sm" style={{ color: 'var(--accent-secondary)' }}>
-              Locations
+          {/* Tabs */}
+          <div className="flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-color)' }}>
+            <div className="flex flex-1">
+              <button
+                onClick={() => setActiveTab('search')}
+                className="flex-1 px-3 py-3 sm:py-2 text-sm sm:text-xs transition-all hover:opacity-70"
+                style={{
+                  color: activeTab === 'search' ? 'var(--link-color)' : 'var(--text-muted)',
+                  backgroundColor: activeTab === 'search' ? 'var(--bg-primary)' : 'transparent',
+                  borderBottom: activeTab === 'search' ? '2px solid var(--link-color)' : '2px solid transparent',
+                  fontWeight: activeTab === 'search' ? 600 : 400,
+                  minHeight: '44px',
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+                aria-label="Search tab"
+                aria-pressed={activeTab === 'search'}
+              >
+                Search
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab('locations');
+                  setShowLocationList(true);
+                }}
+                className="flex-1 px-3 py-3 sm:py-2 text-sm sm:text-xs transition-all hover:opacity-70"
+                style={{
+                  color: activeTab === 'locations' ? 'var(--link-color)' : 'var(--text-muted)',
+                  backgroundColor: activeTab === 'locations' ? 'var(--bg-primary)' : 'transparent',
+                  borderBottom: activeTab === 'locations' ? '2px solid var(--link-color)' : '2px solid transparent',
+                  fontWeight: activeTab === 'locations' ? 600 : 400,
+                  minHeight: '44px',
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+                aria-label="Locations tab"
+                aria-pressed={activeTab === 'locations'}
+              >
+                Locations
+              </button>
+              <button
+                onClick={() => setActiveTab('info')}
+                className="flex-1 px-3 py-3 sm:py-2 text-sm sm:text-xs transition-all hover:opacity-70"
+                style={{
+                  color: activeTab === 'info' ? 'var(--link-color)' : 'var(--text-muted)',
+                  backgroundColor: activeTab === 'info' ? 'var(--bg-primary)' : 'transparent',
+                  borderBottom: activeTab === 'info' ? '2px solid var(--link-color)' : '2px solid transparent',
+                  fontWeight: activeTab === 'info' ? 600 : 400,
+                  opacity: selectedLocation ? 1 : 0.5,
+                  minHeight: '44px',
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+                aria-label="Info tab"
+                aria-pressed={activeTab === 'info'}
+                disabled={!selectedLocation}
+              >
+                Info
+              </button>
             </div>
             <button
-              onClick={() => setShowLocationList(false)}
-              className="text-xs hover:opacity-70 transition-opacity"
-              style={{ color: 'var(--text-muted)' }}
+              onClick={() => setIsPanelOpen(false)}
+              className="text-base sm:text-xs hover:opacity-70 transition-opacity px-4 py-3 sm:py-2"
+              style={{
+                color: 'var(--text-muted)',
+                minWidth: '44px',
+                minHeight: '44px',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+              aria-label="Hide panel"
             >
-              [close]
+              ✕
             </button>
           </div>
+          {/* Tab info row */}
+          {activeTab === 'search' && (
+            <div className="px-3 py-1.5 text-xs flex items-center justify-between">
+              <span style={{ color: 'var(--text-muted)' }}>
+                {filteredLocations.length} {filteredLocations.length === 1 ? 'location' : 'locations'}
+                {activeFilterCount > 0 && (
+                  <span style={{ color: 'var(--accent-secondary)' }}> • {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}</span>
+                )}
+              </span>
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategories(new Set());
+                    setPrivacyFilter('all');
+                    setHasImageFilter(null);
+                  }}
+                  className="text-xs hover:opacity-70 transition-opacity px-2.5 py-1.5"
+                  style={{
+                    color: 'var(--error-color)',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                    minHeight: '32px',
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}
+                  aria-label="Clear all filters"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
+          )}
+          {activeTab === 'locations' && (
+            <div className="px-3 py-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
+              {filteredLocations.length} {filteredLocations.length === 1 ? 'result' : 'results'}
+            </div>
+          )}
+          {activeTab === 'info' && selectedLocation && (
+            <div className="px-3 py-1.5 text-xs" style={{ color: 'var(--accent-secondary)' }}>
+              {selectedLocation.category ? `[${selectedLocation.category}]` : 'Location Details'}
+            </div>
+          )}
+        </div>
 
-          {/* Location List */}
-          <div style={{ overflowY: 'auto', flex: 1 }}>
+        {/* Tab Content */}
+        <div className="flex-1 min-h-0 overflow-y-auto" style={{ backgroundColor: 'var(--bg-primary)' }}>
+          {/* Search Tab Content */}
+          {activeTab === 'search' && (
+            <>
+
+        {/* Network status indicator */}
+        {(!isOnline || networkQuality === 'slow') && (
+          <div
+            style={{
+              padding: '6px 8px',
+              borderBottom: '1px solid var(--border-color)',
+            }}
+          >
+            {!isOnline && (
+              <div
+                className="text-xs px-1.5 py-0.5"
+                style={{
+                  color: 'var(--error-color)',
+                  border: '1px solid var(--error-color)',
+                  backgroundColor: 'var(--bg-primary)',
+                  display: 'inline-block',
+                }}
+              >
+                Offline
+              </div>
+            )}
+            {isOnline && networkQuality === 'slow' && (
+              <div
+                className="text-xs px-1.5 py-0.5"
+                style={{
+                  color: 'var(--accent-secondary)',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'var(--bg-primary)',
+                  display: 'inline-block',
+                }}
+              >
+                Slow
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Search & Filter Section */}
+        <div style={{ padding: '8px 8px 12px', borderBottom: '1px solid var(--border-color)' }}>
+          {/* Compact Search */}
+          <div style={{ position: 'relative', marginBottom: '8px' }}>
+            <input
+              id="location-search"
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
+              className="w-full p-2.5 pl-9 text-sm sm:text-xs sm:p-1.5 sm:pl-7 focus:outline-none focus:ring-1 transition-all"
+              style={{
+                backgroundColor: 'var(--bg-primary)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-primary)',
+                outline: 'none',
+                minHeight: '44px',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+              aria-label="Search locations by name or description"
+            />
+            <span
+              style={{
+                position: 'absolute',
+                left: '6px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--text-muted)',
+                pointerEvents: 'none',
+                fontSize: '11px',
+              }}
+              aria-hidden="true"
+            >
+              🔍
+            </span>
+          </div>
+
+          {/* Multi-select Category Filter */}
+          {categories.length > 0 && (
+            <div>
+              <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                Categories {selectedCategories.size > 0 && `(${selectedCategories.size})`}
+              </div>
+              <div
+                role="group"
+                aria-label="Category filters"
+                className="flex flex-wrap gap-1"
+              >
+                {categories.map((cat) => {
+                  const isSelected = selectedCategories.has(cat);
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        const newCategories = new Set(selectedCategories);
+                        if (isSelected) {
+                          newCategories.delete(cat);
+                        } else {
+                          newCategories.add(cat);
+                        }
+                        setSelectedCategories(newCategories);
+                      }}
+                      className="px-2.5 py-2 sm:px-1.5 sm:py-0.5 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
+                      style={{
+                        color: isSelected ? 'var(--link-color)' : 'var(--text-muted)',
+                        border: `1px solid ${isSelected ? 'var(--link-color)' : 'var(--border-color)'}`,
+                        backgroundColor: isSelected ? 'var(--bg-primary)' : 'transparent',
+                        outline: 'none',
+                        fontWeight: isSelected ? 600 : 400,
+                        minHeight: '36px',
+                        touchAction: 'manipulation',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                      aria-pressed={isSelected}
+                      aria-label={`${isSelected ? 'Remove' : 'Add'} ${cat} filter`}
+                    >
+                      {isSelected && '✓ '}{cat}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+        </div>
+
+        {/* Advanced Filters Section */}
+        <details style={{ padding: '8px', backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)' }}>
+          <summary
+            className="text-xs cursor-pointer transition-opacity hover:opacity-70 mb-2"
+            style={{ color: 'var(--accent-secondary)', listStyle: 'none', userSelect: 'none' }}
+          >
+            ⚙️ Advanced Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+          </summary>
+          <div className="space-y-3">
+            {/* Privacy Filter */}
+            <div>
+              <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                Privacy
+              </div>
+              <div className="flex gap-1">
+                {['all', 'public', 'private'].map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => setPrivacyFilter(option as 'all' | 'public' | 'private')}
+                    className="px-2 py-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
+                    style={{
+                      color: privacyFilter === option ? 'var(--link-color)' : 'var(--text-muted)',
+                      border: `1px solid ${privacyFilter === option ? 'var(--link-color)' : 'var(--border-color)'}`,
+                      backgroundColor: privacyFilter === option ? 'var(--bg-primary)' : 'transparent',
+                      outline: 'none',
+                      fontWeight: privacyFilter === option ? 600 : 400,
+                      flex: 1,
+                      minHeight: '40px',
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                    aria-pressed={privacyFilter === option}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Has Image Filter */}
+            <div>
+              <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                Images
+              </div>
+              <div className="flex gap-1">
+                {[
+                  { label: 'all', value: null },
+                  { label: 'with image', value: true },
+                  { label: 'no image', value: false },
+                ].map((option) => (
+                  <button
+                    key={option.label}
+                    onClick={() => setHasImageFilter(option.value)}
+                    className="px-2 py-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
+                    style={{
+                      color: hasImageFilter === option.value ? 'var(--link-color)' : 'var(--text-muted)',
+                      border: `1px solid ${hasImageFilter === option.value ? 'var(--link-color)' : 'var(--border-color)'}`,
+                      backgroundColor: hasImageFilter === option.value ? 'var(--bg-primary)' : 'transparent',
+                      outline: 'none',
+                      fontWeight: hasImageFilter === option.value ? 600 : 400,
+                      flex: 1,
+                      minHeight: '40px',
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                    aria-pressed={hasImageFilter === option.value}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Auto-zoom Toggle */}
+            <div>
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                  Auto-zoom to extents
+                </span>
+                <button
+                  onClick={() => setAutoZoomToExtents(!autoZoomToExtents)}
+                  className="px-3 py-2 sm:px-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70"
+                  style={{
+                    color: autoZoomToExtents ? 'var(--accent-primary)' : 'var(--text-muted)',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                    minWidth: '52px',
+                    minHeight: '36px',
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}
+                  aria-pressed={autoZoomToExtents}
+                >
+                  {autoZoomToExtents ? 'ON' : 'OFF'}
+                </button>
+              </label>
+              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
+                Automatically zoom to fit filtered locations
+              </div>
+            </div>
+          </div>
+        </details>
+
+        {/* Drawing Actions - shown when drawing is enabled and there are drawings */}
+        {drawingEnabled && drawingCount > 0 && (
+          <div style={{ padding: '8px', borderBottom: '1px solid var(--border-color)' }}>
+            <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
+              Drawings ({drawingCount})
+            </div>
+            <div className="grid grid-cols-3 gap-1">
+              <Tooltip content="Save to storage" position="bottom">
+                <button
+                  onClick={() => saveDrawings()}
+                  className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
+                  style={{
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                    color: 'var(--link-color)',
+                    outline: 'none',
+                  }}
+                  aria-label="Save drawings to browser storage"
+                >
+                  Save
+                </button>
+              </Tooltip>
+              <Tooltip content="Export GeoJSON" position="bottom">
+                <button
+                  onClick={() => exportGeoJSON()}
+                  className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
+                  style={{
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                    color: 'var(--link-color)',
+                    outline: 'none',
+                  }}
+                  aria-label="Export drawings as GeoJSON file"
+                >
+                  Export
+                </button>
+              </Tooltip>
+              <Tooltip content="Clear all" position="bottom">
+                <button
+                  onClick={() => {
+                    if (confirm('Clear all drawings?')) {
+                      clearDrawings();
+                    }
+                  }}
+                  className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
+                  style={{
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                    color: 'var(--error-color)',
+                    outline: 'none',
+                  }}
+                  aria-label="Clear all drawings"
+                >
+                  Clear
+                </button>
+              </Tooltip>
+            </div>
+          </div>
+        )}
+
+        {/* Compact Keyboard Shortcuts */}
+        <details style={{ padding: '6px 8px', backgroundColor: 'var(--bg-primary)' }}>
+          <summary
+            className="text-xs cursor-pointer transition-opacity hover:opacity-70"
+            style={{ color: 'var(--text-muted)', listStyle: 'none', userSelect: 'none' }}
+          >
+            ⌨️ Shortcuts
+          </summary>
+          <div className="mt-1.5 space-y-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>
+            <div className="flex justify-between">
+              <span>Locate</span>
+              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>L</kbd>
+            </div>
+            <div className="flex justify-between">
+              <span>List</span>
+              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>⇧L</kbd>
+            </div>
+            <div className="flex justify-between">
+              <span>Cluster</span>
+              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>C</kbd>
+            </div>
+            <div className="flex justify-between">
+              <span>Draw</span>
+              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>D</kbd>
+            </div>
+            <div className="flex justify-between">
+              <span>Search</span>
+              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>/</kbd>
+            </div>
+            <div className="flex justify-between">
+              <span>Close</span>
+              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>Esc</kbd>
+            </div>
+          </div>
+        </details>
+            </>
+          )}
+
+          {/* Locations Tab Content */}
+          {activeTab === 'locations' && (
+            <div style={{ padding: '8px' }}>
             {filteredLocations.length === 0 ? (
               <div style={{ padding: '24px', textAlign: 'center' }}>
                 <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -1132,39 +1661,200 @@ export default function MapViewer({
                 </div>
               </div>
             ) : (
-              <div style={{ padding: '8px' }}>
+              <>
                 {filteredLocations.map((location) => {
                   const isLocked = isLocationLocked(location);
                   return (
                     <button
                       key={location.id}
                       onClick={() => handleLocationClick(location)}
-                      className="w-full text-left p-2 mb-2 transition-opacity hover:opacity-70"
+                      className="w-full text-left p-3 sm:p-2 mb-2 transition-opacity hover:opacity-70"
                       style={{
                         backgroundColor: 'var(--bg-primary)',
                         border: '1px solid var(--border-color)',
                         opacity: isLocked ? 0.7 : 1,
+                        minHeight: '56px',
+                        touchAction: 'manipulation',
+                        WebkitTapHighlightColor: 'transparent',
                       }}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         {isLocked && <span style={{ color: 'var(--text-muted)' }}>🔒</span>}
-                        <div className="text-sm flex-1" style={{ color: 'var(--text-primary)' }}>
+                        <div className="text-base sm:text-sm flex-1" style={{ color: 'var(--text-primary)' }}>
                           {location.name}
                         </div>
                       </div>
                       {location.category && (
-                        <div className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
+                        <div className="text-sm sm:text-xs" style={{ color: 'var(--accent-secondary)' }}>
                           [{location.category}]
                         </div>
                       )}
                     </button>
                   );
                 })}
-              </div>
+              </>
             )}
-          </div>
+            </div>
+          )}
+
+          {/* Info Tab Content */}
+          {activeTab === 'info' && selectedLocation && (
+            <div style={{ padding: '16px' }}>
+              {/* Featured Image */}
+              {selectedLocation.image && (
+                <div style={{ marginBottom: '20px' }}>
+                  <img
+                    src={selectedLocation.image}
+                    alt={selectedLocation.name}
+                    className="w-full object-cover h-48 sm:h-60"
+                    style={{
+                      border: '1px solid var(--border-color)',
+                      filter: isDark ? 'grayscale(100%)' : 'grayscale(50%)',
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Name */}
+              <div style={{ marginBottom: '16px' }}>
+                <h2
+                  className="text-lg font-semibold mb-1"
+                  style={{ color: 'var(--text-primary)' }}
+                >
+                  {selectedLocation.name}
+                </h2>
+              </div>
+
+              {/* Categories */}
+              {(selectedLocation.categories && selectedLocation.categories.length > 0) && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div
+                    className="text-xs mb-2"
+                    style={{ color: 'var(--accent-secondary)' }}
+                  >
+                    Categories
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedLocation.categories.map((cat, idx) => (
+                      <span
+                        key={idx}
+                        className="text-xs px-2 py-1"
+                        style={{
+                          color: 'var(--text-muted)',
+                          border: '1px solid var(--border-color)',
+                          backgroundColor: 'var(--bg-primary)',
+                        }}
+                      >
+                        [{cat}]
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Coordinates */}
+              <div style={{ marginBottom: '20px' }}>
+                <div
+                  className="text-xs mb-2"
+                  style={{ color: 'var(--accent-secondary)' }}
+                >
+                  Coordinates
+                </div>
+                <div className="text-sm" style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+                  {selectedLocation.latitude.toFixed(6)}, {selectedLocation.longitude.toFixed(6)}
+                </div>
+              </div>
+
+              {/* Description */}
+              {selectedLocation.description && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div
+                    className="text-xs mb-2"
+                    style={{ color: 'var(--accent-secondary)' }}
+                  >
+                    Description
+                  </div>
+                  <div
+                    className="text-sm leading-relaxed"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    {selectedLocation.description}
+                  </div>
+                </div>
+              )}
+
+              {/* External Link */}
+              {selectedLocation.url && (
+                <div style={{ marginBottom: '20px' }}>
+                  <a
+                    href={selectedLocation.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block text-sm hover:opacity-70 transition-opacity px-3 py-2"
+                    style={{
+                      color: 'var(--link-color)',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                    }}
+                  >
+                    [Learn more →]
+                  </a>
+                </div>
+              )}
+
+              {/* Privacy */}
+              {selectedLocation.privacy && (
+                <div style={{ marginBottom: '12px' }}>
+                  <div
+                    className="text-xs mb-2"
+                    style={{ color: 'var(--accent-secondary)' }}
+                  >
+                    Privacy
+                  </div>
+                  <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                    {selectedLocation.privacy}
+                  </div>
+                </div>
+              )}
+
+              {/* Footer with action buttons */}
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => {
+                    const coords = `${selectedLocation.latitude}, ${selectedLocation.longitude}`;
+                    navigator.clipboard.writeText(coords);
+                  }}
+                  className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
+                  style={{
+                    color: 'var(--link-color)',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                  }}
+                  aria-label="Copy coordinates to clipboard"
+                >
+                  [Copy Coords]
+                </button>
+                {selectedLocation.url && (
+                  <button
+                    onClick={() => {
+                      window.open(selectedLocation.url, '_blank', 'noopener,noreferrer');
+                    }}
+                    className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
+                    style={{
+                      color: 'var(--accent-primary)',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                    }}
+                    aria-label="Visit external link"
+                  >
+                    [Visit Link]
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Password Modal */}
       {passwordModal && (

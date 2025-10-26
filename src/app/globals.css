@@ -4,6 +4,9 @@
 @import 'leaflet.markercluster/dist/MarkerCluster.css';
 @import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
+/* Import Leaflet Draw CSS */
+@import 'leaflet-draw/dist/leaflet.draw.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -369,18 +372,18 @@ body::after {
   line-height: 30px;
 }
 
-/* Size-specific styling - DEBUG: Using bright colors temporarily */
+/* Size-specific styling - Terminal theme colors */
 .marker-cluster-small {
-  background-color: #00ff00 !important; /* Bright green for debugging */
-  border: 4px solid #ff0000 !important; /* Red border for visibility */
-  box-shadow: 0 4px 16px rgba(255, 0, 0, 0.8) !important;
+  background-color: var(--accent-primary) !important;
+  border: 2px solid var(--bg-primary) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 .marker-cluster-small div {
-  background-color: #00ff00 !important; /* Bright green for debugging */
-  width: 50px !important; /* Larger for visibility */
-  height: 50px !important;
-  margin: 2px !important;
+  background-color: var(--accent-primary) !important;
+  width: 36px !important;
+  height: 36px !important;
+  margin: 0 !important;
   border-radius: 50% !important;
   display: flex !important;
   align-items: center !important;
@@ -414,7 +417,7 @@ body::after {
   background-color: var(--accent-secondary) !important;
   width: 44px !important;
   height: 44px !important;
-  margin: -2px !important;
+  margin: 0 !important;
   border-radius: 50% !important;
   display: flex !important;
   align-items: center !important;
@@ -422,12 +425,12 @@ body::after {
 }
 
 .marker-cluster span {
-  color: #ff0000 !important; /* Red text for debugging */
-  font-weight: 900 !important;
-  font-size: 18px !important; /* Larger for visibility */
+  color: var(--bg-darker) !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
   font-family: 'JetBrains Mono', monospace !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
-  line-height: 50px !important;
+  text-shadow: none !important;
+  line-height: 36px !important;
 }
 
 .marker-cluster-medium span {
@@ -467,4 +470,229 @@ body::after {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* ========================================
+   Leaflet Draw - Terminal Theme Styling
+   ======================================== */
+
+/* Override Leaflet Draw toolbar styles */
+.leaflet-draw-toolbar {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.leaflet-draw-toolbar a {
+  background-color: var(--bg-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  transition: all 0.2s ease !important;
+}
+
+.leaflet-draw-toolbar a:hover {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--accent-primary) !important;
+}
+
+.leaflet-draw-toolbar a.leaflet-disabled {
+  background-color: var(--bg-primary) !important;
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+/* Active state for drawing tools */
+.leaflet-draw-toolbar .leaflet-draw-draw-polyline,
+.leaflet-draw-toolbar .leaflet-draw-draw-polygon,
+.leaflet-draw-toolbar .leaflet-draw-draw-rectangle {
+  background-color: var(--bg-primary) !important;
+}
+
+.leaflet-draw-toolbar .leaflet-draw-draw-polyline:hover,
+.leaflet-draw-toolbar .leaflet-draw-draw-polygon:hover,
+.leaflet-draw-toolbar .leaflet-draw-draw-rectangle:hover {
+  background-color: var(--bg-surface) !important;
+}
+
+/* Edit toolbar */
+.leaflet-draw-toolbar .leaflet-draw-edit-edit,
+.leaflet-draw-toolbar .leaflet-draw-edit-remove {
+  background-color: var(--bg-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.leaflet-draw-toolbar .leaflet-draw-edit-edit:hover {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--link-color) !important;
+}
+
+.leaflet-draw-toolbar .leaflet-draw-edit-remove:hover {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--error-color) !important;
+}
+
+/* Drawing tooltips */
+.leaflet-draw-tooltip {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  border-radius: 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  padding: 6px 10px !important;
+}
+
+.leaflet-draw-tooltip-single {
+  color: var(--text-primary) !important;
+}
+
+.leaflet-draw-tooltip-subtext {
+  color: var(--text-muted) !important;
+}
+
+/* Drawing action buttons (save/cancel) */
+.leaflet-draw-actions {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0 !important;
+}
+
+.leaflet-draw-actions a {
+  background-color: var(--bg-primary) !important;
+  border: none !important;
+  color: var(--link-color) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  padding: 6px 12px !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.leaflet-draw-actions a:hover {
+  background-color: var(--bg-surface) !important;
+  color: var(--accent-primary) !important;
+}
+
+.leaflet-draw-actions a:first-child {
+  border-right: 1px solid var(--border-color) !important;
+}
+
+/* Drawn shapes - default styles */
+.leaflet-interactive {
+  transition: opacity 0.2s ease;
+}
+
+/* Polyline styles */
+path.leaflet-interactive[stroke="#3388ff"] {
+  stroke: var(--link-color) !important;
+  stroke-width: 3 !important;
+}
+
+/* Polygon styles */
+path.leaflet-interactive[fill="#3388ff"] {
+  stroke: var(--accent-secondary) !important;
+  fill: var(--accent-secondary) !important;
+  fill-opacity: 0.2 !important;
+  stroke-width: 2 !important;
+}
+
+/* Rectangle styles */
+path.leaflet-interactive.leaflet-interactive {
+  stroke: var(--accent-primary) !important;
+  fill: var(--accent-primary) !important;
+  fill-opacity: 0.2 !important;
+  stroke-width: 2 !important;
+}
+
+/* Editing handles (vertices) */
+.leaflet-editing-icon {
+  background-color: var(--bg-surface) !important;
+  border: 2px solid var(--accent-primary) !important;
+  border-radius: 50% !important;
+  width: 10px !important;
+  height: 10px !important;
+  margin-left: -5px !important;
+  margin-top: -5px !important;
+  cursor: move !important;
+}
+
+.leaflet-editing-icon:hover {
+  background-color: var(--accent-primary) !important;
+  transform: scale(1.3);
+}
+
+/* Middle editing handles */
+.leaflet-marker-icon.leaflet-div-icon.leaflet-editing-icon.leaflet-touch-icon {
+  background-color: var(--bg-primary) !important;
+  border: 2px solid var(--link-color) !important;
+  opacity: 0.7 !important;
+}
+
+/* Guide lines during drawing */
+.leaflet-overlay-pane svg path.leaflet-interactive {
+  stroke-dasharray: 5, 5 !important;
+}
+
+/* Measurement labels */
+.leaflet-draw-tooltip {
+  font-weight: 500 !important;
+}
+
+/* Light mode overrides */
+:root.light .leaflet-draw-toolbar,
+:root.light .leaflet-draw-actions {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+:root.light .leaflet-editing-icon {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Dark mode enhancements */
+:root:not(.light) .leaflet-draw-toolbar,
+:root:not(.light) .leaflet-draw-actions {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+}
+
+:root:not(.light) .leaflet-editing-icon {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Ensure proper z-index for drawing controls */
+.leaflet-top.leaflet-right {
+  z-index: 1000;
+}
+
+.leaflet-draw-toolbar {
+  margin-top: 10px !important;
+  margin-right: 10px !important;
+}
+
+/* Animation for drawing controls */
+.leaflet-draw-toolbar a {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Terminal-style brackets for action buttons */
+.leaflet-draw-actions a::before {
+  content: '[';
+  margin-right: 2px;
+}
+
+.leaflet-draw-actions a::after {
+  content: ']';
+  margin-left: 2px;
 }

@@ -135,61 +135,6 @@ export default function MarkerClusterGroup({
         handleLocationClick(location);
       });
 
-      // Create popup content
-      const popupContent = document.createElement('div');
-      popupContent.style.minWidth = '200px';
-
-      popupContent.innerHTML = `
-        <div>
-          <h3 class="text-sm font-semibold mb-2" style="color: var(--text-primary)">
-            ${location.name}
-          </h3>
-
-          ${isLocked ? `
-            <div class="text-xs mb-2 p-2" style="color: var(--text-muted); backgroundColor: var(--bg-primary); border: 1px solid var(--border-color)">
-              🔒 This is a private location. Click the marker to unlock with password.
-            </div>
-          ` : ''}
-
-          ${location.category ? `
-            <div class="text-xs mb-2" style="color: var(--accent-secondary)">
-              [${location.category}]
-            </div>
-          ` : ''}
-
-          ${!isLocked && location.description ? `
-            <p class="text-sm mb-2" style="color: var(--text-muted)">
-              ${location.description}
-            </p>
-          ` : ''}
-
-          ${!isLocked && location.image ? `
-            <img
-              src="${location.image}"
-              alt="${location.name}"
-              class="w-full h-32 object-cover mb-2"
-              style="border: 1px solid var(--border-color); filter: grayscale(100%)"
-            />
-          ` : ''}
-
-          ${!isLocked && location.url ? `
-            <a
-              href="${location.url}"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-sm hover:opacity-70 transition-opacity"
-              style="color: var(--link-color)"
-            >
-              [Learn more →]
-            </a>
-          ` : ''}
-        </div>
-      `;
-
-      marker.bindPopup(popupContent, {
-        className: 'e-ink-popup',
-      });
-
       // Add marker to cluster group
       markerClusterGroup.addLayer(marker);
     });
