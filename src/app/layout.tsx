@@ -62,7 +62,7 @@ export default function RootLayout({
           <footer
             className="relative"
             style={{
-              zIndex: 10,
+              zIndex: 9998,
               borderTop: '1px solid var(--border-color)',
               backgroundColor: 'var(--bg-surface)',
               paddingBottom: 'env(safe-area-inset-bottom)',

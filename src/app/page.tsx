@@ -35,7 +35,7 @@ export default async function HomePage() {
       </div>
 
       {/* Foreground Content - relative positioning with proper spacing */}
-      <div className="relative" style={{ zIndex: 1 }}>
+      <div className="relative px-4 md:px-0" style={{ zIndex: 1 }}>
         {/* Terminal Welcome with typing animation */}
         <TerminalWelcome />
 
@@ -44,13 +44,17 @@ export default async function HomePage() {
           <div className="mb-6 text-sm" style={{ color: 'var(--accent-secondary)' }}>
             Quick Links
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {quickLinks.map((item) => (
               <Link
                 key={item.link}
                 href={item.link}
-                className="block text-sm transition-opacity hover:opacity-70"
-                style={{ color: 'var(--link-color)' }}
+                className="block text-base md:text-sm py-2 transition-opacity hover:opacity-70"
+                style={{
+                  color: 'var(--link-color)',
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
               >
                 [{item.label} →]
               </Link>
@@ -60,9 +64,17 @@ export default async function HomePage() {
 
         {/* Quick Stats */}
         <div className="py-8" style={{ borderTop: '1px solid var(--border-color)' }}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {stats.map((stat) => (
-              <Link key={stat.label} href={stat.href} className="group">
+              <Link
+                key={stat.label}
+                href={stat.href}
+                className="group py-2"
+                style={{
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
                 <div
                   className="text-xs mb-2 transition-opacity"
                   style={{ color: 'var(--link-color)' }}
@@ -70,7 +82,7 @@ export default async function HomePage() {
                   [{stat.label.toLowerCase()}]
                 </div>
                 <div
-                  className="text-4xl font-medium transition-opacity group-hover:opacity-70"
+                  className="text-4xl md:text-3xl lg:text-4xl font-medium transition-opacity group-hover:opacity-70"
                   style={{ color: 'var(--accent-primary)' }}
                 >
                   {stat.value}

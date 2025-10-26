@@ -80,7 +80,7 @@ export default function ContactForm() {
       {/* Page Header */}
       <div>
         <div className="text-sm mb-2" style={{ color: 'var(--accent-secondary)' }}>Contact</div>
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Send me a message using the form below</p>
+        <p className="text-base md:text-sm" style={{ color: 'var(--text-muted)' }}>Send me a message using the form below</p>
       </div>
 
       {/* Success Message */}
@@ -110,8 +110,13 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full p-3 focus:outline-none disabled:opacity-50 text-sm"
-            style={inputStyle}
+            className="w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50"
+            style={{
+              ...inputStyle,
+              minHeight: '48px',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+            }}
             placeholder="Your name"
           />
           {errors.name && (
@@ -134,8 +139,13 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full p-3 focus:outline-none disabled:opacity-50 text-sm"
-            style={inputStyle}
+            className="w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50"
+            style={{
+              ...inputStyle,
+              minHeight: '48px',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+            }}
             placeholder="your.email@example.com"
           />
           {errors.email && (
@@ -158,8 +168,13 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full p-3 focus:outline-none disabled:opacity-50 text-sm"
-            style={inputStyle}
+            className="w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50"
+            style={{
+              ...inputStyle,
+              minHeight: '48px',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+            }}
             placeholder="What's this about?"
           />
           {errors.subject && (
@@ -182,8 +197,12 @@ export default function ContactForm() {
             required
             disabled={isSubmitting}
             rows={8}
-            className="w-full p-3 focus:outline-none resize-none disabled:opacity-50 text-sm"
-            style={inputStyle}
+            className="w-full p-3 text-base md:text-sm focus:outline-none resize-none disabled:opacity-50"
+            style={{
+              ...inputStyle,
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+            }}
             placeholder="Type your message here..."
           />
           {errors.message && (
@@ -204,8 +223,13 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm hover:opacity-70"
-          style={{ color: 'var(--link-color)' }}
+          className="transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-sm hover:opacity-70 px-4 py-3"
+          style={{
+            color: 'var(--link-color)',
+            minHeight: '52px',
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+          }}
         >
           {isSubmitting ? (
             <span className="flex items-center gap-2">
@@ -221,25 +245,33 @@ export default function ContactForm() {
       {/* Additional Contact Info */}
       <div className="pt-8" style={{ borderTop: '1px solid var(--border-color)' }}>
         <div className="text-sm mb-6" style={{ color: 'var(--accent-secondary)' }}>Other ways to reach me</div>
-        <div className="space-y-3 text-sm">
-          <div className="flex items-center gap-4">
+        <div className="space-y-4 text-base md:text-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <span className="w-20" style={{ color: 'var(--text-muted)' }}>email</span>
             <a
               href="mailto:contact@chrisloidolt.com"
-              className="transition-opacity hover:opacity-70"
-              style={{ color: 'var(--link-color)' }}
+              className="transition-opacity hover:opacity-70 py-1"
+              style={{
+                color: 'var(--link-color)',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+              }}
             >
               contact@chrisloidolt.com
             </a>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <span className="w-20" style={{ color: 'var(--text-muted)' }}>github</span>
             <a
               href="https://github.com/chris-loidolt"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-opacity hover:opacity-70"
-              style={{ color: 'var(--link-color)' }}
+              className="transition-opacity hover:opacity-70 py-1"
+              style={{
+                color: 'var(--link-color)',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+              }}
             >
               github.com/chris-loidolt
             </a>

@@ -13,6 +13,7 @@ import MapAnnouncer from './MapAnnouncer';
 import MapDrawingTools from './MapDrawingTools';
 import MapActionControls from './MapActionControls';
 import Tooltip from './Tooltip';
+import OverlayPanel, { PanelTab } from './OverlayPanel';
 import { useDrawings } from '@/hooks/useDrawings';
 import 'leaflet/dist/leaflet.css';
 
@@ -665,9 +666,8 @@ export default function MapViewer({
   const [drawingEnabled, setDrawingEnabled] = useState(false);
 
   // Panel visibility state
-  const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<'search' | 'locations' | 'info'>('search');
-  const [isMobile, setIsMobile] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
 
   const isDark = useTheme();
   const { quality: networkQuality, isOnline } = useNetworkQuality();
@@ -686,18 +686,6 @@ export default function MapViewer({
   useEffect(() => {
     console.log('[MapViewer] Clustering enabled:', clusteringEnabled, 'Locations count:', locations.length);
   }, [clusteringEnabled, locations.length]);
-
-  // Detect mobile screen size
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640); // sm breakpoint
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // Handle tile loading progress (memoized to prevent re-creating)
   const handleTileProgress = useCallback((loading: boolean, progress: number) => {
@@ -902,7 +890,7 @@ export default function MapViewer({
       // Set selected location and switch to info tab
       setSelectedLocation(location);
       setActiveTab('info');
-      setIsPanelOpen(true);
+      setIsPanelOpen(true); // Open the panel to show location info
     }
   }, [unlockedLocations]);
 
@@ -925,7 +913,6 @@ export default function MapViewer({
             // Shift+L: Switch to locations tab
             e.preventDefault();
             setActiveTab('locations');
-            setIsPanelOpen(true);
             setShowLocationList(true); // Keep for backward compat
           } else {
             // L: Locate user
@@ -957,7 +944,6 @@ export default function MapViewer({
           // /: Focus search and switch to search tab
           e.preventDefault();
           setActiveTab('search');
-          setIsPanelOpen(true);
           setTimeout(() => {
             document.getElementById('location-search')?.focus();
           }, 100);
@@ -969,8 +955,6 @@ export default function MapViewer({
           } else if (selectedLocation && activeTab === 'info') {
             setSelectedLocation(null);
             setActiveTab('search');
-          } else if (isPanelOpen && isMobile) {
-            setIsPanelOpen(false);
           }
           break;
       }
@@ -978,10 +962,604 @@ export default function MapViewer({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedLocation, passwordModal, showLocationList, activeTab, isPanelOpen, isMobile]);
+  }, [selectedLocation, passwordModal, showLocationList, activeTab]);
+
+  // Define panel tabs
+  const panelTabs: PanelTab[] = [
+    {
+      id: 'search',
+      label: 'Search',
+      content: (
+        <>
+          {/* Network status indicator */}
+          {(!isOnline || networkQuality === 'slow') && (
+            <div
+              style={{
+                padding: '6px 8px',
+                borderBottom: '1px solid var(--border-color)',
+              }}
+            >
+              {!isOnline && (
+                <div
+                  className="text-xs px-1.5 py-0.5"
+                  style={{
+                    color: 'var(--error-color)',
+                    border: '1px solid var(--error-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                    display: 'inline-block',
+                  }}
+                >
+                  Offline
+                </div>
+              )}
+              {isOnline && networkQuality === 'slow' && (
+                <div
+                  className="text-xs px-1.5 py-0.5"
+                  style={{
+                    color: 'var(--accent-secondary)',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                    display: 'inline-block',
+                  }}
+                >
+                  Slow
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Search & Filter Section */}
+          <div style={{ padding: '8px 8px 12px', borderBottom: '1px solid var(--border-color)' }}>
+            {/* Compact Search */}
+            <div style={{ position: 'relative', marginBottom: '8px' }}>
+              <input
+                id="location-search"
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full p-2.5 pl-9 text-sm sm:text-xs sm:p-1.5 sm:pl-7 focus:outline-none focus:ring-1 transition-all"
+                style={{
+                  backgroundColor: 'var(--bg-primary)',
+                  border: '1px solid var(--border-color)',
+                  color: 'var(--text-primary)',
+                  outline: 'none',
+                  minHeight: '44px',
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+                aria-label="Search locations by name or description"
+              />
+              <span
+                style={{
+                  position: 'absolute',
+                  left: '6px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)',
+                  pointerEvents: 'none',
+                  fontSize: '11px',
+                }}
+                aria-hidden="true"
+              >
+                🔍
+              </span>
+            </div>
+
+            {/* Multi-select Category Filter */}
+            {categories.length > 0 && (
+              <div>
+                <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                  Categories {selectedCategories.size > 0 && `(${selectedCategories.size})`}
+                </div>
+                <div
+                  role="group"
+                  aria-label="Category filters"
+                  className="flex flex-wrap gap-1"
+                >
+                  {categories.map((cat) => {
+                    const isSelected = selectedCategories.has(cat);
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          const newCategories = new Set(selectedCategories);
+                          if (isSelected) {
+                            newCategories.delete(cat);
+                          } else {
+                            newCategories.add(cat);
+                          }
+                          setSelectedCategories(newCategories);
+                        }}
+                        className="px-2.5 py-2 sm:px-1.5 sm:py-0.5 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
+                        style={{
+                          color: isSelected ? 'var(--link-color)' : 'var(--text-muted)',
+                          border: `1px solid ${isSelected ? 'var(--link-color)' : 'var(--border-color)'}`,
+                          backgroundColor: isSelected ? 'var(--bg-primary)' : 'transparent',
+                          outline: 'none',
+                          fontWeight: isSelected ? 600 : 400,
+                          minHeight: '36px',
+                          touchAction: 'manipulation',
+                          WebkitTapHighlightColor: 'transparent',
+                        }}
+                        aria-pressed={isSelected}
+                        aria-label={`${isSelected ? 'Remove' : 'Add'} ${cat} filter`}
+                      >
+                        {isSelected && '✓ '}{cat}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Advanced Filters Section */}
+          <details style={{ padding: '8px', backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)' }}>
+            <summary
+              className="text-xs cursor-pointer transition-opacity hover:opacity-70 mb-2"
+              style={{ color: 'var(--accent-secondary)', listStyle: 'none', userSelect: 'none' }}
+            >
+              ⚙️ Advanced Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+            </summary>
+            <div className="space-y-3">
+              {/* Privacy Filter */}
+              <div>
+                <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                  Privacy
+                </div>
+                <div className="flex gap-1">
+                  {['all', 'public', 'private'].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setPrivacyFilter(option as 'all' | 'public' | 'private')}
+                      className="px-2 py-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
+                      style={{
+                        color: privacyFilter === option ? 'var(--link-color)' : 'var(--text-muted)',
+                        border: `1px solid ${privacyFilter === option ? 'var(--link-color)' : 'var(--border-color)'}`,
+                        backgroundColor: privacyFilter === option ? 'var(--bg-primary)' : 'transparent',
+                        outline: 'none',
+                        fontWeight: privacyFilter === option ? 600 : 400,
+                        flex: 1,
+                        minHeight: '40px',
+                        touchAction: 'manipulation',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                      aria-pressed={privacyFilter === option}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Has Image Filter */}
+              <div>
+                <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                  Images
+                </div>
+                <div className="flex gap-1">
+                  {[
+                    { label: 'all', value: null },
+                    { label: 'with image', value: true },
+                    { label: 'no image', value: false },
+                  ].map((option) => (
+                    <button
+                      key={option.label}
+                      onClick={() => setHasImageFilter(option.value)}
+                      className="px-2 py-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
+                      style={{
+                        color: hasImageFilter === option.value ? 'var(--link-color)' : 'var(--text-muted)',
+                        border: `1px solid ${hasImageFilter === option.value ? 'var(--link-color)' : 'var(--border-color)'}`,
+                        backgroundColor: hasImageFilter === option.value ? 'var(--bg-primary)' : 'transparent',
+                        outline: 'none',
+                        fontWeight: hasImageFilter === option.value ? 600 : 400,
+                        flex: 1,
+                        minHeight: '40px',
+                        touchAction: 'manipulation',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                      aria-pressed={hasImageFilter === option.value}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Auto-zoom Toggle */}
+              <div>
+                <label className="flex items-center justify-between cursor-pointer">
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    Auto-zoom to extents
+                  </span>
+                  <button
+                    onClick={() => setAutoZoomToExtents(!autoZoomToExtents)}
+                    className="px-3 py-2 sm:px-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70"
+                    style={{
+                      color: autoZoomToExtents ? 'var(--accent-primary)' : 'var(--text-muted)',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                      minWidth: '52px',
+                      minHeight: '36px',
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                    aria-pressed={autoZoomToExtents}
+                  >
+                    {autoZoomToExtents ? 'ON' : 'OFF'}
+                  </button>
+                </label>
+                <div className="text-xs mt-1" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
+                  Automatically zoom to fit filtered locations
+                </div>
+              </div>
+            </div>
+          </details>
+
+          {/* Drawing Actions - shown when drawing is enabled and there are drawings */}
+          {drawingEnabled && drawingCount > 0 && (
+            <div style={{ padding: '8px', borderBottom: '1px solid var(--border-color)' }}>
+              <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                Drawings ({drawingCount})
+              </div>
+              <div className="grid grid-cols-3 gap-1">
+                <Tooltip content="Save to storage" position="bottom">
+                  <button
+                    onClick={() => saveDrawings()}
+                    className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
+                    style={{
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                      color: 'var(--link-color)',
+                      outline: 'none',
+                    }}
+                    aria-label="Save drawings to browser storage"
+                  >
+                    Save
+                  </button>
+                </Tooltip>
+                <Tooltip content="Export GeoJSON" position="bottom">
+                  <button
+                    onClick={() => exportGeoJSON()}
+                    className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
+                    style={{
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                      color: 'var(--link-color)',
+                      outline: 'none',
+                    }}
+                    aria-label="Export drawings as GeoJSON file"
+                  >
+                    Export
+                  </button>
+                </Tooltip>
+                <Tooltip content="Clear all" position="bottom">
+                  <button
+                    onClick={() => {
+                      if (confirm('Clear all drawings?')) {
+                        clearDrawings();
+                      }
+                    }}
+                    className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
+                    style={{
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                      color: 'var(--error-color)',
+                      outline: 'none',
+                    }}
+                    aria-label="Clear all drawings"
+                  >
+                    Clear
+                  </button>
+                </Tooltip>
+              </div>
+            </div>
+          )}
+
+          {/* Compact Keyboard Shortcuts */}
+          <details style={{ padding: '6px 8px', backgroundColor: 'var(--bg-primary)' }}>
+            <summary
+              className="text-xs cursor-pointer transition-opacity hover:opacity-70"
+              style={{ color: 'var(--text-muted)', listStyle: 'none', userSelect: 'none' }}
+            >
+              ⌨️ Shortcuts
+            </summary>
+            <div className="mt-1.5 space-y-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>
+              <div className="flex justify-between">
+                <span>Locate</span>
+                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>L</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span>List</span>
+                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>⇧L</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span>Cluster</span>
+                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>C</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span>Draw</span>
+                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>D</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span>Search</span>
+                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>/</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span>Close</span>
+                <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>Esc</kbd>
+              </div>
+            </div>
+          </details>
+        </>
+      ),
+    },
+    {
+      id: 'locations',
+      label: 'Locations',
+      content: (
+        <div style={{ padding: '8px' }}>
+          {filteredLocations.length === 0 ? (
+            <div style={{ padding: '24px', textAlign: 'center' }}>
+              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                No results found
+              </div>
+            </div>
+          ) : (
+            <>
+              {filteredLocations.map((location) => {
+                const isLocked = isLocationLocked(location);
+                return (
+                  <button
+                    key={location.id}
+                    onClick={() => handleLocationClick(location)}
+                    className="w-full text-left p-3 sm:p-2 mb-2 transition-opacity hover:opacity-70"
+                    style={{
+                      backgroundColor: 'var(--bg-primary)',
+                      border: '1px solid var(--border-color)',
+                      opacity: isLocked ? 0.7 : 1,
+                      minHeight: '56px',
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      {isLocked && <span style={{ color: 'var(--text-muted)' }}>🔒</span>}
+                      <div className="text-base sm:text-sm flex-1" style={{ color: 'var(--text-primary)' }}>
+                        {location.name}
+                      </div>
+                    </div>
+                    {location.category && (
+                      <div className="text-sm sm:text-xs" style={{ color: 'var(--accent-secondary)' }}>
+                        [{location.category}]
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: 'info',
+      label: 'Info',
+      disabled: !selectedLocation,
+      content: selectedLocation ? (
+        <div style={{ padding: '16px' }}>
+          {/* Featured Image */}
+          {selectedLocation.image && (
+            <div style={{ marginBottom: '20px' }}>
+              <img
+                src={selectedLocation.image}
+                alt={selectedLocation.name}
+                className="w-full object-cover h-48 sm:h-60"
+                style={{
+                  border: '1px solid var(--border-color)',
+                  filter: isDark ? 'grayscale(100%)' : 'grayscale(50%)',
+                }}
+              />
+            </div>
+          )}
+
+          {/* Name */}
+          <div style={{ marginBottom: '16px' }}>
+            <h2
+              className="text-lg font-semibold mb-1"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              {selectedLocation.name}
+            </h2>
+          </div>
+
+          {/* Categories */}
+          {(selectedLocation.categories && selectedLocation.categories.length > 0) && (
+            <div style={{ marginBottom: '20px' }}>
+              <div
+                className="text-xs mb-2"
+                style={{ color: 'var(--accent-secondary)' }}
+              >
+                Categories
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {selectedLocation.categories.map((cat, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs px-2 py-1"
+                    style={{
+                      color: 'var(--text-muted)',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                    }}
+                  >
+                    [{cat}]
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Coordinates */}
+          <div style={{ marginBottom: '20px' }}>
+            <div
+              className="text-xs mb-2"
+              style={{ color: 'var(--accent-secondary)' }}
+            >
+              Coordinates
+            </div>
+            <div className="text-sm" style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+              {selectedLocation.latitude.toFixed(6)}, {selectedLocation.longitude.toFixed(6)}
+            </div>
+          </div>
+
+          {/* Description */}
+          {selectedLocation.description && (
+            <div style={{ marginBottom: '20px' }}>
+              <div
+                className="text-xs mb-2"
+                style={{ color: 'var(--accent-secondary)' }}
+              >
+                Description
+              </div>
+              <div
+                className="text-sm leading-relaxed"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                {selectedLocation.description}
+              </div>
+            </div>
+          )}
+
+          {/* External Link */}
+          {selectedLocation.url && (
+            <div style={{ marginBottom: '20px' }}>
+              <a
+                href={selectedLocation.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block text-sm hover:opacity-70 transition-opacity px-3 py-2"
+                style={{
+                  color: 'var(--link-color)',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'var(--bg-primary)',
+                }}
+              >
+                [Learn more →]
+              </a>
+            </div>
+          )}
+
+          {/* Privacy */}
+          {selectedLocation.privacy && (
+            <div style={{ marginBottom: '12px' }}>
+              <div
+                className="text-xs mb-2"
+                style={{ color: 'var(--accent-secondary)' }}
+              >
+                Privacy
+              </div>
+              <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                {selectedLocation.privacy}
+              </div>
+            </div>
+          )}
+
+          {/* Footer with action buttons */}
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => {
+                const coords = `${selectedLocation.latitude}, ${selectedLocation.longitude}`;
+                navigator.clipboard.writeText(coords);
+              }}
+              className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
+              style={{
+                color: 'var(--link-color)',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-primary)',
+              }}
+              aria-label="Copy coordinates to clipboard"
+            >
+              [Copy Coords]
+            </button>
+            {selectedLocation.url && (
+              <button
+                onClick={() => {
+                  window.open(selectedLocation.url, '_blank', 'noopener,noreferrer');
+                }}
+                className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
+                style={{
+                  color: 'var(--accent-primary)',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'var(--bg-primary)',
+                }}
+                aria-label="Visit external link"
+              >
+                [Visit Link]
+              </button>
+            )}
+          </div>
+        </div>
+      ) : null,
+    },
+  ];
+
+  // Panel header
+  const panelHeader = activeTab === 'search' ? (
+    <div className="px-3 py-1.5 text-xs flex items-center justify-between">
+      <span style={{ color: 'var(--text-muted)' }}>
+        {filteredLocations.length} {filteredLocations.length === 1 ? 'location' : 'locations'}
+        {activeFilterCount > 0 && (
+          <span style={{ color: 'var(--accent-secondary)' }}> • {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}</span>
+        )}
+      </span>
+      {activeFilterCount > 0 && (
+        <button
+          onClick={() => {
+            setSearchQuery('');
+            setSelectedCategories(new Set());
+            setPrivacyFilter('all');
+            setHasImageFilter(null);
+          }}
+          className="text-xs hover:opacity-70 transition-opacity px-2.5 py-1.5"
+          style={{
+            color: 'var(--error-color)',
+            border: '1px solid var(--border-color)',
+            backgroundColor: 'var(--bg-primary)',
+            minHeight: '32px',
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+          aria-label="Clear all filters"
+        >
+          Clear all
+        </button>
+      )}
+    </div>
+  ) : activeTab === 'locations' ? (
+    <div className="px-3 py-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
+      {filteredLocations.length} {filteredLocations.length === 1 ? 'result' : 'results'}
+    </div>
+  ) : activeTab === 'info' && selectedLocation ? (
+    <div className="px-3 py-1.5 text-xs" style={{ color: 'var(--accent-secondary)' }}>
+      {selectedLocation.category ? `[${selectedLocation.category}]` : 'Location Details'}
+    </div>
+  ) : null;
 
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}>
+      {/* Overlay Panel */}
+      <OverlayPanel
+        tabs={panelTabs}
+        activeTab={activeTab}
+        open={isPanelOpen}
+        onOpenChange={setIsPanelOpen}
+        panelHeader={panelHeader}
+        onTabChange={(tabId) => setActiveTab(tabId as 'search' | 'locations' | 'info')}
+        position="left"
+      />
+
       {/* Full-page Map */}
       <MapContainer
         center={mapCenter}
@@ -1149,712 +1727,6 @@ export default function MapViewer({
         })
         )}
       </MapContainer>
-
-      {/* Left Panel Tab Button - shown when panel is closed */}
-      {!isPanelOpen && (
-        <button
-          onClick={() => setIsPanelOpen(true)}
-          className="absolute top-5 left-0 z-[1001] px-3 py-5 text-sm sm:text-xs transition-all hover:opacity-70"
-          style={{
-            backgroundColor: 'var(--bg-surface)',
-            border: '1px solid var(--border-color)',
-            borderLeft: 'none',
-            borderTopRightRadius: '4px',
-            borderBottomRightRadius: '4px',
-            color: 'var(--accent-secondary)',
-            boxShadow: '2px 0 8px rgba(0,0,0,0.2)',
-            writingMode: 'vertical-rl',
-            textOrientation: 'mixed',
-            minHeight: '80px',
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
-          }}
-          aria-label="Show panel"
-        >
-          {activeTab === 'search' && 'Search'}
-          {activeTab === 'locations' && 'Locations'}
-          {activeTab === 'info' && 'Info'}
-        </button>
-      )}
-
-      {/* Unified Left Panel with Tabs */}
-      <div
-        className={`absolute top-2 left-2 right-2 bottom-2 sm:right-auto sm:top-5 sm:left-5 sm:bottom-5
-                   w-auto sm:w-80 lg:w-96 max-w-full sm:max-w-[calc(100vw-40px)] lg:max-w-[400px]
-                   flex flex-col overflow-hidden z-[1000]
-                   transition-transform duration-300 ease-in-out
-                   ${!isPanelOpen ? '-translate-x-full sm:-translate-x-[calc(100%+20px)]' : 'translate-x-0'}`}
-        role="complementary"
-        aria-label="Map panel"
-        style={{
-          backgroundColor: 'var(--bg-surface)',
-          border: '1px solid var(--border-color)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-        }}
-      >
-        {/* Tab Header */}
-        <div
-          style={{
-            borderBottom: '1px solid var(--border-color)',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          {/* Tabs */}
-          <div className="flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-color)' }}>
-            <div className="flex flex-1">
-              <button
-                onClick={() => setActiveTab('search')}
-                className="flex-1 px-3 py-3 sm:py-2 text-sm sm:text-xs transition-all hover:opacity-70"
-                style={{
-                  color: activeTab === 'search' ? 'var(--link-color)' : 'var(--text-muted)',
-                  backgroundColor: activeTab === 'search' ? 'var(--bg-primary)' : 'transparent',
-                  borderBottom: activeTab === 'search' ? '2px solid var(--link-color)' : '2px solid transparent',
-                  fontWeight: activeTab === 'search' ? 600 : 400,
-                  minHeight: '44px',
-                  touchAction: 'manipulation',
-                  WebkitTapHighlightColor: 'transparent',
-                }}
-                aria-label="Search tab"
-                aria-pressed={activeTab === 'search'}
-              >
-                Search
-              </button>
-              <button
-                onClick={() => {
-                  setActiveTab('locations');
-                  setShowLocationList(true);
-                }}
-                className="flex-1 px-3 py-3 sm:py-2 text-sm sm:text-xs transition-all hover:opacity-70"
-                style={{
-                  color: activeTab === 'locations' ? 'var(--link-color)' : 'var(--text-muted)',
-                  backgroundColor: activeTab === 'locations' ? 'var(--bg-primary)' : 'transparent',
-                  borderBottom: activeTab === 'locations' ? '2px solid var(--link-color)' : '2px solid transparent',
-                  fontWeight: activeTab === 'locations' ? 600 : 400,
-                  minHeight: '44px',
-                  touchAction: 'manipulation',
-                  WebkitTapHighlightColor: 'transparent',
-                }}
-                aria-label="Locations tab"
-                aria-pressed={activeTab === 'locations'}
-              >
-                Locations
-              </button>
-              <button
-                onClick={() => setActiveTab('info')}
-                className="flex-1 px-3 py-3 sm:py-2 text-sm sm:text-xs transition-all hover:opacity-70"
-                style={{
-                  color: activeTab === 'info' ? 'var(--link-color)' : 'var(--text-muted)',
-                  backgroundColor: activeTab === 'info' ? 'var(--bg-primary)' : 'transparent',
-                  borderBottom: activeTab === 'info' ? '2px solid var(--link-color)' : '2px solid transparent',
-                  fontWeight: activeTab === 'info' ? 600 : 400,
-                  opacity: selectedLocation ? 1 : 0.5,
-                  minHeight: '44px',
-                  touchAction: 'manipulation',
-                  WebkitTapHighlightColor: 'transparent',
-                }}
-                aria-label="Info tab"
-                aria-pressed={activeTab === 'info'}
-                disabled={!selectedLocation}
-              >
-                Info
-              </button>
-            </div>
-            <button
-              onClick={() => setIsPanelOpen(false)}
-              className="text-base sm:text-xs hover:opacity-70 transition-opacity px-4 py-3 sm:py-2"
-              style={{
-                color: 'var(--text-muted)',
-                minWidth: '44px',
-                minHeight: '44px',
-                touchAction: 'manipulation',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-              aria-label="Hide panel"
-            >
-              ✕
-            </button>
-          </div>
-          {/* Tab info row */}
-          {activeTab === 'search' && (
-            <div className="px-3 py-1.5 text-xs flex items-center justify-between">
-              <span style={{ color: 'var(--text-muted)' }}>
-                {filteredLocations.length} {filteredLocations.length === 1 ? 'location' : 'locations'}
-                {activeFilterCount > 0 && (
-                  <span style={{ color: 'var(--accent-secondary)' }}> • {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}</span>
-                )}
-              </span>
-              {activeFilterCount > 0 && (
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategories(new Set());
-                    setPrivacyFilter('all');
-                    setHasImageFilter(null);
-                  }}
-                  className="text-xs hover:opacity-70 transition-opacity px-2.5 py-1.5"
-                  style={{
-                    color: 'var(--error-color)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                    minHeight: '32px',
-                    touchAction: 'manipulation',
-                    WebkitTapHighlightColor: 'transparent',
-                  }}
-                  aria-label="Clear all filters"
-                >
-                  Clear all
-                </button>
-              )}
-            </div>
-          )}
-          {activeTab === 'locations' && (
-            <div className="px-3 py-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
-              {filteredLocations.length} {filteredLocations.length === 1 ? 'result' : 'results'}
-            </div>
-          )}
-          {activeTab === 'info' && selectedLocation && (
-            <div className="px-3 py-1.5 text-xs" style={{ color: 'var(--accent-secondary)' }}>
-              {selectedLocation.category ? `[${selectedLocation.category}]` : 'Location Details'}
-            </div>
-          )}
-        </div>
-
-        {/* Tab Content */}
-        <div className="flex-1 min-h-0 overflow-y-auto" style={{ backgroundColor: 'var(--bg-primary)' }}>
-          {/* Search Tab Content */}
-          {activeTab === 'search' && (
-            <>
-
-        {/* Network status indicator */}
-        {(!isOnline || networkQuality === 'slow') && (
-          <div
-            style={{
-              padding: '6px 8px',
-              borderBottom: '1px solid var(--border-color)',
-            }}
-          >
-            {!isOnline && (
-              <div
-                className="text-xs px-1.5 py-0.5"
-                style={{
-                  color: 'var(--error-color)',
-                  border: '1px solid var(--error-color)',
-                  backgroundColor: 'var(--bg-primary)',
-                  display: 'inline-block',
-                }}
-              >
-                Offline
-              </div>
-            )}
-            {isOnline && networkQuality === 'slow' && (
-              <div
-                className="text-xs px-1.5 py-0.5"
-                style={{
-                  color: 'var(--accent-secondary)',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: 'var(--bg-primary)',
-                  display: 'inline-block',
-                }}
-              >
-                Slow
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Search & Filter Section */}
-        <div style={{ padding: '8px 8px 12px', borderBottom: '1px solid var(--border-color)' }}>
-          {/* Compact Search */}
-          <div style={{ position: 'relative', marginBottom: '8px' }}>
-            <input
-              id="location-search"
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full p-2.5 pl-9 text-sm sm:text-xs sm:p-1.5 sm:pl-7 focus:outline-none focus:ring-1 transition-all"
-              style={{
-                backgroundColor: 'var(--bg-primary)',
-                border: '1px solid var(--border-color)',
-                color: 'var(--text-primary)',
-                outline: 'none',
-                minHeight: '44px',
-                touchAction: 'manipulation',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-              aria-label="Search locations by name or description"
-            />
-            <span
-              style={{
-                position: 'absolute',
-                left: '6px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--text-muted)',
-                pointerEvents: 'none',
-                fontSize: '11px',
-              }}
-              aria-hidden="true"
-            >
-              🔍
-            </span>
-          </div>
-
-          {/* Multi-select Category Filter */}
-          {categories.length > 0 && (
-            <div>
-              <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                Categories {selectedCategories.size > 0 && `(${selectedCategories.size})`}
-              </div>
-              <div
-                role="group"
-                aria-label="Category filters"
-                className="flex flex-wrap gap-1"
-              >
-                {categories.map((cat) => {
-                  const isSelected = selectedCategories.has(cat);
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => {
-                        const newCategories = new Set(selectedCategories);
-                        if (isSelected) {
-                          newCategories.delete(cat);
-                        } else {
-                          newCategories.add(cat);
-                        }
-                        setSelectedCategories(newCategories);
-                      }}
-                      className="px-2.5 py-2 sm:px-1.5 sm:py-0.5 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
-                      style={{
-                        color: isSelected ? 'var(--link-color)' : 'var(--text-muted)',
-                        border: `1px solid ${isSelected ? 'var(--link-color)' : 'var(--border-color)'}`,
-                        backgroundColor: isSelected ? 'var(--bg-primary)' : 'transparent',
-                        outline: 'none',
-                        fontWeight: isSelected ? 600 : 400,
-                        minHeight: '36px',
-                        touchAction: 'manipulation',
-                        WebkitTapHighlightColor: 'transparent',
-                      }}
-                      aria-pressed={isSelected}
-                      aria-label={`${isSelected ? 'Remove' : 'Add'} ${cat} filter`}
-                    >
-                      {isSelected && '✓ '}{cat}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-        </div>
-
-        {/* Advanced Filters Section */}
-        <details style={{ padding: '8px', backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-color)' }}>
-          <summary
-            className="text-xs cursor-pointer transition-opacity hover:opacity-70 mb-2"
-            style={{ color: 'var(--accent-secondary)', listStyle: 'none', userSelect: 'none' }}
-          >
-            ⚙️ Advanced Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
-          </summary>
-          <div className="space-y-3">
-            {/* Privacy Filter */}
-            <div>
-              <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                Privacy
-              </div>
-              <div className="flex gap-1">
-                {['all', 'public', 'private'].map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => setPrivacyFilter(option as 'all' | 'public' | 'private')}
-                    className="px-2 py-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
-                    style={{
-                      color: privacyFilter === option ? 'var(--link-color)' : 'var(--text-muted)',
-                      border: `1px solid ${privacyFilter === option ? 'var(--link-color)' : 'var(--border-color)'}`,
-                      backgroundColor: privacyFilter === option ? 'var(--bg-primary)' : 'transparent',
-                      outline: 'none',
-                      fontWeight: privacyFilter === option ? 600 : 400,
-                      flex: 1,
-                      minHeight: '40px',
-                      touchAction: 'manipulation',
-                      WebkitTapHighlightColor: 'transparent',
-                    }}
-                    aria-pressed={privacyFilter === option}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Has Image Filter */}
-            <div>
-              <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                Images
-              </div>
-              <div className="flex gap-1">
-                {[
-                  { label: 'all', value: null },
-                  { label: 'with image', value: true },
-                  { label: 'no image', value: false },
-                ].map((option) => (
-                  <button
-                    key={option.label}
-                    onClick={() => setHasImageFilter(option.value)}
-                    className="px-2 py-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
-                    style={{
-                      color: hasImageFilter === option.value ? 'var(--link-color)' : 'var(--text-muted)',
-                      border: `1px solid ${hasImageFilter === option.value ? 'var(--link-color)' : 'var(--border-color)'}`,
-                      backgroundColor: hasImageFilter === option.value ? 'var(--bg-primary)' : 'transparent',
-                      outline: 'none',
-                      fontWeight: hasImageFilter === option.value ? 600 : 400,
-                      flex: 1,
-                      minHeight: '40px',
-                      touchAction: 'manipulation',
-                      WebkitTapHighlightColor: 'transparent',
-                    }}
-                    aria-pressed={hasImageFilter === option.value}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Auto-zoom Toggle */}
-            <div>
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                  Auto-zoom to extents
-                </span>
-                <button
-                  onClick={() => setAutoZoomToExtents(!autoZoomToExtents)}
-                  className="px-3 py-2 sm:px-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70"
-                  style={{
-                    color: autoZoomToExtents ? 'var(--accent-primary)' : 'var(--text-muted)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                    minWidth: '52px',
-                    minHeight: '36px',
-                    touchAction: 'manipulation',
-                    WebkitTapHighlightColor: 'transparent',
-                  }}
-                  aria-pressed={autoZoomToExtents}
-                >
-                  {autoZoomToExtents ? 'ON' : 'OFF'}
-                </button>
-              </label>
-              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
-                Automatically zoom to fit filtered locations
-              </div>
-            </div>
-          </div>
-        </details>
-
-        {/* Drawing Actions - shown when drawing is enabled and there are drawings */}
-        {drawingEnabled && drawingCount > 0 && (
-          <div style={{ padding: '8px', borderBottom: '1px solid var(--border-color)' }}>
-            <div className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>
-              Drawings ({drawingCount})
-            </div>
-            <div className="grid grid-cols-3 gap-1">
-              <Tooltip content="Save to storage" position="bottom">
-                <button
-                  onClick={() => saveDrawings()}
-                  className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
-                  style={{
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                    color: 'var(--link-color)',
-                    outline: 'none',
-                  }}
-                  aria-label="Save drawings to browser storage"
-                >
-                  Save
-                </button>
-              </Tooltip>
-              <Tooltip content="Export GeoJSON" position="bottom">
-                <button
-                  onClick={() => exportGeoJSON()}
-                  className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
-                  style={{
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                    color: 'var(--link-color)',
-                    outline: 'none',
-                  }}
-                  aria-label="Export drawings as GeoJSON file"
-                >
-                  Export
-                </button>
-              </Tooltip>
-              <Tooltip content="Clear all" position="bottom">
-                <button
-                  onClick={() => {
-                    if (confirm('Clear all drawings?')) {
-                      clearDrawings();
-                    }
-                  }}
-                  className="p-1 text-xs transition-all hover:opacity-70 focus:ring-1"
-                  style={{
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                    color: 'var(--error-color)',
-                    outline: 'none',
-                  }}
-                  aria-label="Clear all drawings"
-                >
-                  Clear
-                </button>
-              </Tooltip>
-            </div>
-          </div>
-        )}
-
-        {/* Compact Keyboard Shortcuts */}
-        <details style={{ padding: '6px 8px', backgroundColor: 'var(--bg-primary)' }}>
-          <summary
-            className="text-xs cursor-pointer transition-opacity hover:opacity-70"
-            style={{ color: 'var(--text-muted)', listStyle: 'none', userSelect: 'none' }}
-          >
-            ⌨️ Shortcuts
-          </summary>
-          <div className="mt-1.5 space-y-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>
-            <div className="flex justify-between">
-              <span>Locate</span>
-              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>L</kbd>
-            </div>
-            <div className="flex justify-between">
-              <span>List</span>
-              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>⇧L</kbd>
-            </div>
-            <div className="flex justify-between">
-              <span>Cluster</span>
-              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>C</kbd>
-            </div>
-            <div className="flex justify-between">
-              <span>Draw</span>
-              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>D</kbd>
-            </div>
-            <div className="flex justify-between">
-              <span>Search</span>
-              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>/</kbd>
-            </div>
-            <div className="flex justify-between">
-              <span>Close</span>
-              <kbd style={{ padding: '0 3px', border: '1px solid var(--border-color)', borderRadius: '2px', fontSize: '10px' }}>Esc</kbd>
-            </div>
-          </div>
-        </details>
-            </>
-          )}
-
-          {/* Locations Tab Content */}
-          {activeTab === 'locations' && (
-            <div style={{ padding: '8px' }}>
-            {filteredLocations.length === 0 ? (
-              <div style={{ padding: '24px', textAlign: 'center' }}>
-                <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                  No results found
-                </div>
-              </div>
-            ) : (
-              <>
-                {filteredLocations.map((location) => {
-                  const isLocked = isLocationLocked(location);
-                  return (
-                    <button
-                      key={location.id}
-                      onClick={() => handleLocationClick(location)}
-                      className="w-full text-left p-3 sm:p-2 mb-2 transition-opacity hover:opacity-70"
-                      style={{
-                        backgroundColor: 'var(--bg-primary)',
-                        border: '1px solid var(--border-color)',
-                        opacity: isLocked ? 0.7 : 1,
-                        minHeight: '56px',
-                        touchAction: 'manipulation',
-                        WebkitTapHighlightColor: 'transparent',
-                      }}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        {isLocked && <span style={{ color: 'var(--text-muted)' }}>🔒</span>}
-                        <div className="text-base sm:text-sm flex-1" style={{ color: 'var(--text-primary)' }}>
-                          {location.name}
-                        </div>
-                      </div>
-                      {location.category && (
-                        <div className="text-sm sm:text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                          [{location.category}]
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </>
-            )}
-            </div>
-          )}
-
-          {/* Info Tab Content */}
-          {activeTab === 'info' && selectedLocation && (
-            <div style={{ padding: '16px' }}>
-              {/* Featured Image */}
-              {selectedLocation.image && (
-                <div style={{ marginBottom: '20px' }}>
-                  <img
-                    src={selectedLocation.image}
-                    alt={selectedLocation.name}
-                    className="w-full object-cover h-48 sm:h-60"
-                    style={{
-                      border: '1px solid var(--border-color)',
-                      filter: isDark ? 'grayscale(100%)' : 'grayscale(50%)',
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Name */}
-              <div style={{ marginBottom: '16px' }}>
-                <h2
-                  className="text-lg font-semibold mb-1"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  {selectedLocation.name}
-                </h2>
-              </div>
-
-              {/* Categories */}
-              {(selectedLocation.categories && selectedLocation.categories.length > 0) && (
-                <div style={{ marginBottom: '20px' }}>
-                  <div
-                    className="text-xs mb-2"
-                    style={{ color: 'var(--accent-secondary)' }}
-                  >
-                    Categories
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedLocation.categories.map((cat, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs px-2 py-1"
-                        style={{
-                          color: 'var(--text-muted)',
-                          border: '1px solid var(--border-color)',
-                          backgroundColor: 'var(--bg-primary)',
-                        }}
-                      >
-                        [{cat}]
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Coordinates */}
-              <div style={{ marginBottom: '20px' }}>
-                <div
-                  className="text-xs mb-2"
-                  style={{ color: 'var(--accent-secondary)' }}
-                >
-                  Coordinates
-                </div>
-                <div className="text-sm" style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                  {selectedLocation.latitude.toFixed(6)}, {selectedLocation.longitude.toFixed(6)}
-                </div>
-              </div>
-
-              {/* Description */}
-              {selectedLocation.description && (
-                <div style={{ marginBottom: '20px' }}>
-                  <div
-                    className="text-xs mb-2"
-                    style={{ color: 'var(--accent-secondary)' }}
-                  >
-                    Description
-                  </div>
-                  <div
-                    className="text-sm leading-relaxed"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    {selectedLocation.description}
-                  </div>
-                </div>
-              )}
-
-              {/* External Link */}
-              {selectedLocation.url && (
-                <div style={{ marginBottom: '20px' }}>
-                  <a
-                    href={selectedLocation.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block text-sm hover:opacity-70 transition-opacity px-3 py-2"
-                    style={{
-                      color: 'var(--link-color)',
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: 'var(--bg-primary)',
-                    }}
-                  >
-                    [Learn more →]
-                  </a>
-                </div>
-              )}
-
-              {/* Privacy */}
-              {selectedLocation.privacy && (
-                <div style={{ marginBottom: '12px' }}>
-                  <div
-                    className="text-xs mb-2"
-                    style={{ color: 'var(--accent-secondary)' }}
-                  >
-                    Privacy
-                  </div>
-                  <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                    {selectedLocation.privacy}
-                  </div>
-                </div>
-              )}
-
-              {/* Footer with action buttons */}
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={() => {
-                    const coords = `${selectedLocation.latitude}, ${selectedLocation.longitude}`;
-                    navigator.clipboard.writeText(coords);
-                  }}
-                  className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
-                  style={{
-                    color: 'var(--link-color)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
-                  }}
-                  aria-label="Copy coordinates to clipboard"
-                >
-                  [Copy Coords]
-                </button>
-                {selectedLocation.url && (
-                  <button
-                    onClick={() => {
-                      window.open(selectedLocation.url, '_blank', 'noopener,noreferrer');
-                    }}
-                    className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
-                    style={{
-                      color: 'var(--accent-primary)',
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: 'var(--bg-primary)',
-                    }}
-                    aria-label="Visit external link"
-                  >
-                    [Visit Link]
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Password Modal */}
       {passwordModal && (

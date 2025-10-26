@@ -26,7 +26,7 @@ export default async function AboutPage() {
     <div className="space-y-12">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl mb-6" style={{ color: 'var(--text-primary)' }}>
+        <h1 className="text-xl md:text-2xl mb-6" style={{ color: 'var(--text-primary)' }}>
           Chris Loidolt - Designer & Engineer
         </h1>
       </div>
@@ -36,7 +36,7 @@ export default async function AboutPage() {
         <div className="text-sm mb-6" style={{ color: 'var(--accent-secondary)' }}>
           About
         </div>
-        <div className="space-y-4 max-w-3xl" style={{ color: 'var(--text-primary)' }}>
+        <div className="space-y-4 max-w-3xl text-base md:text-sm" style={{ color: 'var(--text-primary)' }}>
           <p>
             I'm a designer and engineer with a passion for creating innovative solutions through 3D
             printing, woodworking, and software development. My work combines technical precision
@@ -56,10 +56,13 @@ export default async function AboutPage() {
             Services ({services.length})
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {services.map((service) => (
-              <div key={service.id} className="space-y-2">
-                <h3 className="text-sm" style={{ color: 'var(--text-primary)' }}>
+              <div key={service.id} className="space-y-2 p-4 md:p-0" style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border-color)',
+              }}>
+                <h3 className="text-base md:text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                   {service.icon && <span className="mr-2">{service.icon}</span>}
                   {service.title}
                 </h3>
@@ -82,12 +85,12 @@ export default async function AboutPage() {
           <div className="space-y-6">
             {qualifications.map((qual) => (
               <div key={qual.id} className="space-y-2">
-                <div className="flex items-start justify-between gap-4">
-                  <h3 className="text-sm" style={{ color: 'var(--text-primary)' }}>
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-4">
+                  <h3 className="text-base md:text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                     {qual.title}
                   </h3>
                   <span
-                    className="text-sm whitespace-nowrap"
+                    className="text-sm"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     [{qual.year}]
@@ -112,7 +115,7 @@ export default async function AboutPage() {
         <div className="text-sm mb-6" style={{ color: 'var(--accent-secondary)' }}>
           Skills
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
           <div>
             <div className="mb-3 text-sm" style={{ color: 'var(--text-muted)' }}>
               &quot;design&quot;: [
@@ -165,14 +168,18 @@ export default async function AboutPage() {
         <div className="text-sm mb-4" style={{ color: 'var(--accent-secondary)' }}>
           Collaboration & Consulting
         </div>
-        <p className="mb-6 text-sm max-w-2xl" style={{ color: 'var(--text-primary)' }}>
+        <p className="mb-6 text-base md:text-sm max-w-2xl" style={{ color: 'var(--text-primary)' }}>
           I'm available for collaboration and consulting. Interested in working together? Let's
           discuss your project.
         </p>
         <Link
           href="/contact"
-          className="inline-block text-sm hover:opacity-70 transition-opacity"
-          style={{ color: 'var(--link-color)' }}
+          className="inline-block text-base md:text-sm py-2 hover:opacity-70 transition-opacity"
+          style={{
+            color: 'var(--link-color)',
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+          }}
         >
           [Get in touch →]
         </Link>
