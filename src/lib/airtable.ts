@@ -62,9 +62,12 @@ export interface Location {
   url?: string;
   status?: string;
   privacy?: 'Public' | 'Private';
-  password?: string;
+  password?: string; // Server-side only
   shareToken?: string; // Token for sharing private locations without password
 }
+
+// Client-safe location type (excludes password)
+export type LocationPublic = Omit<Location, 'password'>;
 
 // Environment variable validation
 function getEnvVar(key: string): string {
@@ -246,7 +249,7 @@ export async function getWebsites(): Promise<Website[]> {
   }));
 }
 
-// Fetch locations/POIs
+// Fetch locations/POIs (includes passwords - server-side only)
 export async function getAllLocations(): Promise<Location[]> {
   const base = getAirtableBase();
   const tableName = getEnvVar("AIRTABLE_LOCATIONS_TABLENAME");
@@ -281,4 +284,12 @@ export async function getAllLocations(): Promise<Location[]> {
       shareToken: fields.ShareToken ? String(fields.ShareToken) : undefined,
     };
   });
+}
+
+// Fetch locations for client-side use (passwords excluded for security)
+export async function getPublicLocations(): Promise<LocationPublic[]> {
+  const locations = await getAllLocations();
+
+  // Strip passwords from locations before sending to client
+  return locations.map(({ password, ...location }) => location);
 }

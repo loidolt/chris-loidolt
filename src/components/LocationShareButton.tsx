@@ -40,11 +40,9 @@ export default function LocationShareButton({ location }: LocationShareButtonPro
     <div style={{ position: 'relative' }}>
       <button
         onClick={() => setShowShareMenu(!showShareMenu)}
-        className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
+        className="btn-terminal flex-1 text-xs sm:text-sm px-3 py-2 active:opacity-50"
         style={{
           color: 'var(--accent-primary)',
-          border: '1px solid var(--border-color)',
-          backgroundColor: 'var(--bg-primary)',
         }}
         aria-label="Share location"
       >
@@ -95,11 +93,9 @@ export default function LocationShareButton({ location }: LocationShareButtonPro
               </div>
               <button
                 onClick={() => copyToClipboard(generateShareLink(false), 'normal')}
-                className="w-full text-left p-2 text-xs hover:opacity-70 transition-opacity"
+                className="btn-terminal w-full text-left p-2 text-xs"
                 style={{
                   color: 'var(--link-color)',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: 'var(--bg-primary)',
                   fontFamily: 'monospace',
                 }}
               >
@@ -115,11 +111,9 @@ export default function LocationShareButton({ location }: LocationShareButtonPro
                 </div>
                 <button
                   onClick={() => copyToClipboard(generateShareLink(true), 'token')}
-                  className="w-full text-left p-2 text-xs hover:opacity-70 transition-opacity"
+                  className="btn-terminal w-full text-left p-2 text-xs"
                   style={{
                     color: 'var(--accent-primary)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-primary)',
                     fontFamily: 'monospace',
                   }}
                 >

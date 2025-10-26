@@ -17,6 +17,86 @@
   }
 }
 
+/* Reusable component styles */
+@layer components {
+  /* Terminal-style input field */
+  .input-terminal {
+    @apply w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Terminal-style input field (primary variant) */
+  .input-terminal-primary {
+    @apply w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Terminal-style textarea */
+  .textarea-terminal {
+    @apply w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50 resize-none;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    min-height: 120px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Terminal-style button */
+  .btn-terminal {
+    @apply p-2 text-sm transition-opacity hover:opacity-70;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Terminal-style button (primary variant) */
+  .btn-terminal-primary {
+    @apply p-2 text-sm transition-opacity hover:opacity-70;
+    border: 1px solid var(--link-color);
+    background-color: var(--bg-primary);
+    color: var(--link-color);
+    min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Terminal-style button (selected state) */
+  .btn-terminal-selected {
+    @apply p-2 text-sm transition-opacity hover:opacity-70;
+    border: 1px solid var(--link-color);
+    background-color: var(--bg-surface);
+    color: var(--link-color);
+    min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Terminal-style button (muted variant) */
+  .btn-terminal-muted {
+    @apply p-2 text-sm transition-opacity hover:opacity-70;
+    border: 1px solid var(--border-color);
+    background-color: transparent;
+    color: var(--text-muted);
+    min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
 /* Root theme variables that change based on theme class */
 :root {
   /* E-Paper Light Mode Colors */

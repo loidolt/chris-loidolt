@@ -87,15 +87,7 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Type to search projects..."
-              className="w-full p-3 text-base md:text-sm focus:outline-none transition-all"
-              style={{
-                backgroundColor: 'var(--bg-surface)',
-                border: '1px solid var(--border-color)',
-                color: 'var(--text-primary)',
-                minHeight: '48px',
-                touchAction: 'manipulation',
-                WebkitTapHighlightColor: 'transparent',
-              }}
+              className="input-terminal transition-all"
             />
           </div>
 
@@ -107,15 +99,7 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedCategory(null)}
-                className="px-4 py-2.5 text-sm transition-opacity hover:opacity-70"
-                style={{
-                  color: selectedCategory === null ? 'var(--link-color)' : 'var(--text-muted)',
-                  border: selectedCategory === null ? '1px solid var(--link-color)' : '1px solid var(--border-color)',
-                  backgroundColor: selectedCategory === null ? 'var(--bg-surface)' : 'transparent',
-                  minHeight: '44px',
-                  touchAction: 'manipulation',
-                  WebkitTapHighlightColor: 'transparent',
-                }}
+                className={`px-4 py-2.5 ${selectedCategory === null ? 'btn-terminal-selected' : 'btn-terminal-muted'}`}
               >
                 [all]
               </button>
@@ -123,15 +107,7 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className="px-4 py-2.5 text-sm transition-opacity hover:opacity-70"
-                  style={{
-                    color: selectedCategory === cat ? 'var(--link-color)' : 'var(--text-muted)',
-                    border: selectedCategory === cat ? '1px solid var(--link-color)' : '1px solid var(--border-color)',
-                    backgroundColor: selectedCategory === cat ? 'var(--bg-surface)' : 'transparent',
-                    minHeight: '44px',
-                    touchAction: 'manipulation',
-                    WebkitTapHighlightColor: 'transparent',
-                  }}
+                  className={`px-4 py-2.5 ${selectedCategory === cat ? 'btn-terminal-selected' : 'btn-terminal-muted'}`}
                 >
                   [{cat}]
                 </button>
@@ -158,14 +134,10 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
             setSearchQuery('');
             setSelectedCategory(null);
           }}
-          className="text-xs hover:opacity-70 transition-opacity px-2.5 py-1.5"
+          className="btn-terminal text-xs px-2.5 py-1.5"
           style={{
             color: 'var(--error-color)',
-            border: '1px solid var(--border-color)',
-            backgroundColor: 'var(--bg-primary)',
             minHeight: '32px',
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
           }}
           aria-label="Clear all filters"
         >

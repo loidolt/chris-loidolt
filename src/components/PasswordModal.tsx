@@ -70,12 +70,7 @@ export default function PasswordModal({
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password..."
             autoFocus
-            className="w-full p-3 text-sm mb-3 focus:outline-none"
-            style={{
-              backgroundColor: 'var(--bg-primary)',
-              border: '1px solid var(--border-color)',
-              color: 'var(--text-primary)',
-            }}
+            className="input-terminal-primary mb-3"
           />
 
           {error && (
@@ -90,24 +85,14 @@ export default function PasswordModal({
           <div style={{ display: 'flex', gap: '12px' }}>
             <button
               type="submit"
-              className="flex-1 p-2 text-sm transition-opacity hover:opacity-70"
-              style={{
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-primary)',
-                color: 'var(--link-color)',
-              }}
+              className="flex-1 btn-terminal-primary"
             >
               [Unlock]
             </button>
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 p-2 text-sm transition-opacity hover:opacity-70"
-              style={{
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-primary)',
-                color: 'var(--text-muted)',
-              }}
+              className="flex-1 btn-terminal-muted"
             >
               [Cancel]
             </button>

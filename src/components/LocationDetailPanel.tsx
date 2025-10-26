@@ -52,11 +52,9 @@ export default function LocationDetailPanel({ location, onClose, isDark = true }
         </div>
         <button
           onClick={onClose}
-          className="text-xs hover:opacity-70 transition-opacity px-2 py-1"
+          className="btn-terminal text-xs px-2 py-1"
           style={{
             color: 'var(--text-muted)',
-            border: '1px solid var(--border-color)',
-            backgroundColor: 'var(--bg-primary)',
           }}
           aria-label="Close location details"
         >
@@ -152,11 +150,9 @@ export default function LocationDetailPanel({ location, onClose, isDark = true }
               href={location.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block text-sm hover:opacity-70 transition-opacity px-3 py-2"
+              className="btn-terminal inline-block text-sm px-3 py-2"
               style={{
                 color: 'var(--link-color)',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-primary)',
               }}
             >
               [Learn more →]
@@ -193,11 +189,9 @@ export default function LocationDetailPanel({ location, onClose, isDark = true }
             const coords = `${location.latitude}, ${location.longitude}`;
             navigator.clipboard.writeText(coords);
           }}
-          className="flex-1 text-xs sm:text-sm px-3 py-3 sm:py-2 hover:opacity-70 transition-opacity active:opacity-50"
+          className="btn-terminal flex-1 text-xs sm:text-sm px-3 py-3 sm:py-2 active:opacity-50"
           style={{
             color: 'var(--link-color)',
-            border: '1px solid var(--border-color)',
-            backgroundColor: 'var(--bg-primary)',
           }}
           aria-label="Copy coordinates to clipboard"
         >
@@ -209,11 +203,9 @@ export default function LocationDetailPanel({ location, onClose, isDark = true }
             onClick={() => {
               window.open(location.url, '_blank', 'noopener,noreferrer');
             }}
-            className="flex-1 text-xs sm:text-sm px-3 py-3 sm:py-2 hover:opacity-70 transition-opacity active:opacity-50"
+            className="btn-terminal flex-1 text-xs sm:text-sm px-3 py-3 sm:py-2 active:opacity-50"
             style={{
               color: 'var(--accent-primary)',
-              border: '1px solid var(--border-color)',
-              backgroundColor: 'var(--bg-primary)',
             }}
             aria-label="Visit external link"
           >

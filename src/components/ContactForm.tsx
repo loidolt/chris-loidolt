@@ -22,13 +22,6 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // Common input styles
-  const inputStyle = {
-    backgroundColor: 'var(--bg-surface)',
-    border: '1px solid var(--border-color)',
-    color: 'var(--text-primary)',
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -110,13 +103,7 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50"
-            style={{
-              ...inputStyle,
-              minHeight: '48px',
-              touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'transparent',
-            }}
+            className="input-terminal"
             placeholder="Your name"
           />
           {errors.name && (
@@ -139,13 +126,7 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50"
-            style={{
-              ...inputStyle,
-              minHeight: '48px',
-              touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'transparent',
-            }}
+            className="input-terminal"
             placeholder="your.email@example.com"
           />
           {errors.email && (
@@ -168,13 +149,7 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={isSubmitting}
-            className="w-full p-3 text-base md:text-sm focus:outline-none disabled:opacity-50"
-            style={{
-              ...inputStyle,
-              minHeight: '48px',
-              touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'transparent',
-            }}
+            className="input-terminal"
             placeholder="What's this about?"
           />
           {errors.subject && (
@@ -197,12 +172,7 @@ export default function ContactForm() {
             required
             disabled={isSubmitting}
             rows={8}
-            className="w-full p-3 text-base md:text-sm focus:outline-none resize-none disabled:opacity-50"
-            style={{
-              ...inputStyle,
-              touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'transparent',
-            }}
+            className="textarea-terminal"
             placeholder="Type your message here..."
           />
           {errors.message && (

@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet';
 import Fuse from 'fuse.js';
 import L from 'leaflet';
-import type { Location } from '@/lib/airtable';
+import type { LocationPublic } from '@/lib/airtable';
 import PasswordModal from './PasswordModal';
 import LocateButton from './LocateButton';
 import MarkerClusterGroup from './MarkerClusterGroup';
@@ -19,7 +19,7 @@ import { useDrawings } from '@/hooks/useDrawings';
 import 'leaflet/dist/leaflet.css';
 
 interface MapViewerProps {
-  locations: Location[];
+  locations: LocationPublic[];
   initialCenter?: [number, number];
   initialZoom?: number;
   sharedLocationId?: string | null;
@@ -107,29 +107,71 @@ function useNetworkQuality() {
   return { quality, effectiveType, isOnline: quality !== 'offline' };
 }
 
-// Function to fuzz coordinates for private locations
+// Function to fuzz coordinates for private locations using cryptographically secure random offsets
 // Returns coordinates offset by a random amount within a radius
+// Offsets are stored in localStorage to ensure consistency within the same browser/device
 function fuzzCoordinates(lat: number, lng: number, locationId: string): [number, number] {
-  // Use location ID as seed for consistent fuzzing (same location always gets same offset)
-  const seed = locationId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const STORAGE_KEY = 'map_location_offsets';
+  const MAX_OFFSET_KM = 2; // Maximum offset in kilometers
+  const KM_TO_DEGREES = 0.009; // Approximate conversion (1km ≈ 0.009 degrees)
+  const radiusInDegrees = MAX_OFFSET_KM * KM_TO_DEGREES;
 
-  // Pseudo-random based on seed
-  const random = (seed: number, index: number) => {
-    const x = Math.sin(seed + index) * 10000;
-    return x - Math.floor(x);
-  };
+  try {
+    // Retrieve or initialize offset storage
+    const storedData = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
+    const offsetMap: Record<string, { latOffset: number; lngOffset: number }> = storedData
+      ? JSON.parse(storedData)
+      : {};
 
-  // Offset radius in degrees (roughly 0.5-2km depending on latitude)
-  const radiusInDegrees = 0.02;
+    // Check if we already have an offset for this location
+    if (offsetMap[locationId]) {
+      const { latOffset, lngOffset } = offsetMap[locationId];
+      return [lat + latOffset, lng + lngOffset];
+    }
 
-  // Generate consistent random offset
-  const angle = random(seed, 1) * 2 * Math.PI;
-  const distance = random(seed, 2) * radiusInDegrees;
+    // Generate new cryptographically secure random offset
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+      const randomArray = new Uint32Array(2);
+      window.crypto.getRandomValues(randomArray);
 
-  const latOffset = Math.cos(angle) * distance;
-  const lngOffset = Math.sin(angle) * distance;
+      // Convert to angle and distance
+      const angle = (randomArray[0] / 0xFFFFFFFF) * 2 * Math.PI;
+      const distance = (randomArray[1] / 0xFFFFFFFF) * radiusInDegrees;
 
-  return [lat + latOffset, lng + lngOffset];
+      const latOffset = Math.cos(angle) * distance;
+      const lngOffset = Math.sin(angle) * distance;
+
+      // Store for future use
+      offsetMap[locationId] = { latOffset, lngOffset };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(offsetMap));
+
+      return [lat + latOffset, lng + lngOffset];
+    }
+
+    // Fallback for server-side rendering or browsers without crypto API
+    // Use a different method that's still unpredictable but consistent per session
+    const sessionSeed = Date.now() + Math.random();
+    const hash = (seed: number) => {
+      let h = seed;
+      for (let i = 0; i < locationId.length; i++) {
+        h = ((h << 5) - h) + locationId.charCodeAt(i);
+        h = h & h; // Convert to 32-bit integer
+      }
+      return Math.abs(h);
+    };
+
+    const angle = (hash(sessionSeed) % 360) * (Math.PI / 180);
+    const distance = ((hash(sessionSeed * 2) / 0x7FFFFFFF) * radiusInDegrees);
+
+    const latOffset = Math.cos(angle) * distance;
+    const lngOffset = Math.sin(angle) * distance;
+
+    return [lat + latOffset, lng + lngOffset];
+  } catch (error) {
+    console.error('[fuzzCoordinates] Error fuzzing coordinates:', error);
+    // If all else fails, return original coordinates
+    return [lat, lng];
+  }
 }
 
 // Component to fit map bounds to filtered locations when filters change
@@ -138,7 +180,7 @@ function MapFilterExtentsHandler({
   enabled,
   filterKey
 }: {
-  locations: Location[];
+  locations: LocationPublic[];
   enabled: boolean;
   filterKey: string; // Used to detect filter changes
 }) {
@@ -185,7 +227,7 @@ function MapFilterExtentsHandler({
 }
 
 // Component to fit map bounds to markers on initial load
-function MapBoundsInitializer({ locations }: { locations: Location[] }) {
+function MapBoundsInitializer({ locations }: { locations: LocationPublic[] }) {
   const map = useMap();
   const hasInitialized = useRef(false);
 
@@ -662,8 +704,8 @@ export default function MapViewer({
   const [mapZoom, setMapZoom] = useState(initialZoom);
   const [showLocationList, setShowLocationList] = useState(false);
   const [unlockedLocations, setUnlockedLocations] = useState<Set<string>>(new Set());
-  const [passwordModal, setPasswordModal] = useState<{ location: Location; error?: string } | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [passwordModal, setPasswordModal] = useState<{ location: LocationPublic; error?: string } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<LocationPublic | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [tilesLoading, setTilesLoading] = useState(false);
   const [tileProgress, setTileProgress] = useState(0);
@@ -882,38 +924,71 @@ export default function MapViewer({
 
 
   // Check if location is locked (memoized)
-  const isLocationLocked = useCallback((location: Location) => {
+  const isLocationLocked = useCallback((location: LocationPublic) => {
     return location.privacy === 'Private' && !unlockedLocations.has(location.id);
   }, [unlockedLocations]);
 
-  // Handle password submission (memoized)
-  const handlePasswordSubmit = useCallback((password: string) => {
+  // Handle password submission with secure API validation (memoized)
+  const handlePasswordSubmit = useCallback(async (password: string) => {
     if (!passwordModal) return;
 
     const { location } = passwordModal;
 
-    if (password === location.password) {
-      // Password correct - unlock location
-      setUnlockedLocations(prev => new Set([...prev, location.id]));
-      setPasswordModal(null);
+    // Show loading state (clear any previous error)
+    setPasswordModal({ location, error: undefined });
 
-      // Navigate to exact location
-      setMapCenter([location.latitude, location.longitude]);
-      setMapZoom(14);
+    try {
+      const response = await fetch('/api/unlock-location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          locationId: location.id,
+          password,
+        }),
+      });
 
-      // Show location details in panel
-      setSelectedLocation(location);
-    } else {
-      // Password incorrect
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Password correct - unlock location
+        setUnlockedLocations(prev => new Set([...prev, location.id]));
+        setPasswordModal(null);
+
+        // Navigate to exact location
+        setMapCenter([location.latitude, location.longitude]);
+        setMapZoom(14);
+
+        // Show location details in panel
+        setSelectedLocation(location);
+
+        console.log('[MapViewer] Location unlocked:', location.name);
+      } else if (response.status === 429) {
+        // Rate limited
+        const retryAfter = data.retryAfter || 60;
+        const minutes = Math.ceil(retryAfter / 60);
+        setPasswordModal({
+          location,
+          error: `Too many attempts. Please try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`
+        });
+        console.warn('[MapViewer] Rate limited for location:', location.id);
+      } else {
+        // Incorrect password or other error
+        setPasswordModal({
+          location,
+          error: data.error || 'Incorrect password. Please try again.'
+        });
+      }
+    } catch (error) {
+      console.error('[MapViewer] Password validation error:', error);
       setPasswordModal({
         location,
-        error: 'Incorrect password. Please try again.'
+        error: 'An error occurred. Please try again.'
       });
     }
   }, [passwordModal]);
 
   // Handle location click from search/list or marker (memoized)
-  const handleLocationClick = useCallback((location: Location) => {
+  const handleLocationClick = useCallback((location: LocationPublic) => {
     const locked = location.privacy === 'Private' && !unlockedLocations.has(location.id);
 
     if (locked) {
@@ -1055,16 +1130,7 @@ export default function MapViewer({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full p-2.5 pl-9 text-sm sm:text-xs sm:p-1.5 sm:pl-7 focus:outline-none focus:ring-1 transition-all"
-                style={{
-                  backgroundColor: 'var(--bg-primary)',
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--text-primary)',
-                  outline: 'none',
-                  minHeight: '44px',
-                  touchAction: 'manipulation',
-                  WebkitTapHighlightColor: 'transparent',
-                }}
+                className="input-terminal-primary pl-9 text-sm sm:text-xs sm:p-1.5 sm:pl-7 focus:ring-1 transition-all"
                 aria-label="Search locations by name or description"
               />
               <span
@@ -1108,17 +1174,8 @@ export default function MapViewer({
                           }
                           setSelectedCategories(newCategories);
                         }}
-                        className="px-2.5 py-2 sm:px-1.5 sm:py-0.5 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
-                        style={{
-                          color: isSelected ? 'var(--link-color)' : 'var(--text-muted)',
-                          border: `1px solid ${isSelected ? 'var(--link-color)' : 'var(--border-color)'}`,
-                          backgroundColor: isSelected ? 'var(--bg-primary)' : 'transparent',
-                          outline: 'none',
-                          fontWeight: isSelected ? 600 : 400,
-                          minHeight: '36px',
-                          touchAction: 'manipulation',
-                          WebkitTapHighlightColor: 'transparent',
-                        }}
+                        className={`px-2.5 py-2 sm:px-1.5 sm:py-0.5 ${isSelected ? 'btn-terminal-selected' : 'btn-terminal-muted'}`}
+                        style={{ minHeight: '36px', fontWeight: isSelected ? 600 : 400 }}
                         aria-pressed={isSelected}
                         aria-label={`${isSelected ? 'Remove' : 'Add'} ${cat} filter`}
                       >
@@ -1150,18 +1207,8 @@ export default function MapViewer({
                     <button
                       key={option}
                       onClick={() => setPrivacyFilter(option as 'all' | 'public' | 'private')}
-                      className="px-2 py-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
-                      style={{
-                        color: privacyFilter === option ? 'var(--link-color)' : 'var(--text-muted)',
-                        border: `1px solid ${privacyFilter === option ? 'var(--link-color)' : 'var(--border-color)'}`,
-                        backgroundColor: privacyFilter === option ? 'var(--bg-primary)' : 'transparent',
-                        outline: 'none',
-                        fontWeight: privacyFilter === option ? 600 : 400,
-                        flex: 1,
-                        minHeight: '40px',
-                        touchAction: 'manipulation',
-                        WebkitTapHighlightColor: 'transparent',
-                      }}
+                      className={`px-2 py-2 sm:py-1 ${privacyFilter === option ? 'btn-terminal-selected' : 'btn-terminal-muted'}`}
+                      style={{ flex: 1, minHeight: '40px', fontWeight: privacyFilter === option ? 600 : 400 }}
                       aria-pressed={privacyFilter === option}
                     >
                       {option}
@@ -1184,18 +1231,8 @@ export default function MapViewer({
                     <button
                       key={option.label}
                       onClick={() => setHasImageFilter(option.value)}
-                      className="px-2 py-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70 focus:ring-1"
-                      style={{
-                        color: hasImageFilter === option.value ? 'var(--link-color)' : 'var(--text-muted)',
-                        border: `1px solid ${hasImageFilter === option.value ? 'var(--link-color)' : 'var(--border-color)'}`,
-                        backgroundColor: hasImageFilter === option.value ? 'var(--bg-primary)' : 'transparent',
-                        outline: 'none',
-                        fontWeight: hasImageFilter === option.value ? 600 : 400,
-                        flex: 1,
-                        minHeight: '40px',
-                        touchAction: 'manipulation',
-                        WebkitTapHighlightColor: 'transparent',
-                      }}
+                      className={`px-2 py-2 sm:py-1 ${hasImageFilter === option.value ? 'btn-terminal-selected' : 'btn-terminal-muted'}`}
+                      style={{ flex: 1, minHeight: '40px', fontWeight: hasImageFilter === option.value ? 600 : 400 }}
                       aria-pressed={hasImageFilter === option.value}
                     >
                       {option.label}
@@ -1212,15 +1249,11 @@ export default function MapViewer({
                   </span>
                   <button
                     onClick={() => setAutoZoomToExtents(!autoZoomToExtents)}
-                    className="px-3 py-2 sm:px-2 sm:py-1 text-sm sm:text-xs transition-all hover:opacity-70"
+                    className="btn-terminal px-3 py-2 sm:px-2 sm:py-1"
                     style={{
                       color: autoZoomToExtents ? 'var(--accent-primary)' : 'var(--text-muted)',
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: 'var(--bg-primary)',
                       minWidth: '52px',
                       minHeight: '36px',
-                      touchAction: 'manipulation',
-                      WebkitTapHighlightColor: 'transparent',
                     }}
                     aria-pressed={autoZoomToExtents}
                   >
@@ -1351,14 +1384,10 @@ export default function MapViewer({
                   <button
                     key={location.id}
                     onClick={() => handleLocationClick(location)}
-                    className="w-full text-left p-3 sm:p-2 mb-2 transition-opacity hover:opacity-70"
+                    className="btn-terminal w-full text-left p-3 sm:p-2 mb-2"
                     style={{
-                      backgroundColor: 'var(--bg-primary)',
-                      border: '1px solid var(--border-color)',
                       opacity: isLocked ? 0.7 : 1,
                       minHeight: '56px',
-                      touchAction: 'manipulation',
-                      WebkitTapHighlightColor: 'transparent',
                     }}
                   >
                     <div className="flex items-center gap-2 mb-1">
@@ -1563,14 +1592,10 @@ export default function MapViewer({
             setPrivacyFilter('all');
             setHasImageFilter(null);
           }}
-          className="text-xs hover:opacity-70 transition-opacity px-2.5 py-1.5"
+          className="btn-terminal text-xs px-2.5 py-1.5"
           style={{
             color: 'var(--error-color)',
-            border: '1px solid var(--border-color)',
-            backgroundColor: 'var(--bg-primary)',
             minHeight: '32px',
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
           }}
           aria-label="Clear all filters"
         >

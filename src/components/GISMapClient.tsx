@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import type { Location } from '@/lib/airtable';
+import type { LocationPublic } from '@/lib/airtable';
 import MapErrorBoundary from '@/components/MapErrorBoundary';
 
 // Dynamic import to avoid SSR issues with Leaflet
@@ -17,7 +17,7 @@ const MapViewer = dynamic(() => import('@/components/MapViewer'), {
 });
 
 interface GISMapClientProps {
-  locations: Location[];
+  locations: LocationPublic[];
 }
 
 export default function GISMapClient({ locations }: GISMapClientProps) {
