@@ -63,6 +63,7 @@ export interface Location {
   status?: string;
   privacy?: 'Public' | 'Private';
   password?: string;
+  shareToken?: string; // Token for sharing private locations without password
 }
 
 // Environment variable validation
@@ -277,6 +278,7 @@ export async function getAllLocations(): Promise<Location[]> {
       status: fields.Status ? String(fields.Status) : undefined,
       privacy: (fields.Privacy === 'Private' ? 'Private' : 'Public') as 'Public' | 'Private',
       password: fields.Password ? String(fields.Password) : undefined,
+      shareToken: fields.ShareToken ? String(fields.ShareToken) : undefined,
     };
   });
 }

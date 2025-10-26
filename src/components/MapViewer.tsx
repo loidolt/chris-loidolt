@@ -14,6 +14,7 @@ import MapDrawingTools from './MapDrawingTools';
 import MapActionControls from './MapActionControls';
 import Tooltip from './Tooltip';
 import OverlayPanel, { PanelTab } from './OverlayPanel';
+import LocationShareButton from './LocationShareButton';
 import { useDrawings } from '@/hooks/useDrawings';
 import 'leaflet/dist/leaflet.css';
 
@@ -21,6 +22,8 @@ interface MapViewerProps {
   locations: Location[];
   initialCenter?: [number, number];
   initialZoom?: number;
+  sharedLocationId?: string | null;
+  shareToken?: string | null;
 }
 
 // Hook to detect theme changes
@@ -646,7 +649,9 @@ function TileLoadingTracker({ onProgress }: { onProgress: (loading: boolean, pro
 export default function MapViewer({
   locations,
   initialCenter = [37.7749, -122.4194], // Default to San Francisco
-  initialZoom = 10
+  initialZoom = 10,
+  sharedLocationId = null,
+  shareToken = null
 }: MapViewerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
@@ -757,6 +762,38 @@ export default function MapViewer({
       console.error('Error saving unlocked locations:', error);
     }
   }, [unlockedLocations]);
+
+  // Handle shared location with token validation
+  useEffect(() => {
+    if (!sharedLocationId) return;
+
+    // Find the shared location
+    const sharedLocation = locations.find(loc => loc.id === sharedLocationId);
+
+    if (!sharedLocation) {
+      console.warn('[MapViewer] Shared location not found:', sharedLocationId);
+      return;
+    }
+
+    // Check if location is private and token is provided
+    const isPrivate = sharedLocation.privacy === 'Private';
+    const hasValidToken = shareToken && sharedLocation.shareToken && shareToken === sharedLocation.shareToken;
+
+    if (isPrivate && hasValidToken) {
+      // Auto-unlock location with valid token
+      console.log('[MapViewer] Valid share token provided, unlocking location:', sharedLocation.name);
+      setUnlockedLocations(prev => new Set([...prev, sharedLocation.id]));
+    }
+
+    // Navigate to the location (use timeout to ensure map is ready)
+    setTimeout(() => {
+      setMapCenter([sharedLocation.latitude, sharedLocation.longitude]);
+      setMapZoom(14);
+      setSelectedLocation(sharedLocation);
+      setActiveTab('info');
+      setIsPanelOpen(true);
+    }, 500);
+  }, [sharedLocationId, shareToken, locations]);
 
   // Initialize Fuse.js for fuzzy searching
   const fuse = useMemo(
@@ -1467,38 +1504,42 @@ export default function MapViewer({
           )}
 
           {/* Footer with action buttons */}
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={() => {
-                const coords = `${selectedLocation.latitude}, ${selectedLocation.longitude}`;
-                navigator.clipboard.writeText(coords);
-              }}
-              className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
-              style={{
-                color: 'var(--link-color)',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-primary)',
-              }}
-              aria-label="Copy coordinates to clipboard"
-            >
-              [Copy Coords]
-            </button>
-            {selectedLocation.url && (
+          <div className="space-y-2 mt-4">
+            <div className="flex gap-2">
               <button
                 onClick={() => {
-                  window.open(selectedLocation.url, '_blank', 'noopener,noreferrer');
+                  const coords = `${selectedLocation.latitude}, ${selectedLocation.longitude}`;
+                  navigator.clipboard.writeText(coords);
                 }}
                 className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
                 style={{
-                  color: 'var(--accent-primary)',
+                  color: 'var(--link-color)',
                   border: '1px solid var(--border-color)',
                   backgroundColor: 'var(--bg-primary)',
                 }}
-                aria-label="Visit external link"
+                aria-label="Copy coordinates to clipboard"
               >
-                [Visit Link]
+                [Copy Coords]
               </button>
-            )}
+              {selectedLocation.url && (
+                <button
+                  onClick={() => {
+                    window.open(selectedLocation.url, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="flex-1 text-xs sm:text-sm px-3 py-2 hover:opacity-70 transition-opacity active:opacity-50"
+                  style={{
+                    color: 'var(--accent-primary)',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-primary)',
+                  }}
+                  aria-label="Visit external link"
+                >
+                  [Visit Link]
+                </button>
+              )}
+            </div>
+            {/* Share button */}
+            <LocationShareButton location={selectedLocation} />
           </div>
         </div>
       ) : null,
