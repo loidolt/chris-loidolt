@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet';
-import type { LocationPublic } from '@/lib/airtable';
+import type { LocationPublic } from '@/lib/pocketbase';
 import PasswordModal from './PasswordModal';
 import MarkerClusterGroup from './MarkerClusterGroup';
 import MapKeyboardNav from './MapKeyboardNav';

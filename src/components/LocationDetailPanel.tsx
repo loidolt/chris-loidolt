@@ -1,6 +1,6 @@
 'use client';
 
-import type { Location } from '@/lib/airtable';
+import type { Location } from '@/lib/pocketbase';
 
 interface LocationDetailPanelProps {
   location: Location | null;

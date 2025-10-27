@@ -22,6 +22,11 @@ next-env.d.ts
 # Downloaded/cached images from Airtable (regenerated at build time)
 /public/images/projects/
 
+# PocketBase data (local development)
+/pb_data/
+/pb_migrations/
+/.airtable-export/
+
 # Legacy directories (no longer used)
 /build/
 /dist/
@@ -30,3 +35,6 @@ next-env.d.ts
 /app.backup/
 /static/
 *.backup
+
+# Docker
+.dockerignore

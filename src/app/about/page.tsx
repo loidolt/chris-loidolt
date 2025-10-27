@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getQualifications, getServices, type Qualification, type Service } from '@/lib/airtable';
+import { getQualifications, getServices, type Qualification, type Service } from '@/lib/pocketbase';
 
 export const metadata: Metadata = {
   title: 'About - Chris Loidolt',

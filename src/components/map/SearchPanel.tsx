@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LocationPublic } from '@/lib/airtable';
+import type { LocationPublic } from '@/lib/pocketbase';
 import Tooltip from '../Tooltip';
 
 interface SearchPanelProps {

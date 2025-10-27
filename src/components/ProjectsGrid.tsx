@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
-import type { Project } from '@/lib/airtable';
+import type { Project } from '@/lib/pocketbase';
 import OverlayPanel, { PanelTab } from './OverlayPanel';
 
 interface ProjectsGridProps {

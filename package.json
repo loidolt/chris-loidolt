@@ -10,7 +10,16 @@
     "typecheck": "tsc --noEmit",
     "workers:build": "npx @opennextjs/cloudflare",
     "workers:dev": "wrangler dev",
-    "workers:deploy": "npm run workers:build && wrangler deploy"
+    "workers:deploy": "npm run workers:build && wrangler deploy",
+    "export:airtable": "tsx scripts/export-airtable.ts",
+    "import:pocketbase": "tsx scripts/import-pocketbase.ts",
+    "seed:locations": "tsx scripts/seed-locations.ts",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:rebuild": "docker compose up -d --build",
+    "docker:clean": "docker compose down -v && rm -rf pb_data",
+    "docker:pocketbase": "docker compose exec pocketbase sh"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
@@ -18,7 +27,6 @@
     "@types/geojson": "^7946.0.16",
     "@types/leaflet-draw": "^1.0.13",
     "@types/leaflet.markercluster": "^1.5.6",
-    "airtable": "^0.12.2",
     "d3": "^7.9.0",
     "dotenv": "^16.4.7",
     "fuse.js": "^7.1.0",
@@ -26,6 +34,7 @@
     "leaflet-draw": "^1.0.4",
     "leaflet.markercluster": "^1.5.3",
     "next": "^16.0.0",
+    "pocketbase": "^0.26.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-leaflet": "^5.0.0",
@@ -45,6 +54,7 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2",
     "wrangler": "^4.45.0"
   }

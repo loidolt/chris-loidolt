@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getAllLocations } from '@/lib/airtable';
+import { getAllLocations } from '@/lib/pocketbase';
 
 // Validation schema
 const unlockSchema = z.object({
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch locations from Airtable
+    // Fetch locations from PocketBase
     const locations = await getAllLocations();
     const location = locations.find(loc => loc.id === locationId);
 

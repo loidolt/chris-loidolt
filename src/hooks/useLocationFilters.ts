@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
-import type { LocationPublic } from '@/lib/airtable';
+import type { LocationPublic } from '@/lib/pocketbase';
 
 export interface LocationFiltersResult {
   searchQuery: string;

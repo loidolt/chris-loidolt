@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
-import type { Location } from '@/lib/airtable';
+import type { Location } from '@/lib/pocketbase';
 
 interface MarkerClusterGroupProps {
   locations: Location[];

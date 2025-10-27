@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import TerminalWelcome from '@/components/TerminalWelcome';
 import ProjectNodeGraph from '@/components/ProjectNodeGraph';
-import { getAllProjects } from '@/lib/airtable';
+import { getAllProjects } from '@/lib/pocketbase';
 
 const quickLinks = [
   { label: 'View all projects', link: '/projects' },

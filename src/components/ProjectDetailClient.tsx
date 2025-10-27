@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo } from 'react';
-import type { Project } from '@/lib/airtable';
+import type { Project } from '@/lib/pocketbase';
 import OverlayPanel, { PanelTab } from './OverlayPanel';
 import { ProjectDetailsSection } from './ProjectDetailsSection';
 

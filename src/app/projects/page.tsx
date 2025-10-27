@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import ProjectsGrid from '@/components/ProjectsGrid';
-import { getAllProjects, type Project } from '@/lib/airtable';
+import { getAllProjects, type Project } from '@/lib/pocketbase';
 
 export const metadata: Metadata = {
   title: 'Projects - Chris Loidolt',

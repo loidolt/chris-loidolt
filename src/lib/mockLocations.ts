@@ -1,4 +1,4 @@
-import type { Location } from './airtable';
+import type { Location } from './pocketbase';
 
 /**
  * Mock locations for testing map functionality

@@ -4,16 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a portfolio website for Chris Loidolt showcasing design and engineering projects. Built with **Next.js 16** (App Router) using React 19, optimized for modern web deployment with optional Cloudflare Workers support. The site features a clean, monospace aesthetic inspired by developer tools and code editors, with a dark color palette and modern UI elements. It uses Airtable as a CMS for project data and includes 3D model viewing, client-side search, interactive maps, and a contact form.
+This is a portfolio website for Chris Loidolt showcasing design and engineering projects. Built with **Next.js 16** (App Router) using React 19, optimized for modern web deployment with optional Cloudflare Workers support. The site features a clean, monospace aesthetic inspired by developer tools and code editors, with a dark color palette and modern UI elements. It uses **PocketBase** as a self-hosted CMS for project data and includes 3D model viewing, client-side search, interactive maps, and a contact form.
 
 ## Common Commands
 
 ### Development
+
+**Docker Compose (Recommended):**
+- `npm run docker:up` - Start PocketBase + Next.js together
+- `npm run docker:down` - Stop all services
+- `npm run docker:logs` - View logs from all services
+- `npm run docker:rebuild` - Rebuild and restart services
+
+**Native Development:**
 - `npm run dev` - Start Next.js development server (runs on http://localhost:3000)
-- `npm run build` - Build production site (fetches Airtable data at build time)
+- `npm run build` - Build production site
 - `npm run start` - Start production server
 - `npm run typecheck` - Run TypeScript type checking
 - `npm run lint` - Run ESLint
+
+**Data Migration:**
+- `npm run export:airtable` - Export data from Airtable (requires temporary airtable package)
+- `npm run import:pocketbase` - Import data into PocketBase
 
 ### Cloudflare Workers Deployment
 - `npm run workers:build` - Build for Cloudflare Workers using OpenNext
@@ -23,21 +35,23 @@ This is a portfolio website for Chris Loidolt showcasing design and engineering 
 ## Architecture
 
 ### Data Sources
-- **Airtable**: Primary CMS for project data, locations, qualifications, services, and websites
-  - Data is fetched **at build time** (using Next.js static generation) for optimal performance
-  - Images are downloaded and cached locally during build
-- **Environment Variables**: Airtable API keys and base IDs stored in `.env.local` files
+- **PocketBase**: Self-hosted CMS for project data, locations, qualifications, services, and websites
+  - Data is fetched **at runtime** for real-time updates without rebuilds
+  - Images served directly from PocketBase file API
+  - Can be run via Docker Compose or standalone binary
+- **Environment Variables**: PocketBase URL and credentials stored in `.env.local` files
 - **Static Files**: 3D models (.glb files) stored in `/public/models/`
 
 ### Key Technologies
-- **Next.js 16**: React framework with App Router for server components and static generation
+- **Next.js 16**: React framework with App Router for server components and runtime data fetching
 - **React 19**: Modern React with Server Components support
+- **PocketBase**: Self-hosted SQLite-based CMS with REST API
+- **Docker Compose**: Development environment orchestration
 - **Tailwind CSS v3**: Utility-first CSS with custom terminal theme
 - **Three.js**: 3D model rendering via @react-three/fiber
 - **Leaflet**: Interactive maps via react-leaflet
 - **D3.js**: Data visualization for project node graphs
 - **Fuse.js**: Client-side fuzzy search
-- **Airtable**: Headless CMS
 - **TypeScript**: Type safety throughout
 - **Cloudflare Workers**: Optional edge deployment via OpenNext
 
@@ -73,11 +87,13 @@ src/
 │   ├── ThemeToggle.tsx         # Dark/light theme toggle
 │   └── ...                     # Other components
 ├── lib/
-│   ├── airtable.ts             # Airtable data fetching utilities
-│   ├── imageManifest.ts        # Image manifest for cached images
-│   └── downloadImages.ts       # Image download/caching utilities
+│   ├── pocketbase.ts           # PocketBase data fetching utilities
+│   └── mockLocations.ts        # Mock data for development/testing
 └── app/
     └── globals.css             # Global styles with Tailwind imports
+scripts/                         # Migration and utility scripts
+├── export-airtable.ts          # Export data from Airtable
+└── import-pocketbase.ts        # Import data into PocketBase
 public/                          # Static assets (models, images, etc.)
 ```
 
@@ -112,17 +128,16 @@ public/                          # Static assets (models, images, etc.)
 
 Required environment variables (stored in `.env.local`):
 ```bash
-# Airtable Configuration
-AIRTABLE_API_KEY=your_airtable_api_key
-AIRTABLE_POSTS_BASEID=your_base_id
-AIRTABLE_POSTS_TABLENAME=Projects
-AIRTABLE_QUALIFICATIONS_TABLENAME=Qualifications
-AIRTABLE_WEBSITES_TABLENAME=Websites
-AIRTABLE_SERVICES_TABLENAME=Services
-AIRTABLE_LOCATIONS_TABLENAME=Locations
+# PocketBase Configuration
+POCKETBASE_URL=http://127.0.0.1:8090
+POCKETBASE_ADMIN_EMAIL=admin@example.com
+POCKETBASE_ADMIN_PASSWORD=your_secure_password
+
+# For Docker Compose: URLs are automatically configured
+# For production: Use your deployed PocketBase URL
 ```
 
-**Important**: Airtable data is fetched at build time using Next.js static generation. To update content, rebuild the site.
+**Important**: PocketBase data is fetched at runtime. Content updates appear immediately without rebuilding the site.
 
 ### Key Features
 
@@ -158,18 +173,18 @@ AIRTABLE_LOCATIONS_TABLENAME=Locations
    - API endpoint for form submission
 
 6. **About Page** (`app/about/page.tsx`)
-   - Qualifications timeline from Airtable
-   - Services grid from Airtable
+   - Qualifications timeline from PocketBase
+   - Services grid from PocketBase
    - Skills display organized by category
 
 ### Data Flow
 
-1. **Build-Time Data Fetching**
-   - Airtable data fetched during `npm run build` using Next.js App Router
-   - Data is statically generated and baked into HTML
-   - Images downloaded and cached locally in `/public/images/projects/`
-   - No runtime API calls to Airtable
-   - Optimal for performance and edge deployment
+1. **Runtime Data Fetching**
+   - PocketBase data fetched at request time via REST API
+   - Enables real-time content updates without rebuilds
+   - Images served directly from PocketBase file endpoints
+   - Can be cached using Next.js caching strategies
+   - Requires PocketBase to be running and accessible
 
 2. **Client-Side Interactivity**
    - Search/filter using Fuse.js
@@ -180,10 +195,10 @@ AIRTABLE_LOCATIONS_TABLENAME=Locations
    - Theme toggle
 
 3. **Deployment Options**
-   - **Static export**: Build and deploy to any static host
+   - **Next.js on Vercel/Netlify**: With PocketBase hosted separately
    - **Node.js server**: Run with `npm run start` after building
    - **Cloudflare Workers**: Deploy to edge with `npm run workers:deploy`
-   - **Vercel/Netlify**: Native Next.js support
+   - **Docker Compose**: For development or self-hosted production
 
 ### Build Process
 - **Next.js** handles build orchestration
@@ -196,20 +211,22 @@ AIRTABLE_LOCATIONS_TABLENAME=Locations
 
 ### Development Notes
 
-- Dev server runs on **port 3000** by default
+- Dev server runs on **port 3000** by default (Next.js)
+- PocketBase runs on **port 8090** by default
+- **Docker Compose** recommended for easy setup: `npm run docker:up`
 - Hot module replacement enabled
 - TypeScript strict mode enabled
 - Client components marked with `"use client"` directive
 - 3D models should be optimized .glb files
-- Images cached from Airtable during build
-- To update content: modify Airtable → rebuild site
-- Map requires password for private locations (stored in Airtable)
+- Images served directly from PocketBase
+- To update content: modify in PocketBase admin → changes appear immediately
+- Map requires password for private locations (stored in PocketBase)
 
 ### Component Patterns
 
 **Server Components (default):**
-- Pages that fetch data at build time
-- Static layout components
+- Pages that fetch data at runtime
+- Can use async/await for data fetching
 - SEO-optimized content
 
 **Client Components (`"use client"`):**
@@ -220,8 +237,9 @@ AIRTABLE_LOCATIONS_TABLENAME=Locations
 
 ### Performance Optimizations
 
-- **Static Generation**: All pages pre-rendered at build time
-- **Image Optimization**: Local caching of Airtable images
+- **Runtime Data Fetching**: Data fetched on demand with optional caching
+- **Image Serving**: Images served directly from PocketBase with caching headers
 - **Code Splitting**: Automatic with Next.js App Router
 - **Lazy Loading**: 3D models and heavy components load on demand
 - **Edge Ready**: Optional Cloudflare Workers deployment for global CDN
+- **Docker Compose**: Optimized development environment with health checks

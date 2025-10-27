@@ -3,23 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ImageGallery } from '@/components/ImageGallery';
 import { ProjectDetailsSection } from '@/components/ProjectDetailsSection';
-import { getAllProjects, Project } from '@/lib/airtable';
+import { getProjectBySlug, getAllProjects, Project } from '@/lib/pocketbase';
 import ProjectDetailClient from '@/components/ProjectDetailClient';
-
-// Generate static paths at build time
-export async function generateStaticParams() {
-  const projects = await getAllProjects();
-
-  return projects.map((project) => ({
-    slug: project.slug,
-  }));
-}
 
 // Generate metadata for each project
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const projects = await getAllProjects();
-  const project = projects.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     return {
@@ -35,12 +25,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const projects = await getAllProjects();
-  const project = projects.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
   }
 
-  return <ProjectDetailClient project={project} allProjects={projects} />;
+  // Fetch all projects for navigation (could be optimized with pagination/related projects later)
+  const allProjects = await getAllProjects();
+
+  return <ProjectDetailClient project={project} allProjects={allProjects} />;
 }

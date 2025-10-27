@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LocationPublic } from '@/lib/airtable';
+import type { LocationPublic } from '@/lib/pocketbase';
 import LocationShareButton from '../LocationShareButton';
 
 interface LocationInfoPanelProps {

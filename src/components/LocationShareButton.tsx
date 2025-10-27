@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Location } from '@/lib/airtable';
+import type { Location } from '@/lib/pocketbase';
 
 interface LocationShareButtonProps {
   location: Location;
