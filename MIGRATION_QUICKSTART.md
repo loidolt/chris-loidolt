@@ -63,11 +63,15 @@ npm run docker:up
 
 Open http://localhost:8090/_ and create admin account.
 
-### 5️⃣ Create Collections (3 minutes)
+### 5️⃣ Create Collections (10-15 minutes)
 
-Use PocketBase admin UI to create these collections:
+**Follow the manual setup guide:**
 
-**Quick Schema (essential fields only)**:
+See **`MANUAL_COLLECTION_SETUP.md`** for step-by-step instructions.
+
+This guide provides exact field names, types, and settings for all 5 collections.
+
+**Quick reference:**
 
 #### `projects` Collection
 - title (Text, required)
@@ -119,7 +123,7 @@ Use PocketBase admin UI to create these collections:
 - status (Select: Draft, Published)
 - privacy (Select: Public, Private)
 
-> 💡 **Tip**: See `POCKETBASE_SCHEMA.md` for complete field details including indexes and API rules.
+> 💡 **Important**: Follow `MANUAL_COLLECTION_SETUP.md` for complete step-by-step instructions with all field settings and API rules.
 
 ### 6️⃣ Import to PocketBase (2 minutes)
 

@@ -1,7 +1,16 @@
 import PocketBase from "pocketbase";
 
 // TypeScript interfaces for PocketBase records
-// These remain the same as before for backward compatibility
+export interface Person {
+  id: string;
+  name: string;
+  slug: string;
+  email?: string;
+  bio?: string;
+  avatar?: string;
+  user?: string; // Relation to users collection
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -26,6 +35,9 @@ export interface Project {
   cleanRepo?: boolean; // Clean Repo checkbox
   lastModified?: string; // Last modified timestamp
   featured?: boolean;
+  person?: string[]; // Relation to persons collection (multi-select)
+  scope?: 'Family' | 'Personal';
+  visibility?: 'Public' | 'Family' | 'Private';
 }
 
 export interface Qualification {
@@ -34,6 +46,7 @@ export interface Qualification {
   institution: string;
   year: string;
   description?: string;
+  person: string; // Relation to persons collection (required)
 }
 
 export interface Service {
@@ -41,6 +54,24 @@ export interface Service {
   title: string;
   description: string;
   icon?: string;
+  person?: string[]; // Relation to persons collection (multi-select)
+  scope?: 'Family' | 'Personal';
+  visibility?: 'Public' | 'Family' | 'Private';
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  summary?: string;
+  type?: 'Skills' | 'Programming';
+  category?: string;
+  categories?: string[];
+  level?: 'Expert' | 'Advanced' | 'Intermediate' | 'Elementary';
+  moreInfo?: string;
+  order?: number;
+  person?: string[]; // Relation to persons collection (multi-select)
+  scope?: 'Family' | 'Personal';
+  visibility?: 'Public' | 'Family' | 'Private';
 }
 
 export interface Website {
@@ -64,6 +95,9 @@ export interface Location {
   privacy?: 'Public' | 'Private';
   password?: string; // Server-side only
   shareToken?: string; // Token for sharing private locations without password
+  person?: string[]; // Relation to persons collection (multi-select)
+  scope?: 'Family' | 'Personal';
+  visibility?: 'Public' | 'Family' | 'Private';
 }
 
 // Client-safe location type (excludes password)
@@ -306,6 +340,154 @@ export async function getPublicLocations(): Promise<LocationPublic[]> {
 
   // Strip passwords from locations before sending to client
   return locations.map(({ password, ...location }) => location);
+}
+
+// Fetch all persons
+export async function getAllPersons(): Promise<Person[]> {
+  try {
+    const pb = getPocketBase();
+
+    const records = await pb.collection('persons').getFullList({
+      sort: 'name',
+    });
+
+    return records.map((record) => {
+      const avatar = record.avatar
+        ? pb.files.getUrl(record, record.avatar)
+        : undefined;
+
+      return {
+        id: record.id,
+        name: String(record.name || ""),
+        slug: String(record.slug || ""),
+        email: record.email ? String(record.email) : undefined,
+        bio: record.bio ? String(record.bio) : undefined,
+        avatar,
+        user: record.user ? String(record.user) : undefined,
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching persons:', error);
+    return [];
+  }
+}
+
+// Fetch a single person by slug
+export async function getPersonBySlug(slug: string): Promise<Person | null> {
+  try {
+    const pb = getPocketBase();
+
+    const record = await pb.collection('persons').getFirstListItem(`slug="${slug}"`);
+
+    const avatar = record.avatar
+      ? pb.files.getUrl(record, record.avatar)
+      : undefined;
+
+    return {
+      id: record.id,
+      name: String(record.name || ""),
+      slug: String(record.slug || ""),
+      email: record.email ? String(record.email) : undefined,
+      bio: record.bio ? String(record.bio) : undefined,
+      avatar,
+      user: record.user ? String(record.user) : undefined,
+    };
+  } catch (error) {
+    console.error(`Error fetching person with slug "${slug}":`, error);
+    return null;
+  }
+}
+
+// Fetch projects for a specific person
+export async function getProjectsByPerson(personSlug: string): Promise<Project[]> {
+  try {
+    const pb = getPocketBase();
+
+    // First get the person by slug
+    const person = await getPersonBySlug(personSlug);
+    if (!person) {
+      console.error(`Person with slug "${personSlug}" not found`);
+      return [];
+    }
+
+    const records = await pb.collection('projects').getFullList({
+      filter: `person.id ?= "${person.id}"`,
+      sort: '-date',
+    });
+
+    return records.map((record) => recordToProject(record, pb));
+  } catch (error) {
+    console.error(`Error fetching projects for person "${personSlug}":`, error);
+    return [];
+  }
+}
+
+// Fetch skills for a specific person
+export async function getSkillsByPerson(personSlug: string): Promise<Skill[]> {
+  try {
+    const pb = getPocketBase();
+
+    // First get the person by slug
+    const person = await getPersonBySlug(personSlug);
+    if (!person) {
+      console.error(`Person with slug "${personSlug}" not found`);
+      return [];
+    }
+
+    const records = await pb.collection('skills').getFullList({
+      filter: `person.id ?= "${person.id}"`,
+      sort: 'order',
+    });
+
+    return records.map((record) => ({
+      id: record.id,
+      name: String(record.name || ""),
+      summary: record.summary ? String(record.summary) : undefined,
+      type: record.type as 'Skills' | 'Programming',
+      category: record.category ? String(record.category) : undefined,
+      categories: record.categories || [],
+      level: record.level as 'Expert' | 'Advanced' | 'Intermediate' | 'Elementary',
+      moreInfo: record.moreInfo ? String(record.moreInfo) : undefined,
+      order: record.order ? Number(record.order) : undefined,
+      person: record.person || [],
+      scope: record.scope as 'Family' | 'Personal',
+      visibility: record.visibility as 'Public' | 'Family' | 'Private',
+    }));
+  } catch (error) {
+    console.error(`Error fetching skills for person "${personSlug}":`, error);
+    return [];
+  }
+}
+
+// Fetch qualifications for a specific person
+export async function getQualificationsByPerson(personSlug: string): Promise<Qualification[]> {
+  try {
+    const pb = getPocketBase();
+
+    // First get the person by slug
+    const person = await getPersonBySlug(personSlug);
+    if (!person) {
+      console.error(`Person with slug "${personSlug}" not found`);
+      return [];
+    }
+
+    const records = await pb.collection('qualifications').getFullList({
+      filter: `person = "${person.id}"`,
+      sort: '-year',
+    });
+
+    return records.map((record) => ({
+      id: record.id,
+      title: String(record.title || ""),
+      institution: String(record.institution || ""),
+      year: String(record.year || ""),
+      description: record.description ? String(record.description) : undefined,
+      person: String(record.person || ""),
+    }));
+  } catch (error) {
+    console.error(`Error fetching qualifications for person "${personSlug}":`, error);
+    return [];
+  }
 }
 
 // Export PocketBase instance for direct use in API routes

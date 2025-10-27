@@ -253,12 +253,12 @@ npm run seed:locations
   ```
 - [ ] Access PocketBase admin: http://localhost:8090/_/
 - [ ] Create admin account
-- [ ] Create collections following `POCKETBASE_SCHEMA.md`:
-  - [ ] projects
-  - [ ] skills (not "qualifications"!)
-  - [ ] services
-  - [ ] websites
-  - [ ] locations
+- [ ] Create collections manually following `MANUAL_COLLECTION_SETUP.md`:
+    - [ ] projects
+    - [ ] skills (not "qualifications"!)
+    - [ ] services
+    - [ ] websites
+    - [ ] locations
 - [ ] Set environment variables in `.env.local`:
   ```bash
   POCKETBASE_URL=http://127.0.0.1:8090
@@ -304,9 +304,11 @@ ls -la .airtable-export/
 
 ### Step 3: Create PocketBase Collections
 
-Use the PocketBase admin UI to create collections following `POCKETBASE_SCHEMA.md`.
+Follow the step-by-step instructions in `MANUAL_COLLECTION_SETUP.md` to create all collections through the PocketBase admin UI.
 
 **Important**: Create collection named `skills`, NOT `qualifications`!
+
+**Estimated time**: 10-15 minutes
 
 ### Step 4: Import to PocketBase
 
@@ -464,7 +466,7 @@ npm run docker:down        # Stop PocketBase (Docker)
 
 1. **Follow AIRTABLE_UPDATE_GUIDE.md** to prepare your Airtable base
 2. **Run the export**: `npm run export:airtable`
-3. **Create PocketBase collections** using POCKETBASE_SCHEMA.md
+3. **Create PocketBase collections**: Follow `MANUAL_COLLECTION_SETUP.md`
 4. **Run the import**: `npm run import:pocketbase`
 5. **Seed locations** (optional): `npm run seed:locations`
 6. **Update your Next.js code** to use the new schema

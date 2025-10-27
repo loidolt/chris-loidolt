@@ -84,102 +84,66 @@ POCKETBASE_ADMIN_PASSWORD=your-secure-password
 
 ### Step 3: Create Collections
 
-In the PocketBase admin dashboard, create these 5 collections:
+**For up-to-date collection schemas, see:**
+- `MANUAL_COLLECTION_SETUP.md` - Step-by-step manual collection setup guide
+- `POCKETBASE_SCHEMA.md` - Complete schema reference
 
-#### **projects** Collection
-| Field Name | Type | Options |
-|------------|------|---------|
-| title | text | required |
-| slug | text | required, unique |
-| description | text | |
-| longDescription | editor | |
-| markdown | editor | |
-| tags | json | |
-| categories | json | |
-| date | date | |
-| featuredImage | file | single, maxSelect: 1 |
-| gallery | file | multiple, maxSelect: 20 |
-| modelFile | text | |
-| modelPath | text | |
-| modelUrl | url | |
-| repository | url | |
-| website | url | |
-| attribution | url | |
-| status | select | options: Draft, Published |
-| cleanRepo | bool | |
-| featured | bool | |
+**Quick Summary:**
 
-#### **qualifications** Collection
-| Field Name | Type | Options |
-|------------|------|---------|
-| title | text | required |
-| institution | text | required |
-| year | text | required |
-| description | text | |
+Create these 5 collections in the PocketBase admin dashboard:
 
-#### **services** Collection
-| Field Name | Type | Options |
-|------------|------|---------|
-| title | text | required |
-| description | text | required |
-| icon | text | |
+1. **projects** - Portfolio projects with images, 3D models, and metadata
+2. **skills** - Professional skills, programming languages, and certifications (NOTE: named "skills", not "qualifications")
+3. **services** - Services offered with descriptions and icons
+4. **websites** - Website links and status pages
+5. **locations** - Geographic locations for GIS map features
 
-#### **websites** Collection
-| Field Name | Type | Options |
-|------------|------|---------|
-| name | text | required |
-| url | url | required |
-| description | text | |
-
-#### **locations** Collection
-| Field Name | Type | Options |
-|------------|------|---------|
-| name | text | required |
-| description | text | |
-| latitude | number | required |
-| longitude | number | required |
-| category | text | |
-| categories | json | |
-| image | file | single, maxSelect: 1 |
-| url | url | |
-| status | select | options: Draft, Published |
-| privacy | select | options: Public, Private |
-| password | text | |
-| shareToken | text | |
+**Important Notes:**
+- The "qualifications" collection should be named **"skills"** to match the actual data structure
+- Follow `MANUAL_COLLECTION_SETUP.md` for complete field definitions, types, and API rules
+- Estimated setup time: 10-15 minutes
 
 ### Step 4: Migrate Your Data from Airtable
 
-#### 4.1 Export Data from Airtable
+**For detailed migration instructions, see:**
+- `MIGRATION_QUICKSTART.md` - Fast-track 20-minute migration guide
+- `MIGRATION_SUMMARY.md` - Comprehensive migration documentation
+- `AIRTABLE_UPDATE_GUIDE.md` - Airtable preparation steps
+
+#### Quick Migration Steps:
+
+**1. Prepare Airtable** (Follow `AIRTABLE_UPDATE_GUIDE.md`)
+- Add Order fields to Qualifications, Services, Websites tables
+- Populate order values (1, 2, 3...)
+
+**2. Export Data from Airtable**
 ```bash
-# First, temporarily install Airtable SDK
+# Install Airtable SDK temporarily
 npm install airtable --legacy-peer-deps
 
-# Run the export script
+# Run export script
 npm run export:airtable
-
-# This will create a .airtable-export/ directory with:
-# - JSON files for each collection
-# - files/ directory with all downloaded images
 ```
 
-#### 4.2 Import Data into PocketBase
+**3. Import Data into PocketBase**
 ```bash
-# Make sure PocketBase is running first!
-# Update .env.local with your PocketBase admin credentials
+# Ensure PocketBase is running and collections are created
+# Update .env.local with admin credentials
 
-# Run the import script
+# Run import script
 npm run import:pocketbase
-
-# This will:
-# - Create records in PocketBase
-# - Upload all file attachments
-# - Log progress and any errors
 ```
 
-#### 4.3 Verify Data Import
-Check the PocketBase admin dashboard to verify all data was imported correctly.
+**4. Seed Sample Locations** (Optional)
+```bash
+npm run seed:locations
+```
 
-#### 4.4 Clean Up (Optional)
+**5. Verify Import**
+- Check PocketBase admin dashboard
+- Verify all data and images imported correctly
+
+**6. Clean Up** (Optional)
 ```bash
 # Remove temporary Airtable SDK
 npm uninstall airtable --legacy-peer-deps

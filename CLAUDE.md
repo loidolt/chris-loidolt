@@ -16,6 +16,11 @@ This is a portfolio website for Chris Loidolt showcasing design and engineering 
 - `npm run docker:logs` - View logs from all services
 - `npm run docker:rebuild` - Rebuild and restart services
 
+**PocketBase Setup:**
+- `npm run pocketbase:init` - Create admin user from .env.local
+- `npm run import:schema` - Import schema from pb_schema.json (creates all collections)
+- `npm run export:schema` - Export current schema to pb_schema.json
+
 **Native Development:**
 - `npm run dev` - Start Next.js development server (runs on http://localhost:3000)
 - `npm run build` - Build production site
@@ -39,6 +44,7 @@ This is a portfolio website for Chris Loidolt showcasing design and engineering 
   - Data is fetched **at runtime** for real-time updates without rebuilds
   - Images served directly from PocketBase file API
   - Can be run via Docker Compose or standalone binary
+  - **Schema managed declaratively** via `pb_schema.json` (version controlled)
 - **Environment Variables**: PocketBase URL and credentials stored in `.env.local` files
 - **Static Files**: 3D models (.glb files) stored in `/public/models/`
 
