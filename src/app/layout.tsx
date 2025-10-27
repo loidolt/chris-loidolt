@@ -1,23 +1,49 @@
 import type { Metadata, Viewport } from 'next';
+import { headers } from 'next/headers';
 import './globals.css';
-import Navigation from '@/components/Navigation';
-import LayoutContent from '@/components/LayoutContent';
+import RootLayoutClient from './RootLayoutClient';
+import { isValidPersonSlug, type PersonSlug } from '@/themes';
 
-export const metadata: Metadata = {
-  title: 'Chris Loidolt - Design & Engineering Portfolio',
-  description: 'Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development.',
-  openGraph: {
-    type: 'website',
-    title: 'Chris Loidolt - Design & Engineering Portfolio',
-    description: 'Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development.',
-    siteName: 'Chris Loidolt Portfolio',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Chris Loidolt - Design & Engineering Portfolio',
-    description: 'Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development.',
-  },
-};
+// Dynamic metadata generation based on person
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const personSlug = (headersList.get('x-person-slug') || 'chris') as PersonSlug;
+
+  const personNames: Record<PersonSlug, string> = {
+    chris: 'Chris Loidolt',
+    julia: 'Julia Loidolt',
+    theo: 'Theo Loidolt',
+    jack: 'Jack Loidolt',
+    family: 'Loidolt Family',
+  };
+
+  const personDescriptions: Record<PersonSlug, string> = {
+    chris: 'Portfolio of Chris Loidolt showcasing design and engineering projects in 3D printing, woodworking, and software development.',
+    julia: 'Julia Loidolt\'s portfolio featuring creative projects, art, and design work.',
+    theo: 'Theo Loidolt\'s portfolio showcasing technical projects and innovations.',
+    jack: 'Jack Loidolt\'s portfolio featuring creative and playful projects.',
+    family: 'The Loidolt Family hub showcasing collaborative projects and family adventures.',
+  };
+
+  const name = personNames[personSlug];
+  const description = personDescriptions[personSlug];
+
+  return {
+    title: `${name} - Portfolio`,
+    description,
+    openGraph: {
+      type: 'website',
+      title: `${name} - Portfolio`,
+      description,
+      siteName: `${name} Portfolio`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${name} - Portfolio`,
+      description,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: '#1c1a16',
@@ -27,15 +53,20 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const currentYear = new Date().getFullYear();
+  // Get person slug from middleware header
+  const headersList = await headers();
+  const personSlugFromHeader = headersList.get('x-person-slug') || 'chris';
+  const personSlug: PersonSlug = isValidPersonSlug(personSlugFromHeader)
+    ? (personSlugFromHeader as PersonSlug)
+    : 'chris';
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Theme detection script - runs before body renders to prevent flash */}
         <script
@@ -51,47 +82,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg-primary)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
-          {/* Navigation Header */}
-          <Navigation />
-
-          {/* Main Content - conditionally styled based on route */}
-          <LayoutContent>{children}</LayoutContent>
-
-          {/* Terminal Footer */}
-          <footer
-            className="relative"
-            style={{
-              zIndex: 9998,
-              borderTop: '1px solid var(--border-color)',
-              backgroundColor: 'var(--bg-surface)',
-              paddingBottom: 'env(safe-area-inset-bottom)',
-            }}
-          >
-            <div className="container mx-auto px-6 py-6 max-w-6xl" style={{ paddingLeft: 'max(1.5rem, env(safe-area-inset-left))', paddingRight: 'max(1.5rem, env(safe-area-inset-right))' }}>
-              <div
-                className="flex items-center justify-between text-xs"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                <div className="flex items-center gap-6">
-                  <span>© {currentYear} Chris Loidolt</span>
-                  <a
-                    href="https://github.com/chris-loidolt"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: 'var(--link-color)' }}
-                    className="hover:opacity-70 transition-opacity"
-                  >
-                    github
-                  </a>
-                </div>
-                <div style={{ color: 'var(--text-muted)' }}>
-                  <span className="opacity-50">~/portfolio</span>
-                </div>
-              </div>
-            </div>
-          </footer>
-        </div>
+        <RootLayoutClient personSlug={personSlug}>
+          {children}
+        </RootLayoutClient>
       </body>
     </html>
   );

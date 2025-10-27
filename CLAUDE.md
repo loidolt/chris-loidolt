@@ -4,7 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a portfolio website for Chris Loidolt showcasing design and engineering projects. Built with **Next.js 16** (App Router) using React 19, optimized for modern web deployment with optional Cloudflare Workers support. The site features a clean, monospace aesthetic inspired by developer tools and code editors, with a dark color palette and modern UI elements. It uses **PocketBase** as a self-hosted CMS for project data and includes 3D model viewing, client-side search, interactive maps, and a contact form.
+This is a **multi-tenant family portfolio system** powered by a single PocketBase instance, supporting **5 separate sites**:
+- **loidolt.space** - Family hub with shared content and collaborative projects
+- **chris.loidolt.space** - Chris's personal portfolio site
+- **julia.loidolt.space** - Julia's personal site
+- **theo.loidolt.space** - Theo's personal site
+- **jack.loidolt.space** - Jack's personal site
+
+Built with **Next.js 16** (App Router) using React 19, optimized for modern web deployment with optional Cloudflare Workers support. The site features a clean, monospace aesthetic inspired by developer tools and code editors, with a dark color palette and modern UI elements. It uses **PocketBase** as a self-hosted CMS with **multi-tenant architecture** supporting person-specific data, flexible scoping (Family/Personal), and granular privacy controls (Public/Family/Private). Features include 3D model viewing, client-side search, interactive maps, and contact forms.
 
 ## Common Commands
 
@@ -31,6 +38,7 @@ This is a portfolio website for Chris Loidolt showcasing design and engineering 
 **Data Migration:**
 - `npm run export:airtable` - Export data from Airtable (requires temporary airtable package)
 - `npm run import:pocketbase` - Import data into PocketBase
+- `npm run migrate:multitenant` - Migrate existing data to multi-tenant architecture
 
 ### Cloudflare Workers Deployment
 - `npm run workers:build` - Build for Cloudflare Workers using OpenNext
@@ -39,19 +47,24 @@ This is a portfolio website for Chris Loidolt showcasing design and engineering 
 
 ## Architecture
 
+> **Multi-Tenant Documentation**: See `MULTITENANT_ARCHITECTURE.md` for comprehensive architecture details, `MIGRATION_STEPS.md` for setup instructions, and `MULTITENANT_SUMMARY.md` for a summary of changes.
+
 ### Data Sources
-- **PocketBase**: Self-hosted CMS for project data, locations, qualifications, services, and websites
+- **PocketBase**: Self-hosted CMS with **multi-tenant architecture**
+  - **Collections**: persons, projects, locations, qualifications, services, skills
+  - **Multi-tenant features**: Person-specific data, flexible scoping (Family/Personal), granular privacy (Public/Family/Private)
   - Data is fetched **at runtime** for real-time updates without rebuilds
   - Images served directly from PocketBase file API
   - Can be run via Docker Compose or standalone binary
   - **Schema managed declaratively** via `pb_schema.json` (version controlled)
+  - **Access rules**: Sophisticated multi-tenant permissions enforce data isolation
 - **Environment Variables**: PocketBase URL and credentials stored in `.env.local` files
 - **Static Files**: 3D models (.glb files) stored in `/public/models/`
 
 ### Key Technologies
 - **Next.js 16**: React framework with App Router for server components and runtime data fetching
 - **React 19**: Modern React with Server Components support
-- **PocketBase**: Self-hosted SQLite-based CMS with REST API
+- **PocketBase**: Self-hosted SQLite-based CMS with REST API and multi-tenant support
 - **Docker Compose**: Development environment orchestration
 - **Tailwind CSS v3**: Utility-first CSS with custom terminal theme
 - **Three.js**: 3D model rendering via @react-three/fiber
@@ -60,6 +73,42 @@ This is a portfolio website for Chris Loidolt showcasing design and engineering 
 - **Fuse.js**: Client-side fuzzy search
 - **TypeScript**: Type safety throughout
 - **Cloudflare Workers**: Optional edge deployment via OpenNext
+
+### Multi-Tenant Architecture
+
+The project uses a **flexible multi-tenant architecture** powered by a single PocketBase instance to support multiple family member sites.
+
+**Core Concepts:**
+
+1. **Persons Collection**
+   - Represents each family member (Chris, Julia, Theo, Jack)
+   - Fields: name, slug, email, bio, avatar, user (optional auth relation)
+   - Decouples person identity from authentication
+
+2. **Data Scoping**
+   - **Family**: Shared across all sites (locations, collaborative projects, family services)
+   - **Personal**: Specific to individuals (personal projects, skills, qualifications)
+
+3. **Privacy Levels**
+   - **Public**: Visible to everyone (authenticated or not)
+   - **Family**: Visible only to authenticated family members
+   - **Private**: Visible only to owner(s) and admins
+
+4. **Multi-Person Relations**
+   - Projects, services, locations, and skills support multiple person owners
+   - Enables collaborative projects and shared content
+   - Family members have read-only access to each other's unpublished work
+
+5. **Data Fetching Functions**
+   - `getAllPersons()` / `getPersonBySlug(slug)`
+   - `getProjectsByPerson(slug)` / `getSkillsByPerson(slug)`
+   - `getQualificationsByPerson(slug)`
+   - Legacy functions (e.g., `getAllProjects()`) continue to work
+
+**Documentation:**
+- `MULTITENANT_ARCHITECTURE.md` - Comprehensive architecture guide
+- `MIGRATION_STEPS.md` - Step-by-step migration instructions
+- `MULTITENANT_SUMMARY.md` - High-level overview of changes
 
 ### Directory Structure
 ```
@@ -99,7 +148,10 @@ src/
     └── globals.css             # Global styles with Tailwind imports
 scripts/                         # Migration and utility scripts
 ├── export-airtable.ts          # Export data from Airtable
-└── import-pocketbase.ts        # Import data into PocketBase
+├── import-pocketbase.ts        # Import data into PocketBase
+├── migrate-multitenant.ts      # Migrate to multi-tenant architecture
+├── import-schema.ts            # Import schema from pb_schema.json
+└── export-schema.ts            # Export schema to pb_schema.json
 public/                          # Static assets (models, images, etc.)
 ```
 
@@ -179,18 +231,20 @@ POCKETBASE_ADMIN_PASSWORD=your_secure_password
    - API endpoint for form submission
 
 6. **About Page** (`app/about/page.tsx`)
-   - Qualifications timeline from PocketBase
-   - Services grid from PocketBase
-   - Skills display organized by category
+   - Person-specific qualifications timeline from PocketBase
+   - Services grid from PocketBase (can be Family or Personal)
+   - Skills display organized by category (person-filtered)
 
 ### Data Flow
 
 1. **Runtime Data Fetching**
    - PocketBase data fetched at request time via REST API
+   - **Multi-tenant filtering**: Data filtered by person, scope, and visibility
    - Enables real-time content updates without rebuilds
    - Images served directly from PocketBase file endpoints
    - Can be cached using Next.js caching strategies
    - Requires PocketBase to be running and accessible
+   - Access rules enforce data isolation at the API level
 
 2. **Client-Side Interactivity**
    - Search/filter using Fuse.js
@@ -228,6 +282,18 @@ POCKETBASE_ADMIN_PASSWORD=your_secure_password
 - To update content: modify in PocketBase admin → changes appear immediately
 - Map requires password for private locations (stored in PocketBase)
 
+**Multi-Tenant Setup:**
+1. Import schema: `npm run import:schema`
+2. Run migration: `npm run migrate:multitenant`
+3. Verify in PocketBase admin: Check persons collection has 4 records
+4. Use person-filtered data fetching: `getProjectsByPerson('chris')`
+
+**Data Access Patterns:**
+- Use `getProjectsByPerson(slug)` for person-specific sites
+- Use `getAllProjects()` and filter by `scope === 'Family'` for family hub
+- Content visibility respects authentication state and person ownership
+- All data fetching functions handle multi-tenant permissions automatically
+
 ### Component Patterns
 
 **Server Components (default):**
@@ -249,3 +315,27 @@ POCKETBASE_ADMIN_PASSWORD=your_secure_password
 - **Lazy Loading**: 3D models and heavy components load on demand
 - **Edge Ready**: Optional Cloudflare Workers deployment for global CDN
 - **Docker Compose**: Optimized development environment with health checks
+- **Multi-Tenant Efficiency**: Single database serves all sites with smart filtering
+
+### Future Enhancements
+
+**Subdomain Routing:**
+Configure Next.js middleware to route subdomains to person-specific content:
+```typescript
+// middleware.ts
+const subdomain = hostname.split('.')[0];
+if (['chris', 'julia', 'theo', 'jack'].includes(subdomain)) {
+  request.headers.set('x-person-slug', subdomain);
+}
+```
+
+**Person-Specific Themes:**
+Each family member can have custom color schemes and styling preferences.
+
+**Family Hub Features:**
+- Collaborative project showcase
+- Family timeline with all members' highlights
+- Shared photo galleries and locations
+- Family member directory with avatars
+
+See `MULTITENANT_ARCHITECTURE.md` for detailed implementation guidance.

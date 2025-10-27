@@ -1,54 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
-type Theme = 'light' | 'dark';
+import { useThemeMode } from '@/lib/theme-provider';
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
-
-  // Initialize theme on mount
-  useEffect(() => {
-    setMounted(true);
-
-    // Check for saved theme preference or use system preference
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-
-    if (savedTheme) {
-      setTheme(savedTheme);
-      applyTheme(savedTheme);
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const systemTheme: Theme = prefersDark ? 'dark' : 'light';
-      setTheme(systemTheme);
-      applyTheme(systemTheme);
-    }
-  }, []);
-
-  const applyTheme = (newTheme: Theme) => {
-    const root = document.documentElement;
-
-    if (newTheme === 'light') {
-      root.classList.add('light');
-    } else {
-      root.classList.remove('light');
-    }
-  };
-
-  const toggleTheme = () => {
-    const newTheme: Theme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    applyTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-  };
+  const { mode, toggleMode, mounted } = useThemeMode();
 
   // Don't render until mounted to avoid hydration mismatch
   if (!mounted) {
     return (
       <button
-        className="p-2 border border-[var(--border-color)] hover:bg-[var(--bg-surface)] transition-colors"
+        className="p-2 border hover:opacity-70 transition-colors"
+        style={{ borderColor: 'var(--color-border)' }}
         disabled
         aria-label="Toggle theme"
       >
@@ -72,12 +34,13 @@ export default function ThemeToggle() {
 
   return (
     <button
-      onClick={toggleTheme}
-      className="p-2 border border-[var(--border-color)] hover:bg-[var(--bg-surface)] transition-all duration-300"
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      onClick={toggleMode}
+      className="p-2 border hover:opacity-70 transition-all duration-300"
+      style={{ borderColor: 'var(--color-border)' }}
+      aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
+      title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
     >
-      {theme === 'light' ? (
+      {mode === 'light' ? (
         // Moon icon for dark mode
         <svg
           className="w-5 h-5 transition-transform duration-300"

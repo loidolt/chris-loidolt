@@ -247,6 +247,7 @@ export async function getQualifications(): Promise<Qualification[]> {
       institution: String(record.institution || ""),
       year: String(record.year || ""),
       description: record.description ? String(record.description) : undefined,
+      person: String(record.person || ""),
     }));
   } catch (error) {
     console.error('Error fetching qualifications:', error);
