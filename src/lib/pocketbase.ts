@@ -104,18 +104,32 @@ export interface Location {
 export type LocationPublic = Omit<Location, 'password'>;
 
 // Environment variable validation
+// Works in both Next.js and SvelteKit
 function getEnvVar(key: string): string {
-  const value = process.env[key];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${key}`);
+  // In Node.js/server environment
+  if (typeof process !== 'undefined' && process.env) {
+    const value = process.env[key];
+    if (value) return value;
   }
-  return value;
+  throw new Error(`Missing environment variable: ${key} - Make sure .env file exists with ${key} set`);
 }
 
 // Initialize PocketBase client
 let pbInstance: PocketBase | null = null;
 
-function getPocketBase(): PocketBase {
+/**
+ * Get PocketBase instance with optional authentication
+ *
+ * @param authToken - Optional user auth token for authenticated requests
+ * @returns PocketBase instance
+ *
+ * IMPORTANT: When authToken is provided, PocketBase access rules are enforced
+ * automatically based on the user's authentication state. This means:
+ * - Public content: Visible to all
+ * - Family content: Visible only to authenticated family members
+ * - Private content: Visible only to the content owner
+ */
+function getPocketBase(authToken?: string): PocketBase {
   if (!pbInstance) {
     const url = getEnvVar("POCKETBASE_URL");
     pbInstance = new PocketBase(url);
@@ -123,7 +137,138 @@ function getPocketBase(): PocketBase {
     // Disable auto cancellation for server-side requests
     pbInstance.autoCancellation(false);
   }
+
+  // Set auth token if provided (this automatically enforces visibility rules!)
+  if (authToken) {
+    pbInstance.authStore.save(authToken, null);
+  } else {
+    // Clear auth for public requests
+    pbInstance.authStore.clear();
+  }
+
   return pbInstance;
+}
+
+// ============================================================================
+// CACHING AND REQUEST DEDUPLICATION
+// ============================================================================
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+// In-memory cache with TTL (Time To Live)
+const cache = new Map<string, CacheEntry<any>>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+// Track pending requests to prevent duplicate calls
+const pendingRequests = new Map<string, Promise<any>>();
+
+/**
+ * Get data from cache if valid, otherwise return null
+ */
+function getFromCache<T>(key: string): T | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+
+  const now = Date.now();
+  if (now - entry.timestamp > CACHE_TTL) {
+    cache.delete(key);
+    return null;
+  }
+
+  return entry.data as T;
+}
+
+/**
+ * Store data in cache with current timestamp
+ */
+function setCache<T>(key: string, data: T): void {
+  cache.set(key, {
+    data,
+    timestamp: Date.now()
+  });
+}
+
+/**
+ * Deduplicate concurrent requests for the same data
+ */
+async function withRequestDeduplication<T>(
+  key: string,
+  fetcher: () => Promise<T>
+): Promise<T> {
+  // Check if there's already a pending request for this key
+  if (pendingRequests.has(key)) {
+    return pendingRequests.get(key)! as Promise<T>;
+  }
+
+  // Create new request
+  const promise = fetcher().finally(() => {
+    // Clean up after request completes
+    pendingRequests.delete(key);
+  });
+
+  pendingRequests.set(key, promise);
+  return promise;
+}
+
+/**
+ * Wrapper function that combines caching and request deduplication
+ */
+async function cachedFetch<T>(
+  cacheKey: string,
+  fetcher: () => Promise<T>,
+  options: { skipCache?: boolean } = {}
+): Promise<T> {
+  // Check cache first (unless explicitly skipped)
+  if (!options.skipCache) {
+    const cached = getFromCache<T>(cacheKey);
+    if (cached !== null) {
+      console.log(`[Cache HIT] ${cacheKey}`);
+      return cached;
+    }
+  }
+
+  console.log(`[Cache MISS] ${cacheKey}`);
+
+  // Use request deduplication for the fetch
+  const data = await withRequestDeduplication(cacheKey, fetcher);
+
+  // Store in cache
+  setCache(cacheKey, data);
+
+  return data;
+}
+
+/**
+ * Clear all cache entries (useful for testing or manual refresh)
+ */
+export function clearCache(): void {
+  cache.clear();
+  console.log('[Cache] Cleared all entries');
+}
+
+/**
+ * Clear cache for a specific key or pattern
+ */
+export function clearCacheKey(keyOrPattern: string): void {
+  if (keyOrPattern.includes('*')) {
+    // Pattern matching: clear all keys that match
+    const pattern = keyOrPattern.replace('*', '');
+    const keysToDelete: string[] = [];
+    cache.forEach((_, key) => {
+      if (key.includes(pattern)) {
+        keysToDelete.push(key);
+      }
+    });
+    keysToDelete.forEach(key => cache.delete(key));
+    console.log(`[Cache] Cleared ${keysToDelete.length} entries matching "${keyOrPattern}"`);
+  } else {
+    // Exact key match
+    cache.delete(keyOrPattern);
+    console.log(`[Cache] Cleared "${keyOrPattern}"`);
+  }
 }
 
 // Helper function to transform PocketBase record to Project
@@ -172,47 +317,100 @@ function recordToProject(record: any, pb: PocketBase): Project {
   };
 }
 
-// Fetch all projects
-export async function getAllProjects(): Promise<Project[]> {
-  try {
-    const pb = getPocketBase();
+// Fetch all projects (with caching and auth-aware visibility)
+export async function getAllProjects(options: { skipCache?: boolean; authToken?: string } = {}): Promise<Project[]> {
+  // Include auth state in cache key to prevent leaking private data
+  const cacheKey = options.authToken ? `projects:all:authed` : 'projects:all:public';
 
-    console.log('Fetching projects from PocketBase...');
+  return cachedFetch(cacheKey, async () => {
+    try {
+      const pb = getPocketBase(options.authToken);
 
-    const records = await pb.collection('projects').getFullList({
-      sort: '-date',
-      // Uncomment to filter only published projects:
-      // filter: 'status = "Published"',
-    });
+      console.log('Fetching projects from PocketBase...');
 
-    console.log(`Found ${records.length} projects in PocketBase`);
+      const records = await pb.collection('projects').getFullList({
+        sort: '-date',
+        // PocketBase access rules automatically filter based on visibility!
+        // No manual filtering needed - it's handled at the database level
+      });
 
-    const projects = records.map((record) => recordToProject(record, pb));
+      console.log(`Found ${records.length} projects in PocketBase`);
 
-    return projects;
-  } catch (error) {
-    console.error('Error fetching projects from PocketBase:', error);
-    if (error instanceof Error) {
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+      const projects = records.map((record) => recordToProject(record, pb));
+
+      return projects;
+    } catch (error) {
+      console.error('Error fetching projects from PocketBase:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      // Return empty array instead of throwing to prevent page crash
+      return [];
     }
-    // Return empty array instead of throwing to prevent page crash
-    return [];
-  }
+  }, options);
 }
 
-// Fetch a single project by slug
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  try {
-    const pb = getPocketBase();
+// Fetch a single project by slug (with caching and auth-aware visibility)
+export async function getProjectBySlug(slug: string, options: { skipCache?: boolean; authToken?: string } = {}): Promise<Project | null> {
+  const cacheKey = options.authToken ? `project:${slug}:authed` : `project:${slug}:public`;
 
-    const record = await pb.collection('projects').getFirstListItem(`slug="${slug}"`);
+  return cachedFetch(cacheKey, async () => {
+    try {
+      const pb = getPocketBase(options.authToken);
 
-    return recordToProject(record, pb);
-  } catch (error) {
-    console.error(`Error fetching project with slug "${slug}":`, error);
-    return null;
-  }
+      const record = await pb.collection('projects').getFirstListItem(`slug="${slug}"`);
+
+      return recordToProject(record, pb);
+    } catch (error) {
+      console.error(`Error fetching project with slug "${slug}":`, error);
+      return null;
+    }
+  }, options);
+}
+
+// Fetch related projects based on shared tags/categories (optimized)
+export async function getRelatedProjects(projectId: string, limit: number = 3): Promise<Project[]> {
+  const cacheKey = `projects:related:${projectId}:${limit}`;
+
+  return cachedFetch(cacheKey, async () => {
+    try {
+      const pb = getPocketBase();
+
+      // First get the current project
+      const currentProject = await pb.collection('projects').getOne(projectId);
+
+      if (!currentProject) return [];
+
+      // Build filter for related projects based on shared categories or tags
+      const categories = currentProject.categories || [];
+      const tags = currentProject.tags || [];
+
+      const filters: string[] = [`id != "${projectId}"`]; // Exclude current project
+
+      if (categories.length > 0 || tags.length > 0) {
+        const categoryFilters = categories.map((cat: string) => `categories ~ "${cat}"`);
+        const tagFilters = tags.map((tag: string) => `tags ~ "${tag}"`);
+        const combinedFilters = [...categoryFilters, ...tagFilters];
+
+        if (combinedFilters.length > 0) {
+          filters.push(`(${combinedFilters.join(' || ')})`);
+        }
+      }
+
+      const filterString = filters.join(' && ');
+
+      const records = await pb.collection('projects').getList(1, limit, {
+        filter: filterString,
+        sort: '-date',
+      });
+
+      return records.items.map((record: any) => recordToProject(record, pb));
+    } catch (error) {
+      console.error(`Error fetching related projects for "${projectId}":`, error);
+      return [];
+    }
+  });
 }
 
 // Fetch featured projects
@@ -374,9 +572,9 @@ export async function getAllPersons(): Promise<Person[]> {
 }
 
 // Fetch a single person by slug
-export async function getPersonBySlug(slug: string): Promise<Person | null> {
+export async function getPersonBySlug(slug: string, options: { authToken?: string } = {}): Promise<Person | null> {
   try {
-    const pb = getPocketBase();
+    const pb = getPocketBase(options.authToken);
 
     const record = await pb.collection('persons').getFirstListItem(`slug="${slug}"`);
 
@@ -399,28 +597,35 @@ export async function getPersonBySlug(slug: string): Promise<Person | null> {
   }
 }
 
-// Fetch projects for a specific person
-export async function getProjectsByPerson(personSlug: string): Promise<Project[]> {
-  try {
-    const pb = getPocketBase();
+// Fetch projects for a specific person (with caching and auth-aware visibility)
+export async function getProjectsByPerson(personSlug: string, options: { skipCache?: boolean; authToken?: string } = {}): Promise<Project[]> {
+  const cacheKey = options.authToken
+    ? `projects:person:${personSlug}:authed`
+    : `projects:person:${personSlug}:public`;
 
-    // First get the person by slug
-    const person = await getPersonBySlug(personSlug);
-    if (!person) {
-      console.error(`Person with slug "${personSlug}" not found`);
+  return cachedFetch(cacheKey, async () => {
+    try {
+      const pb = getPocketBase(options.authToken);
+
+      // First get the person by slug
+      const person = await getPersonBySlug(personSlug, options);
+      if (!person) {
+        console.error(`Person with slug "${personSlug}" not found`);
+        return [];
+      }
+
+      const records = await pb.collection('projects').getFullList({
+        filter: `person.id ?= "${person.id}"`,
+        sort: '-date',
+        // PocketBase will automatically filter based on visibility rules
+      });
+
+      return records.map((record) => recordToProject(record, pb));
+    } catch (error) {
+      console.error(`Error fetching projects for person "${personSlug}":`, error);
       return [];
     }
-
-    const records = await pb.collection('projects').getFullList({
-      filter: `person.id ?= "${person.id}"`,
-      sort: '-date',
-    });
-
-    return records.map((record) => recordToProject(record, pb));
-  } catch (error) {
-    console.error(`Error fetching projects for person "${personSlug}":`, error);
-    return [];
-  }
+  }, options);
 }
 
 // Fetch skills for a specific person

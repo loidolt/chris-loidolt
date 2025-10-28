@@ -11,14 +11,14 @@ This is a **multi-tenant family portfolio system** powered by a single PocketBas
 - **theo.loidolt.space** - Theo's personal site
 - **jack.loidolt.space** - Jack's personal site
 
-Built with **Next.js 16** (App Router) using React 19, optimized for modern web deployment with optional Cloudflare Workers support. The site features a clean, monospace aesthetic inspired by developer tools and code editors, with a dark color palette and modern UI elements. It uses **PocketBase** as a self-hosted CMS with **multi-tenant architecture** supporting person-specific data, flexible scoping (Family/Personal), and granular privacy controls (Public/Family/Private). Features include 3D model viewing, client-side search, interactive maps, and contact forms.
+Built with **SvelteKit 2.0** using Svelte 5, optimized for modern web deployment with Node.js server. The site features a clean, monospace aesthetic inspired by developer tools and code editors, with a dark color palette and modern UI elements. It uses **PocketBase** as a self-hosted CMS with **multi-tenant architecture** supporting person-specific data, flexible scoping (Family/Personal), and granular privacy controls (Public/Family/Private). Features include 3D model viewing, client-side search, interactive maps, PWA support, and contact forms.
 
 ## Common Commands
 
 ### Development
 
 **Docker Compose (Recommended):**
-- `npm run docker:up` - Start PocketBase + Next.js together
+- `npm run docker:up` - Start PocketBase + SvelteKit together
 - `npm run docker:down` - Stop all services
 - `npm run docker:logs` - View logs from all services
 - `npm run docker:rebuild` - Rebuild and restart services
@@ -28,22 +28,21 @@ Built with **Next.js 16** (App Router) using React 19, optimized for modern web 
 - `npm run import:schema` - Import schema from pb_schema.json (creates all collections)
 - `npm run export:schema` - Export current schema to pb_schema.json
 
-**Native Development:**
-- `npm run dev` - Start Next.js development server (runs on http://localhost:3000)
+**SvelteKit Development:**
+- `npm run dev` - Start SvelteKit development server (runs on http://localhost:3050)
 - `npm run build` - Build production site
-- `npm run start` - Start production server
-- `npm run typecheck` - Run TypeScript type checking
-- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
+- `npm start` - Start production server (node build)
+- `npm run check` - Run Svelte type checking
+- `npm run check:watch` - Watch mode for type checking
 
 **Data Migration:**
 - `npm run export:airtable` - Export data from Airtable (requires temporary airtable package)
 - `npm run import:pocketbase` - Import data into PocketBase
 - `npm run migrate:multitenant` - Migrate existing data to multi-tenant architecture
 
-### Cloudflare Workers Deployment
-- `npm run workers:build` - Build for Cloudflare Workers using OpenNext
-- `npm run workers:dev` - Start Wrangler dev server
-- `npm run workers:deploy` - Build and deploy to Cloudflare Workers
+**PWA:**
+- `npm run pwa:icons` - Generate PWA icons
 
 ## Architecture
 
@@ -59,20 +58,21 @@ Built with **Next.js 16** (App Router) using React 19, optimized for modern web 
   - **Schema managed declaratively** via `pb_schema.json` (version controlled)
   - **Access rules**: Sophisticated multi-tenant permissions enforce data isolation
 - **Environment Variables**: PocketBase URL and credentials stored in `.env.local` files
-- **Static Files**: 3D models (.glb files) stored in `/public/models/`
+- **Static Files**: 3D models (.glb files) stored in `/static/models/`
 
 ### Key Technologies
-- **Next.js 16**: React framework with App Router for server components and runtime data fetching
-- **React 19**: Modern React with Server Components support
+- **SvelteKit 2.0**: Modern framework with excellent server-side rendering and routing
+- **Svelte 5**: Latest version with improved reactivity and runes
 - **PocketBase**: Self-hosted SQLite-based CMS with REST API and multi-tenant support
 - **Docker Compose**: Development environment orchestration
 - **Tailwind CSS v3**: Utility-first CSS with custom terminal theme
-- **Three.js**: 3D model rendering via @react-three/fiber
-- **Leaflet**: Interactive maps via react-leaflet
+- **Three.js**: 3D model rendering
+- **Leaflet**: Interactive maps
 - **D3.js**: Data visualization for project node graphs
 - **Fuse.js**: Client-side fuzzy search
 - **TypeScript**: Type safety throughout
-- **Cloudflare Workers**: Optional edge deployment via OpenNext
+- **Vite 7**: Fast build tool and dev server
+- **@vite-pwa/sveltekit**: Progressive Web App support
 
 ### Multi-Tenant Architecture
 
@@ -113,46 +113,66 @@ The project uses a **flexible multi-tenant architecture** powered by a single Po
 ### Directory Structure
 ```
 src/
-├── app/
-│   ├── layout.tsx               # Root layout with terminal theme
-│   ├── page.tsx                 # Homepage
+├── routes/
+│   ├── +layout.svelte           # Root layout with Navigation
+│   ├── +layout.server.ts        # Server load for personSlug
+│   ├── +page.svelte             # Homepage
+│   ├── +page.server.ts          # Homepage data loading
 │   ├── about/
-│   │   └── page.tsx            # About page with qualifications
+│   │   ├── +page.svelte        # About page with qualifications
+│   │   └── +page.server.ts     # Load qualifications/services
 │   ├── contact/
-│   │   └── page.tsx            # Contact form page
+│   │   ├── +page.svelte        # Contact form page
+│   │   └── +server.ts          # Contact form API endpoint
 │   ├── projects/
-│   │   ├── page.tsx            # Project grid with search/filter
+│   │   ├── +page.svelte        # Project grid with search/filter
+│   │   ├── +page.server.ts     # Load projects
 │   │   └── [slug]/
-│   │       └── page.tsx        # Dynamic project detail pages
-│   ├── gis/
-│   │   └── page.tsx            # GIS map page
-│   └── api/
-│       └── contact/
-│           └── route.ts        # Contact form API endpoint
-├── components/
-│   ├── Navigation.tsx          # Main navigation component
-│   ├── LayoutContent.tsx       # Client wrapper for layout content
-│   ├── TerminalWelcome.tsx     # Welcome text typing animation
-│   ├── ProjectsGrid.tsx        # Project search/filter grid
-│   ├── ContactForm.tsx         # Contact form with validation
-│   ├── ModelViewer.tsx         # Three.js 3D viewer
-│   ├── MapViewer.tsx           # Leaflet map with location markers
-│   ├── ProjectNodeGraph.tsx    # D3 node graph visualization
-│   ├── ImageGallery.tsx        # Image gallery component
-│   ├── ThemeToggle.tsx         # Dark/light theme toggle
-│   └── ...                     # Other components
+│   │       ├── +page.svelte    # Project detail page
+│   │       └── +page.server.ts # Load single project
+│   └── gis/
+│       ├── +page.svelte        # GIS map page
+│       └── +page.server.ts     # Load locations
 ├── lib/
-│   ├── pocketbase.ts           # PocketBase data fetching utilities
-│   └── mockLocations.ts        # Mock data for development/testing
-└── app/
-    └── globals.css             # Global styles with Tailwind imports
-scripts/                         # Migration and utility scripts
-├── export-airtable.ts          # Export data from Airtable
-├── import-pocketbase.ts        # Import data into PocketBase
-├── migrate-multitenant.ts      # Migrate to multi-tenant architecture
-├── import-schema.ts            # Import schema from pb_schema.json
-└── export-schema.ts            # Export schema to pb_schema.json
-public/                          # Static assets (models, images, etc.)
+│   ├── components/
+│   │   ├── Navigation.svelte       # Main navigation
+│   │   ├── TerminalWelcome.svelte  # Welcome text animation
+│   │   ├── ProjectsGrid.svelte     # Project search/filter grid
+│   │   ├── ModelViewer.svelte      # Three.js 3D viewer
+│   │   ├── MapViewer.svelte        # Leaflet map with markers
+│   │   ├── ImageGallery.svelte     # Image gallery
+│   │   ├── PWAInstaller.svelte     # PWA install prompt
+│   │   └── ...                     # Other components
+│   ├── layouts/
+│   │   ├── Card.svelte             # Card layout
+│   │   ├── Container.svelte        # Container layout
+│   │   ├── Flex.svelte             # Flex layout
+│   │   ├── Modal.svelte            # Modal layout
+│   │   ├── PageHeader.svelte       # Page header
+│   │   ├── Section.svelte          # Section layout
+│   │   ├── Sidebar.svelte          # Sidebar layout
+│   │   ├── Stack.svelte            # Stack layout
+│   │   ├── Tabs.svelte             # Tabs layout
+│   │   └── index.ts                # Layout exports
+│   ├── stores/
+│   │   ├── theme.ts                # Theme store
+│   │   ├── locationFilters.ts      # Location filter store
+│   │   └── drawings.ts             # Map drawing store
+│   ├── utils/
+│   │   └── breakpoints.ts          # Responsive breakpoint utils
+│   ├── pocketbase.ts               # PocketBase data fetching
+│   └── mapUtils.ts                 # Map utility functions
+├── hooks.server.ts                 # Multi-tenant subdomain detection
+├── app.d.ts                        # TypeScript definitions
+├── app.css                         # Global styles with Tailwind
+└── app.html                        # HTML template
+static/                             # Static assets (models, images, etc.)
+scripts/                            # Migration and utility scripts
+├── export-airtable.ts              # Export data from Airtable
+├── import-pocketbase.ts            # Import data into PocketBase
+├── migrate-multitenant.ts          # Migrate to multi-tenant architecture
+├── import-schema.ts                # Import schema from pb_schema.json
+└── export-schema.ts                # Export schema to pb_schema.json
 ```
 
 ### Design System
@@ -199,38 +219,38 @@ POCKETBASE_ADMIN_PASSWORD=your_secure_password
 
 ### Key Features
 
-1. **Homepage** (`app/page.tsx`)
+1. **Homepage** (`routes/+page.svelte`)
    - Animated welcome text with typing effect
    - Quick links to main sections
    - Project statistics overview
 
-2. **Projects Index** (`app/projects/page.tsx`)
+2. **Projects Index** (`routes/projects/+page.svelte`)
    - Grid layout with project cards
    - Fuse.js client-side search
    - Category filtering
    - 3D model indicators
    - Node graph visualization toggle
 
-3. **Project Detail** (`app/projects/[slug]/page.tsx`)
-   - Dynamic routes generated at build time via `generateStaticParams()`
+3. **Project Detail** (`routes/projects/[slug]/+page.svelte`)
+   - Dynamic routes loaded via `+page.server.ts`
    - Interactive 3D model viewer (Three.js)
    - Image gallery with pixelation effect
    - Markdown content rendering
    - Tabbed interface for different content types
    - Links to GitHub/website
 
-4. **GIS Map** (`app/gis/page.tsx`)
+4. **GIS Map** (`routes/gis/+page.svelte`)
    - Interactive Leaflet map
    - Location markers with categories
    - Password-protected private locations
    - Modal for location details
 
-5. **Contact Form** (`app/contact/page.tsx`)
+5. **Contact Form** (`routes/contact/+page.svelte`)
    - Form inputs with validation
-   - Zod validation (client-side)
+   - Zod validation (client-side and server-side)
    - API endpoint for form submission
 
-6. **About Page** (`app/about/page.tsx`)
+6. **About Page** (`routes/about/+page.svelte`)
    - Person-specific qualifications timeline from PocketBase
    - Services grid from PocketBase (can be Family or Personal)
    - Skills display organized by category (person-filtered)
@@ -238,11 +258,11 @@ POCKETBASE_ADMIN_PASSWORD=your_secure_password
 ### Data Flow
 
 1. **Runtime Data Fetching**
-   - PocketBase data fetched at request time via REST API
+   - PocketBase data fetched at request time via REST API in `+page.server.ts` files
    - **Multi-tenant filtering**: Data filtered by person, scope, and visibility
    - Enables real-time content updates without rebuilds
    - Images served directly from PocketBase file endpoints
-   - Can be cached using Next.js caching strategies
+   - Can be cached using SvelteKit's built-in caching
    - Requires PocketBase to be running and accessible
    - Access rules enforce data isolation at the API level
 
@@ -252,31 +272,29 @@ POCKETBASE_ADMIN_PASSWORD=your_secure_password
    - Interactive maps with Leaflet
    - Node graph visualization with D3
    - Contact form validation
-   - Theme toggle
+   - Theme toggle using Svelte stores
 
 3. **Deployment Options**
-   - **Next.js on Vercel/Netlify**: With PocketBase hosted separately
-   - **Node.js server**: Run with `npm run start` after building
-   - **Cloudflare Workers**: Deploy to edge with `npm run workers:deploy`
-   - **Docker Compose**: For development or self-hosted production
+   - **Node.js server**: Build with `npm run build`, run with `npm start`
+   - **Docker**: Deploy with `docker compose up -d --build`
+   - **Any Node.js platform**: Deploy `build/` directory
 
 ### Build Process
-- **Next.js** handles build orchestration
-- **App Router** for modern React Server Components
+- **SvelteKit** handles build orchestration
+- **Vite** for fast development and optimized builds
 - **TypeScript** compilation
 - **Tailwind CSS** processing
 - Static file handling for 3D models
-- Image optimization with Next.js Image component
-- Client components bundled separately for optimal loading
+- Component pre-rendering where possible
+- Automatic code splitting
 
 ### Development Notes
 
-- Dev server runs on **port 3000** by default (Next.js)
+- Dev server runs on **port 3050** by default (SvelteKit/Vite)
 - PocketBase runs on **port 8090** by default
 - **Docker Compose** recommended for easy setup: `npm run docker:up`
 - Hot module replacement enabled
 - TypeScript strict mode enabled
-- Client components marked with `"use client"` directive
 - 3D models should be optimized .glb files
 - Images served directly from PocketBase
 - To update content: modify in PocketBase admin → changes appear immediately
@@ -294,38 +312,70 @@ POCKETBASE_ADMIN_PASSWORD=your_secure_password
 - Content visibility respects authentication state and person ownership
 - All data fetching functions handle multi-tenant permissions automatically
 
-### Component Patterns
+### SvelteKit Patterns
 
-**Server Components (default):**
-- Pages that fetch data at runtime
-- Can use async/await for data fetching
-- SEO-optimized content
+**Load Functions (+page.server.ts):**
+```typescript
+import { getProjectsByPerson } from '$lib/pocketbase';
 
-**Client Components (`"use client"`):**
-- Interactive components (search, filters, forms)
-- Components using React hooks
-- 3D viewers, maps, and visualizations
-- Theme toggles and dynamic UI
+export async function load({ locals }) {
+  const projects = await getProjectsByPerson(locals.personSlug);
+  return { projects };
+}
+```
+
+**Reactive Stores:**
+```typescript
+import { writable } from 'svelte/store';
+
+export const theme = writable<'light' | 'dark'>('dark');
+```
+
+**Reactive Declarations:**
+```svelte
+<script lang="ts">
+  let count = 0;
+  $: doubled = count * 2; // Automatically recomputes when count changes
+</script>
+```
+
+**Event Handlers:**
+```svelte
+<button on:click={() => count++}>
+  Clicked {count} times
+</button>
+```
 
 ### Performance Optimizations
 
 - **Runtime Data Fetching**: Data fetched on demand with optional caching
 - **Image Serving**: Images served directly from PocketBase with caching headers
-- **Code Splitting**: Automatic with Next.js App Router
+- **Code Splitting**: Automatic with SvelteKit
 - **Lazy Loading**: 3D models and heavy components load on demand
-- **Edge Ready**: Optional Cloudflare Workers deployment for global CDN
+- **SSR**: Server-side rendering for fast initial load
+- **PWA**: Progressive Web App with offline support
 - **Docker Compose**: Optimized development environment with health checks
 - **Multi-Tenant Efficiency**: Single database serves all sites with smart filtering
+
+### Migration from Next.js
+
+This project was migrated from Next.js to SvelteKit for:
+- **~40% less boilerplate code**: No "use client", useState, useEffect needed
+- **Simpler multi-tenancy**: `event.locals.personSlug` vs header manipulation
+- **Better PWA support**: @vite-pwa/sveltekit is actively maintained
+- **Improved DX**: Reactive by default, scoped styles, built-in stores
+
+The previous Next.js implementation is archived in `nextjs-archive/` for reference.
 
 ### Future Enhancements
 
 **Subdomain Routing:**
-Configure Next.js middleware to route subdomains to person-specific content:
+Configure hooks.server.ts to route subdomains to person-specific content:
 ```typescript
-// middleware.ts
+// hooks.server.ts
 const subdomain = hostname.split('.')[0];
 if (['chris', 'julia', 'theo', 'jack'].includes(subdomain)) {
-  request.headers.set('x-person-slug', subdomain);
+  event.locals.personSlug = subdomain;
 }
 ```
 

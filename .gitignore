@@ -4,16 +4,11 @@
 # Dependencies
 /node_modules/
 
-# Next.js
-/.next/
-/out/
+# SvelteKit
+/.svelte-kit/
+/build/
+.output/
 *.tsbuildinfo
-next-env.d.ts
-
-# OpenNext / Cloudflare Workers
-/.worker-next/
-/.wrangler/
-/wrangler.toml.local
 
 # Environment variables
 .env*.local
@@ -27,14 +22,11 @@ next-env.d.ts
 /pb_migrations/
 /.airtable-export/
 
-# Legacy directories (no longer used)
-/build/
-/dist/
-/.astro/
-/.react-router/
-/app.backup/
-/static/
-*.backup
-
 # Docker
 .dockerignore
+
+# Archived Next.js implementation
+/nextjs-archive/
+
+# Legacy SvelteKit subdirectory (now in root)
+/sveltekit/
