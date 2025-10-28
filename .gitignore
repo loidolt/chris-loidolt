@@ -30,3 +30,6 @@
 
 # Legacy SvelteKit subdirectory (now in root)
 /sveltekit/
+
+/temp-attachments
+/other
