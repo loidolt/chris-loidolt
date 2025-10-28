@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>Projects - {data.personSlug === 'loidolt' ? 'Loidolt Family' : data.personSlug}</title>
+  <title>Projects - {data.personSlug === 'loidolt' ? 'Loidolt Spaces' : data.personSlug}</title>
   <meta name="description" content="Browse design and engineering projects in 3D printing, woodworking, and software development." />
 </svelte:head>
 

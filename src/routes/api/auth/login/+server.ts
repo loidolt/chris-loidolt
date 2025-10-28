@@ -3,9 +3,30 @@ import { setAuthCookie } from '$lib/auth';
 import PocketBase from 'pocketbase';
 import type { RequestHandler } from './$types';
 import { ENV, debugLog } from '$lib/env';
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '$lib/rateLimit';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
+    // Check rate limit for authentication attempts
+    const clientIP = getClientIP(request);
+    const rateLimit = checkRateLimit(clientIP, RATE_LIMITS.AUTH);
+
+    if (!rateLimit.success) {
+      return json(
+        {
+          success: false,
+          error: RATE_LIMITS.AUTH.message,
+          retryAfter: rateLimit.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+          },
+        }
+      );
+    }
+
     const { email, password } = await request.json();
 
     if (!email || !password) {

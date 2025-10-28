@@ -28,6 +28,6 @@
   };
 </script>
 
-<div class="flex flex-col {gapClasses[gap]} {alignClasses[align]} {className}">
+<div class="flex flex-col w-full {gapClasses[gap]} {alignClasses[align]} {className}">
   <slot />
 </div>

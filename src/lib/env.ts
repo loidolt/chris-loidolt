@@ -55,8 +55,10 @@ export const ENV = {
   // Multi-tenant configuration
   BASE_DOMAIN: getOptionalEnvVar('BASE_DOMAIN', 'loidolt.space'),
 
-  // Contact form configuration (optional)
-  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  // Contact form configuration (optional - Mailgun)
+  MAILGUN_API_KEY: process.env.MAILGUN_API_KEY,
+  MAILGUN_DOMAIN: process.env.MAILGUN_DOMAIN,
+  MAILGUN_REGION: (process.env.MAILGUN_REGION || 'us') as 'us' | 'eu',
   CONTACT_EMAIL_TO: process.env.CONTACT_EMAIL_TO,
   CONTACT_EMAIL_FROM: process.env.CONTACT_EMAIL_FROM,
 

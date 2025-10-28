@@ -13,6 +13,7 @@
   export let spacing: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
   export let withBorder = false;
   export let withBackground = false;
+  export let fullWidth = false; // If true, doesn't add Container wrapper
   export let className = '';
 
   const spacingClasses = {
@@ -25,7 +26,7 @@
 
 <section
   {id}
-  class="{spacingClasses[spacing]} {className}"
+  class="w-full {spacingClasses[spacing]} {className}"
   style={withBorder ? 'border-top: 1px solid var(--border-color);' : ''}
   style:background-color={withBackground ? 'var(--bg-surface)' : ''}
 >

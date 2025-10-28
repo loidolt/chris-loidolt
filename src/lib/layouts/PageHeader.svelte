@@ -14,9 +14,9 @@
   export let breadcrumbs: Array<{ label: string; href?: string }> = [];
 </script>
 
-<header class="mb-8 pb-6" style="border-bottom: 1px solid var(--border-color);">
+<header class="w-full mb-8 pb-6" style="border-bottom: 1px solid var(--border-color);">
   {#if breadcrumbs.length > 0}
-    <nav class="mb-3 flex items-center gap-2 text-sm" style="color: var(--text-muted);">
+    <nav class="mb-3 flex items-center gap-2 text-sm flex-wrap" style="color: var(--text-muted);">
       {#each breadcrumbs as crumb, i}
         {#if i > 0}
           <span>/</span>
@@ -33,19 +33,19 @@
   {/if}
 
   <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-    <div>
-      <h1 class="text-3xl lg:text-4xl font-bold mb-2" style="color: var(--text-primary);">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 break-words" style="color: var(--text-primary);">
         {title}
       </h1>
       {#if subtitle}
-        <p class="text-base lg:text-lg" style="color: var(--text-secondary);">
+        <p class="text-sm sm:text-base lg:text-lg break-words" style="color: var(--text-secondary);">
           {subtitle}
         </p>
       {/if}
     </div>
 
     {#if $$slots.actions}
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-shrink-0">
         <slot name="actions" />
       </div>
     {/if}

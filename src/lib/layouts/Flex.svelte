@@ -58,7 +58,7 @@
 </script>
 
 <div
-  class="flex {directionClasses[direction]} {alignClasses[align]} {justifyClasses[justify]} {wrapClasses[wrap]} {gapClasses[gap]} {className}"
+  class="flex w-full {directionClasses[direction]} {alignClasses[align]} {justifyClasses[justify]} {wrapClasses[wrap]} {gapClasses[gap]} {className}"
 >
   <slot />
 </div>

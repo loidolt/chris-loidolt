@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import PocketBase from 'pocketbase';
 import { timingSafeEqual } from 'crypto';
 import { ENV } from '$lib/env';
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '$lib/rateLimit';
 
 /**
  * Constant-time password comparison to prevent timing attacks
@@ -30,6 +31,26 @@ function timingSafePasswordCompare(storedPassword: string, suppliedPassword: str
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
+    // Check rate limit
+    const clientIP = getClientIP(request);
+    const rateLimit = checkRateLimit(clientIP, RATE_LIMITS.UNLOCK);
+
+    if (!rateLimit.success) {
+      return json(
+        {
+          success: false,
+          error: RATE_LIMITS.UNLOCK.message,
+          retryAfter: rateLimit.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+          },
+        }
+      );
+    }
+
     const { locationId, password } = await request.json();
 
     if (!locationId || !password) {

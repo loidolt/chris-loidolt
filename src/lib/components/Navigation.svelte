@@ -1,11 +1,14 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { theme, toggleTheme } from '$lib/stores/theme';
+  import { Menu, X, Sun, Moon } from 'lucide-svelte';
+  import { fly, fade } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
 
-  // Reactive variable - updates automatically when $page changes!
-  $: pathname = $page.url.pathname;
+  // Reactive variable - updates automatically when $page changes
+  let pathname = $derived($page.url.pathname);
 
-  let isMobileMenuOpen = false;
+  let isMobileMenuOpen = $state(false);
 
   const navItems = [
     { href: '/', label: 'home' },
@@ -15,101 +18,123 @@
     { href: '/contact', label: 'contact' },
   ];
 
-  // Reactive function - recalculates when pathname changes
-  $: isActive = (href: string) => {
+  // Check if link is active
+  function isActive(href: string): boolean {
     if (href === '/') {
       return pathname === href;
     }
     return pathname.startsWith(href);
-  };
+  }
 
   // Auto-close mobile menu when route changes
-  $: if (pathname) {
-    isMobileMenuOpen = false;
+  $effect(() => {
+    if (pathname) {
+      isMobileMenuOpen = false;
+    }
+  });
+
+  // Close menu on Escape key
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && isMobileMenuOpen) {
+      isMobileMenuOpen = false;
+    }
   }
 </script>
 
-<header class="sticky top-0" style="z-index: 9999; background-color: var(--bg-surface)">
+<svelte:window on:keydown={handleKeydown} />
+
+<header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
   <!-- Desktop Navigation -->
-  <nav
-    class="hidden md:flex items-center"
-    style="border-bottom: 1px solid var(--border-color); background-color: var(--bg-surface)"
-  >
-    {#each navItems as item, index}
-      <a
-        href={item.href}
-        class="px-6 py-3 text-sm relative transition-all hover:opacity-70"
-        style="
-          color: var(--text-primary);
-          border-right: {index < navItems.length - 1 ? '1px solid var(--border-color)' : 'none'};
-          background-color: {isActive(item.href) ? 'var(--bg-primary)' : 'var(--bg-surface)'};
-        "
-      >
-        {item.label}
-      </a>
-    {/each}
-    <div class="ml-auto px-4">
-      <button on:click={toggleTheme} class="text-lg hover:opacity-70 transition-opacity">
-        {$theme === 'dark' ? '☀️' : '🌙'}
-      </button>
+  <nav class="hidden md:flex items-center h-14" aria-label="Main navigation">
+    <div class="flex items-center flex-1">
+      {#each navItems as item, index}
+        <a
+          href={item.href}
+          class="relative px-6 h-14 flex items-center text-sm font-medium transition-colors hover:text-foreground/80 {isActive(item.href) ? 'text-foreground' : 'text-foreground/60'}"
+          class:border-r={index < navItems.length - 1}
+          class:border-border={index < navItems.length - 1}
+          class:bg-accent={isActive(item.href)}
+        >
+          {item.label}
+          {#if isActive(item.href)}
+            <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" transition:fade={{ duration: 150 }}></span>
+          {/if}
+        </a>
+      {/each}
     </div>
+
+    <!-- Theme Toggle -->
+    <button
+      on:click={toggleTheme}
+      class="h-14 px-4 inline-flex items-center justify-center text-sm font-medium transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      aria-label="Toggle theme"
+      type="button"
+    >
+      {#if $theme === 'dark'}
+        <Sun class="h-5 w-5" />
+      {:else}
+        <Moon class="h-5 w-5" />
+      {/if}
+    </button>
   </nav>
 
   <!-- Mobile Navigation -->
-  <nav
-    class="md:hidden flex items-center justify-between"
-    style="border-bottom: 1px solid var(--border-color); background-color: var(--bg-surface)"
-  >
+  <nav class="md:hidden flex items-center justify-between h-14 px-4" aria-label="Main navigation">
     <!-- Mobile Menu Button -->
     <button
       on:click={() => (isMobileMenuOpen = !isMobileMenuOpen)}
-      class="px-4 py-4 text-sm transition-all hover:opacity-70"
-      style="
-        color: var(--text-primary);
-        background-color: var(--bg-surface);
-        min-width: 60px;
-        min-height: 52px;
-      "
+      class="inline-flex items-center justify-center h-10 w-10 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
       aria-expanded={isMobileMenuOpen}
+      type="button"
     >
-      {isMobileMenuOpen ? '✕' : '☰'}
+      {#if isMobileMenuOpen}
+        <X class="h-5 w-5" />
+      {:else}
+        <Menu class="h-5 w-5" />
+      {/if}
     </button>
 
     <!-- Current Page Indicator -->
-    <div class="flex-1 px-4 text-sm" style="color: var(--text-primary)">
+    <div class="flex-1 px-4 text-sm font-medium text-foreground">
       {navItems.find(item => isActive(item.href))?.label || 'home'}
     </div>
 
     <!-- Theme Toggle -->
-    <div class="px-4">
-      <button on:click={toggleTheme} class="text-lg hover:opacity-70 transition-opacity">
-        {$theme === 'dark' ? '☀️' : '🌙'}
-      </button>
-    </div>
+    <button
+      on:click={toggleTheme}
+      class="inline-flex items-center justify-center h-10 w-10 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      aria-label="Toggle theme"
+      type="button"
+    >
+      {#if $theme === 'dark'}
+        <Sun class="h-5 w-5" />
+      {:else}
+        <Moon class="h-5 w-5" />
+      {/if}
+    </button>
   </nav>
 
-  <!-- Mobile Menu Dropdown -->
+  <!-- Mobile Menu Overlay & Dropdown -->
   {#if isMobileMenuOpen}
+    <!-- Backdrop -->
+    <button
+      class="md:hidden fixed inset-0 z-40 bg-black/50"
+      on:click={() => (isMobileMenuOpen = false)}
+      transition:fade={{ duration: 200 }}
+      aria-label="Close menu"
+      type="button"
+    ></button>
+
+    <!-- Menu Panel -->
     <div
-      class="md:hidden absolute top-full left-0 right-0"
-      style="
-        background-color: var(--bg-surface);
-        border-bottom: 1px solid var(--border-color);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        z-index: 9999;
-      "
+      class="md:hidden fixed top-14 left-0 right-0 z-50 border-b border-border bg-popover shadow-lg opacity-100"
+      transition:fly={{ y: -20, duration: 200, easing: quintOut }}
     >
       {#each navItems as item}
         <a
           href={item.href}
-          class="block px-6 py-4 text-sm transition-all hover:opacity-70"
-          style="
-            color: var(--text-primary);
-            border-top: 1px solid var(--border-color);
-            background-color: {isActive(item.href) ? 'var(--bg-primary)' : 'var(--bg-surface)'};
-            min-height: 52px;
-          "
+          class="flex items-center px-6 h-14 text-sm font-medium transition-colors hover:bg-accent border-t border-border {isActive(item.href) ? 'bg-accent text-foreground' : 'text-foreground/60'}"
         >
           {item.label}
         </a>
@@ -117,12 +142,3 @@
     </div>
   {/if}
 </header>
-
-<style>
-  /* No global styles pollution - everything is scoped! */
-  button {
-    cursor: pointer;
-    border: none;
-    background: none;
-  }
-</style>

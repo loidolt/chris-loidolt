@@ -22,18 +22,18 @@
 </script>
 
 <svelte:head>
-  <title>{data.personSlug === 'family' ? 'Loidolt Family' : data.personSlug.charAt(0).toUpperCase() + data.personSlug.slice(1) + ' Loidolt'} - Portfolio</title>
+  <title>{data.personSlug === 'family' ? 'Loidolt Spaces' : data.personSlug.charAt(0).toUpperCase() + data.personSlug.slice(1) + ' Loidolt'} - Portfolio</title>
   <meta name="description" content="Multi-tenant family portfolio system" />
 </svelte:head>
 
-<div class="min-h-screen flex flex-col" style="background-color: var(--bg-primary)">
+<div class="min-h-screen flex flex-col bg-background">
   <Navigation />
 
   <main class="flex-1">
     <slot />
   </main>
 
-  <footer class="py-8 px-4 text-center text-sm" style="color: var(--text-muted); border-top: 1px solid var(--border-color)">
+  <footer class="py-8 px-4 text-center text-sm text-muted-foreground border-t">
     <p>Built with SvelteKit & PocketBase</p>
     <p class="mt-2">Person: {data.personSlug}</p>
   </footer>

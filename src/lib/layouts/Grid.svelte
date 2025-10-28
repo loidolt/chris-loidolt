@@ -43,7 +43,7 @@
 </script>
 
 <div
-  class="grid {colsClass} {gapClasses[gap]} {className}"
+  class="grid {colsClass} {gapClasses[gap]} w-full {className}"
   style={minColWidth ? `grid-template-columns: repeat(auto-fit, minmax(${minColWidth}, 1fr));` : ''}
 >
   <slot />

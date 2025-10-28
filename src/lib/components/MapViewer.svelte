@@ -2,8 +2,23 @@
   import { onMount, onDestroy } from 'svelte';
   import { browser } from '$app/environment';
   import type { LocationPublic } from '$lib/pocketbase';
-  import { filteredLocations, allLocations } from '$lib/stores/locationFilters';
+  import {
+    filteredLocations,
+    allLocations,
+    searchQuery,
+    selectedCategories,
+    privacyFilter,
+    hasImageFilter,
+    categories,
+    activeFilterCount,
+    clearAllFilters,
+  } from '$lib/stores/locationFilters';
+  import DataPanel, { type PanelTab } from './DataPanel.svelte';
+  import SearchFilter, { type FilterSection } from './SearchFilter.svelte';
   import PasswordModal from './PasswordModal.svelte';
+  import * as Card from '$lib/components/ui/card';
+  import { Button } from '$lib/components/ui/button';
+  import { Badge } from '$lib/components/ui/badge';
 
   export let locations: LocationPublic[];
   export let initialCenter: [number, number] = [39.5, -98.35]; // Center of US
@@ -19,12 +34,89 @@
   let selectedLocation: LocationPublic | null = null;
   let passwordError = '';
   let unlockedLocations = new Set<string>();
-  let isPanelOpen = false;
 
   // Set all locations for filtering
   $: if (browser && locations) {
     allLocations.set(locations);
   }
+
+  // Convert store values to SearchFilter format
+  let localSearchQuery = '';
+  let localSelectedFilters: Record<string, any> = {
+    categories: new Set<string>(),
+    privacy: 'all',
+    hasImage: null,
+  };
+
+  // Sync local state with stores
+  $: {
+    searchQuery.set(localSearchQuery);
+  }
+
+  $: {
+    selectedCategories.set(localSelectedFilters.categories || new Set());
+    privacyFilter.set(localSelectedFilters.privacy || 'all');
+    hasImageFilter.set(localSelectedFilters.hasImage ?? null);
+  }
+
+  // Define filter sections for SearchFilter component
+  $: filterSections = [
+    {
+      id: 'categories',
+      label: 'Categories',
+      type: 'multi',
+      options: $categories.map(cat => ({
+        value: cat,
+        label: cat,
+        count: locations.filter(loc =>
+          (loc.categories && loc.categories.includes(cat)) || loc.category === cat
+        ).length,
+      })),
+    },
+    {
+      id: 'privacy',
+      label: 'Privacy',
+      type: 'toggle',
+      options: [
+        { value: 'all', label: 'All' },
+        { value: 'public', label: 'Public' },
+        { value: 'private', label: 'Private' },
+      ],
+    },
+    {
+      id: 'hasImage',
+      label: 'Image',
+      type: 'toggle',
+      options: [
+        { value: null, label: 'All' },
+        { value: true, label: 'With Image' },
+        { value: false, label: 'No Image' },
+      ],
+    },
+  ] as FilterSection[];
+
+  // Define tabs for the panel
+  const tabs: PanelTab[] = [
+    {
+      id: 'filters',
+      label: 'Filters',
+    },
+    {
+      id: 'info',
+      label: 'Info',
+      disabled: !selectedLocation,
+    },
+  ];
+
+  const handleClearFilters = () => {
+    clearAllFilters();
+    localSearchQuery = '';
+    localSelectedFilters = {
+      categories: new Set(),
+      privacy: 'all',
+      hasImage: null,
+    };
+  };
 
   onMount(async () => {
     if (!browser) return;
@@ -103,9 +195,8 @@
           showPasswordModal = true;
           passwordError = '';
         } else {
-          // Show location details
+          // Show location details in info tab
           selectedLocation = location;
-          isPanelOpen = true;
         }
       });
 
@@ -153,9 +244,8 @@
         unlockedLocations.add(selectedLocation.id);
         unlockedLocations = unlockedLocations; // Trigger reactivity
 
-        // Close modal and open panel
+        // Close modal
         showPasswordModal = false;
-        isPanelOpen = true;
         passwordError = '';
 
         // Update markers to show unlocked location
@@ -175,11 +265,6 @@
     passwordError = '';
   }
 
-  function handleClosePanel() {
-    isPanelOpen = false;
-    selectedLocation = null;
-  }
-
   onDestroy(() => {
     if (map) {
       map.remove();
@@ -191,6 +276,82 @@
   <!-- Map Container -->
   <div bind:this={mapContainer} class="h-full w-full"></div>
 
+  <!-- Data Panel with Filters and Info -->
+  <DataPanel
+    {tabs}
+    defaultTab="filters"
+    position="left"
+    storageKey="map-viewer"
+  >
+    <div slot="filters">
+      <SearchFilter
+        bind:searchQuery={localSearchQuery}
+        bind:selectedFilters={localSelectedFilters}
+        {filterSections}
+        activeFilterCount={$activeFilterCount}
+        resultCount={$filteredLocations.length}
+        searchPlaceholder="Search locations..."
+        onClearAll={handleClearFilters}
+      />
+    </div>
+
+    <div slot="info">
+      {#if selectedLocation}
+        <Card.Root class="border-0 shadow-none">
+          <Card.Content class="p-0 space-y-4">
+            <div>
+              <Card.Title class="text-base mb-2">{selectedLocation.name}</Card.Title>
+              {#if selectedLocation.privacy === 'Private'}
+                <Badge variant="secondary" class="text-xs">Private</Badge>
+              {/if}
+            </div>
+
+            {#if selectedLocation.image}
+              <img
+                src={selectedLocation.image}
+                alt={selectedLocation.name}
+                class="w-full h-auto rounded-md"
+              />
+            {/if}
+
+            {#if selectedLocation.description}
+              <p class="text-sm text-muted-foreground">
+                {selectedLocation.description}
+              </p>
+            {/if}
+
+            {#if selectedLocation.category || selectedLocation.categories}
+              <div class="text-xs text-muted-foreground">
+                <strong>Categories:</strong> {selectedLocation.categories?.join(', ') || selectedLocation.category || 'None'}
+              </div>
+            {/if}
+
+            {#if selectedLocation.latitude && selectedLocation.longitude}
+              <div class="text-xs font-mono text-muted-foreground">
+                <strong>Coordinates:</strong> {selectedLocation.latitude.toFixed(4)}, {selectedLocation.longitude.toFixed(4)}
+              </div>
+            {/if}
+
+            {#if selectedLocation.url}
+              <Button
+                variant="link"
+                size="sm"
+                class="p-0 h-auto text-sm"
+                onclick={() => selectedLocation && window.open(selectedLocation.url, '_blank')}
+              >
+                View more info →
+              </Button>
+            {/if}
+          </Card.Content>
+        </Card.Root>
+      {:else}
+        <div class="text-sm text-muted-foreground text-center py-8">
+          Click on a marker to view location details
+        </div>
+      {/if}
+    </div>
+  </DataPanel>
+
   <!-- Password Modal -->
   {#if showPasswordModal && selectedLocation}
     <PasswordModal
@@ -199,69 +360,6 @@
       onCancel={handlePasswordCancel}
       error={passwordError}
     />
-  {/if}
-
-  <!-- Location Info Panel -->
-  {#if isPanelOpen && selectedLocation}
-    <div
-      class="absolute top-4 right-4 z-[1000] max-w-md border-2 p-4 shadow-lg"
-      style="background-color: var(--bg-surface); border-color: var(--border-color); max-height: calc(100vh - 8rem); overflow-y: auto;"
-    >
-      <!-- Close button -->
-      <button
-        on:click={handleClosePanel}
-        class="absolute top-2 right-2 text-xl hover:opacity-70 transition-opacity"
-        style="color: var(--text-primary)"
-        aria-label="Close panel"
-      >
-        [×]
-      </button>
-
-      <!-- Content -->
-      <div class="space-y-4 pr-6">
-        <h3 class="text-sm font-bold" style="color: var(--link-color)">
-          {selectedLocation.name}
-        </h3>
-
-        {#if selectedLocation.image}
-          <img
-            src={selectedLocation.image}
-            alt={selectedLocation.name}
-            class="w-full h-auto"
-          />
-        {/if}
-
-        {#if selectedLocation.description}
-          <p class="text-sm" style="color: var(--text-muted)">
-            {selectedLocation.description}
-          </p>
-        {/if}
-
-        {#if selectedLocation.category || selectedLocation.categories}
-          <div class="text-xs" style="color: var(--accent-secondary)">
-            Categories: {selectedLocation.categories?.join(', ') || selectedLocation.category || 'None'}
-          </div>
-        {/if}
-
-        {#if selectedLocation.latitude && selectedLocation.longitude}
-          <div class="text-xs font-mono" style="color: var(--text-muted)">
-            Coordinates: {selectedLocation.latitude.toFixed(4)}, {selectedLocation.longitude.toFixed(4)}
-          </div>
-        {/if}
-
-        {#if selectedLocation.url}
-          <a
-            href={selectedLocation.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-sm hover:opacity-70 transition-opacity inline-block"
-            style="color: var(--link-color)"
-          >
-            [View more info →]
-          </a>
-        {/if}
-      </div>
-    </div>
   {/if}
 </div>
 

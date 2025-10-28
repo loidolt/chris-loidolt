@@ -1,17 +1,15 @@
 <script lang="ts">
-  import { derived } from 'svelte/store';
-  import { writable } from 'svelte/store';
   import Fuse from 'fuse.js';
   import type { Project } from '$lib/pocketbase';
-  import OverlayPanel, { type PanelTab } from './OverlayPanel.svelte';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Badge } from '$lib/components/ui/badge';
+  import DataPanel, { type PanelTab } from './DataPanel.svelte';
+  import SearchFilter, { type FilterSection } from './SearchFilter.svelte';
 
   export let projects: Project[];
 
   let searchQuery = '';
-  let selectedCategory: string | null = null;
+  let selectedFilters: Record<string, any> = {
+    category: null,
+  };
 
   // Initialize Fuse.js for fuzzy searching
   $: fuse = new Fuse(projects, {
@@ -29,13 +27,13 @@
     }
 
     // Apply category filter
-    if (selectedCategory) {
+    if (selectedFilters.category) {
       filtered = filtered.filter((p) => {
         // Check both categories array and single category for backward compatibility
-        if (p.categories && p.categories.includes(selectedCategory)) {
+        if (p.categories && p.categories.includes(selectedFilters.category)) {
           return true;
         }
-        return p.category === selectedCategory;
+        return p.category === selectedFilters.category;
       });
     }
 
@@ -59,110 +57,65 @@
   })();
 
   // Count active filters
-  $: activeFilterCount = (searchQuery ? 1 : 0) + (selectedCategory !== null ? 1 : 0);
+  $: activeFilterCount = (searchQuery ? 1 : 0) + (selectedFilters.category ? 1 : 0);
 
   // Clear all filters
   const clearFilters = () => {
     searchQuery = '';
-    selectedCategory = null;
+    selectedFilters = { category: null };
   };
 
-  // Define tabs for the left panel
-  $: tabs = [
+  // Define filter sections for SearchFilter component
+  $: filterSections = [
+    {
+      id: 'category',
+      label: 'Category',
+      type: 'single',
+      options: categories.map(cat => ({
+        value: cat,
+        label: cat,
+        count: projects.filter(p =>
+          (p.categories && p.categories.includes(cat)) || p.category === cat
+        ).length,
+      })),
+    },
+  ] as FilterSection[];
+
+  // Define tabs for the panel
+  const tabs: PanelTab[] = [
     {
       id: 'search',
       label: 'Search',
-      content: SearchFilterContent,
     },
   ];
-
-  // Track if clear button should be shown
-  let showClearButton = false;
-  $: showClearButton = activeFilterCount > 0;
 </script>
 
-<!-- Search/Filter Content Component -->
-<script lang="ts" context="module">
-  export const SearchFilterContent = null; // Will be slot content
-</script>
-
-<!-- Overlay Panel -->
-<OverlayPanel
+<!-- Data Panel -->
+<DataPanel
   {tabs}
   defaultTab="search"
   position="left"
   storageKey="projects-grid"
 >
-  <!-- Custom Header Slot -->
-  <div slot="header" class="px-3 py-1.5 text-xs flex items-center justify-between gap-2">
-    <div class="flex items-center gap-2">
-      <span style="color: var(--text-muted)">
-        {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
-      </span>
-      {#if activeFilterCount > 0}
-        <Badge variant="secondary" class="text-xs">
-          {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
-        </Badge>
-      {/if}
-    </div>
-    {#if showClearButton}
-      <Button
-        onclick={clearFilters}
-        variant="destructive"
-        size="sm"
-        class="text-xs"
-      >
-        Clear all
-      </Button>
-    {/if}
+  <div slot="search">
+    <SearchFilter
+      bind:searchQuery
+      bind:selectedFilters
+      {filterSections}
+      {activeFilterCount}
+      resultCount={filteredProjects.length}
+      searchPlaceholder="Type to search projects..."
+      onClearAll={clearFilters}
+    />
   </div>
-
-  <div slot="search" style="padding: 12px">
-    <!-- Search Input -->
-    <div style="margin-bottom: 16px">
-      <label class="block text-sm mb-3" style="color: var(--accent-secondary)">
-        Search
-      </label>
-      <Input
-        type="text"
-        bind:value={searchQuery}
-        placeholder="Type to search projects..."
-      />
-    </div>
-
-    <!-- Category Filter -->
-    <div>
-      <div class="text-sm mb-3" style="color: var(--accent-secondary)">
-        Filter by category
-      </div>
-      <div class="flex flex-wrap gap-2">
-        <Button
-          onclick={() => selectedCategory = null}
-          variant={selectedCategory === null ? 'default' : 'outline'}
-          size="sm"
-        >
-          [all]
-        </Button>
-        {#each categories as cat}
-          <Button
-            onclick={() => selectedCategory = cat}
-            variant={selectedCategory === cat ? 'default' : 'outline'}
-            size="sm"
-          >
-            [{cat}]
-          </Button>
-        {/each}
-      </div>
-    </div>
-  </div>
-</OverlayPanel>
+</DataPanel>
 
 <!-- Main Content - Projects Grid -->
 <div class="py-6 md:py-8 px-4 md:px-6 max-w-6xl mx-auto">
   {#if filteredProjects.length === 0}
     <div class="py-12 text-center">
-      <div class="text-sm mb-2" style="color: var(--text-muted)">No results found</div>
-      <p class="text-sm" style="color: var(--text-muted)">
+      <div class="text-sm mb-2 text-muted-foreground">No results found</div>
+      <p class="text-sm text-muted-foreground">
         Try adjusting your search query or filters
       </p>
     </div>
@@ -176,7 +129,7 @@
         >
           <!-- Project Image or Placeholder -->
           {#if project.featuredImage}
-            <div class="mb-3 aspect-video overflow-hidden" style="background-color: var(--bg-surface)">
+            <div class="mb-3 aspect-video overflow-hidden bg-muted rounded-md">
               <img
                 src={project.featuredImage}
                 alt={project.title}
@@ -184,8 +137,8 @@
               />
             </div>
           {:else}
-            <div class="mb-3 aspect-video flex items-center justify-center" style="background-color: var(--bg-surface)">
-              <div class="text-6xl opacity-30" style="color: var(--text-muted)">
+            <div class="mb-3 aspect-video flex items-center justify-center bg-muted rounded-md">
+              <div class="text-6xl opacity-30 text-muted-foreground">
                 {project.modelFile ? '🔲' : '📁'}
               </div>
             </div>
@@ -194,32 +147,32 @@
           <!-- Project Info -->
           <div class="space-y-2">
             <div class="flex items-start justify-between gap-2">
-              <h3 class="text-base md:text-sm transition-opacity group-hover:opacity-70" style="color: var(--text-primary)">
+              <h3 class="text-base md:text-sm transition-opacity group-hover:opacity-70 font-medium">
                 {project.title}
               </h3>
               {#if project.categories && project.categories.length > 0}
-                <div class="flex flex-wrap gap-1 text-xs whitespace-nowrap" style="color: var(--text-muted)">
+                <div class="flex flex-wrap gap-1 text-xs whitespace-nowrap text-muted-foreground">
                   {#each project.categories.slice(0, 2) as cat}
-                    <span>[{cat}]</span>
+                    <span class="bg-muted px-1.5 py-0.5 rounded">{cat}</span>
                   {/each}
                 </div>
               {/if}
             </div>
 
-            <p class="text-sm line-clamp-2" style="color: var(--text-muted)">
+            <p class="text-sm line-clamp-2 text-muted-foreground">
               {project.description}
             </p>
 
             {#if project.tags && project.tags.length > 0}
               <div class="flex flex-wrap gap-2 text-xs">
                 {#each project.tags.slice(0, 3) as tag}
-                  <span style="color: var(--text-muted)">#{tag}</span>
+                  <span class="text-muted-foreground">#{tag}</span>
                 {/each}
               </div>
             {/if}
 
             {#if project.modelFile}
-              <div class="text-xs" style="color: var(--accent-primary)">
+              <div class="text-xs text-primary font-medium">
                 3D model available
               </div>
             {/if}

@@ -7,12 +7,14 @@
 
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
-  import { pwaInfo } from 'virtual:pwa-info';
 
-  let deferredPrompt: any = null;
-  let showInstallButton = false;
+  interface BeforeInstallPromptEvent extends Event {
+    prompt(): Promise<void>;
+    userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  }
 
-  $: webManifest = pwaInfo ? pwaInfo.webManifest.linkTag : '';
+  let deferredPrompt: BeforeInstallPromptEvent | null = null;
+  let showInstallButton = $state(false);
 
   onMount(() => {
     if (!browser) return;
@@ -21,7 +23,7 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       console.log('📱 Install prompt available');
       e.preventDefault();
-      deferredPrompt = e;
+      deferredPrompt = e as BeforeInstallPromptEvent;
       showInstallButton = true;
     });
 
@@ -31,21 +33,34 @@
       showInstallButton = false;
       deferredPrompt = null;
     });
+
+    // Check if running as PWA
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('🎉 Running as PWA');
+    }
   });
 
   async function installPWA() {
     if (!deferredPrompt) return;
 
-    // Show the install prompt
-    deferredPrompt.prompt();
+    try {
+      // Show the install prompt
+      await deferredPrompt.prompt();
 
-    // Wait for the user's response
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response: ${outcome}`);
+      // Wait for the user's response
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response: ${outcome}`);
 
-    // Clear the prompt
-    deferredPrompt = null;
-    showInstallButton = false;
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      }
+    } catch (error) {
+      console.error('Error showing install prompt:', error);
+    } finally {
+      // Clear the prompt
+      deferredPrompt = null;
+      showInstallButton = false;
+    }
   }
 </script>
 
