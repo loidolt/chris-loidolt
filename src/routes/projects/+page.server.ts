@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
   let projects: Project[] = [];
   try {
-    if (personSlug && personSlug !== 'loidolt') {
+    if (personSlug && personSlug !== 'family') {
       // Person-specific site: get only their projects (with visibility filtering)
       projects = await getProjectsByPerson(personSlug, { authToken });
     } else {
@@ -16,7 +16,10 @@ export const load: PageServerLoad = async ({ locals }) => {
       projects = allProjects.filter(p => p.scope === 'Family');
     }
   } catch (error) {
-    console.error('Error loading projects:', error);
+    console.error('[projects/+page.server.ts] Error loading projects:', error);
+    if (error instanceof Error) {
+      console.error(`  Message: ${error.message}`);
+    }
   }
 
   return {

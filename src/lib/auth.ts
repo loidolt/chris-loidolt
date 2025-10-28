@@ -15,7 +15,7 @@ const COOKIE_OPTIONS = {
   path: '/',
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  sameSite: 'strict' as const, // Changed from 'lax' to 'strict' for better CSRF protection
   maxAge: 60 * 60 * 24 * 7, // 7 days
 };
 
@@ -70,6 +70,13 @@ export async function getAuthUser(cookies: Cookies, pbUrl: string): Promise<Auth
 
     const model = pb.authStore.model;
 
+    // Ensure model exists (should always be present after successful auth)
+    if (!model) {
+      console.error('Auth model is null after successful refresh');
+      cookies.delete(COOKIE_NAME, { path: '/' });
+      return null;
+    }
+
     // Find associated person record if it exists
     let personId: string | undefined;
     try {
@@ -87,7 +94,7 @@ export async function getAuthUser(cookies: Cookies, pbUrl: string): Promise<Auth
       id: model.id,
       email: model.email,
       name: model.name,
-      avatar: model.avatar ? pb.files.getUrl(model, model.avatar) : undefined,
+      avatar: model.avatar ? pb.files.getUrl(model as any, model.avatar) : undefined,
       token: authData.token,
       personId,
     };

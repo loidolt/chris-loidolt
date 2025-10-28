@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { setAuthCookie } from '$lib/auth';
 import PocketBase from 'pocketbase';
 import type { RequestHandler } from './$types';
+import { ENV, debugLog } from '$lib/env';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
@@ -14,8 +15,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       );
     }
 
-    const pbUrl = process.env.POCKETBASE_URL || 'http://127.0.0.1:8090';
-    const pb = new PocketBase(pbUrl);
+    const pb = new PocketBase(ENV.POCKETBASE_URL);
 
     // Authenticate with PocketBase
     const authData = await pb.collection('users').authWithPassword(email, password);
@@ -23,7 +23,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     // Set secure HTTP-only cookie
     setAuthCookie(cookies, authData.token, authData.record);
 
-    console.log(`[Auth] User logged in: ${authData.record.email}`);
+    debugLog(`User logged in: ${authData.record.email}`);
 
     return json({
       success: true,

@@ -103,16 +103,8 @@ export interface Location {
 // Client-safe location type (excludes password)
 export type LocationPublic = Omit<Location, 'password'>;
 
-// Environment variable validation
-// Works in both Next.js and SvelteKit
-function getEnvVar(key: string): string {
-  // In Node.js/server environment
-  if (typeof process !== 'undefined' && process.env) {
-    const value = process.env[key];
-    if (value) return value;
-  }
-  throw new Error(`Missing environment variable: ${key} - Make sure .env file exists with ${key} set`);
-}
+// Import centralized environment configuration
+import { ENV, debugLog } from './env';
 
 // Initialize PocketBase client
 let pbInstance: PocketBase | null = null;
@@ -131,8 +123,7 @@ let pbInstance: PocketBase | null = null;
  */
 function getPocketBase(authToken?: string): PocketBase {
   if (!pbInstance) {
-    const url = getEnvVar("POCKETBASE_URL");
-    pbInstance = new PocketBase(url);
+    pbInstance = new PocketBase(ENV.POCKETBASE_URL);
 
     // Disable auto cancellation for server-side requests
     pbInstance.autoCancellation(false);
@@ -160,7 +151,8 @@ interface CacheEntry<T> {
 
 // In-memory cache with TTL (Time To Live)
 const cache = new Map<string, CacheEntry<any>>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+// Use centralized cache TTL configuration
+const CACHE_TTL = ENV.CACHE_TTL_MS;
 
 // Track pending requests to prevent duplicate calls
 const pendingRequests = new Map<string, Promise<any>>();
@@ -225,12 +217,12 @@ async function cachedFetch<T>(
   if (!options.skipCache) {
     const cached = getFromCache<T>(cacheKey);
     if (cached !== null) {
-      console.log(`[Cache HIT] ${cacheKey}`);
+      debugLog(`[Cache HIT] ${cacheKey}`);
       return cached;
     }
   }
 
-  console.log(`[Cache MISS] ${cacheKey}`);
+  debugLog(`[Cache MISS] ${cacheKey}`);
 
   // Use request deduplication for the fetch
   const data = await withRequestDeduplication(cacheKey, fetcher);
@@ -246,7 +238,7 @@ async function cachedFetch<T>(
  */
 export function clearCache(): void {
   cache.clear();
-  console.log('[Cache] Cleared all entries');
+  debugLog('[Cache] Cleared all entries');
 }
 
 /**
@@ -263,11 +255,11 @@ export function clearCacheKey(keyOrPattern: string): void {
       }
     });
     keysToDelete.forEach(key => cache.delete(key));
-    console.log(`[Cache] Cleared ${keysToDelete.length} entries matching "${keyOrPattern}"`);
+    debugLog(`[Cache] Cleared ${keysToDelete.length} entries matching "${keyOrPattern}"`);
   } else {
     // Exact key match
     cache.delete(keyOrPattern);
-    console.log(`[Cache] Cleared "${keyOrPattern}"`);
+    debugLog(`[Cache] Cleared "${keyOrPattern}"`);
   }
 }
 
@@ -326,7 +318,7 @@ export async function getAllProjects(options: { skipCache?: boolean; authToken?:
     try {
       const pb = getPocketBase(options.authToken);
 
-      console.log('Fetching projects from PocketBase...');
+      debugLog('Fetching projects from PocketBase...');
 
       const records = await pb.collection('projects').getFullList({
         sort: '-date',
@@ -334,7 +326,7 @@ export async function getAllProjects(options: { skipCache?: boolean; authToken?:
         // No manual filtering needed - it's handled at the database level
       });
 
-      console.log(`Found ${records.length} projects in PocketBase`);
+      debugLog(`Found ${records.length} projects in PocketBase`);
 
       const projects = records.map((record) => recordToProject(record, pb));
 
@@ -692,6 +684,38 @@ export async function getQualificationsByPerson(personSlug: string): Promise<Qua
     }));
   } catch (error) {
     console.error(`Error fetching qualifications for person "${personSlug}":`, error);
+    return [];
+  }
+}
+
+// Fetch services for a specific person
+export async function getServicesByPerson(personSlug: string): Promise<Service[]> {
+  try {
+    const pb = getPocketBase();
+
+    // First get the person by slug
+    const person = await getPersonBySlug(personSlug);
+    if (!person) {
+      console.error(`Person with slug "${personSlug}" not found`);
+      return [];
+    }
+
+    const records = await pb.collection('services').getFullList({
+      filter: `person.id ?= "${person.id}"`,
+      sort: 'title',
+    });
+
+    return records.map((record) => ({
+      id: record.id,
+      title: String(record.title || ""),
+      description: String(record.description || ""),
+      icon: record.icon ? String(record.icon) : undefined,
+      person: record.person || [],
+      scope: record.scope as 'Family' | 'Personal',
+      visibility: record.visibility as 'Public' | 'Family' | 'Private',
+    }));
+  } catch (error) {
+    console.error(`Error fetching services for person "${personSlug}":`, error);
     return [];
   }
 }

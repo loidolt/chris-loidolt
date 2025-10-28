@@ -44,22 +44,30 @@ export function fuzzCoordinates(lat: number, lng: number, locationId: string): [
     }
 
     // Fallback for server-side rendering or browsers without crypto API
-    // Use a different method that's still unpredictable but consistent per session
-    const sessionSeed = Date.now() + Math.random();
-    const hash = (seed: number) => {
+    // Use deterministic hash-based offset that doesn't require randomness
+    // This ensures consistent offsets per location ID without using weak RNG
+    const hash = (str: string, seed = 0): number => {
       let h = seed;
-      for (let i = 0; i < locationId.length; i++) {
-        h = ((h << 5) - h) + locationId.charCodeAt(i);
+      for (let i = 0; i < str.length; i++) {
+        h = ((h << 5) - h) + str.charCodeAt(i);
         h = h & h; // Convert to 32-bit integer
       }
       return Math.abs(h);
     };
 
-    const angle = (hash(sessionSeed) % 360) * (Math.PI / 180);
-    const distance = ((hash(sessionSeed * 2) / 0x7FFFFFFF) * radiusInDegrees);
+    // Generate deterministic but unpredictable offsets based on location ID
+    // Use different seeds for angle and distance to get different values
+    const angle = ((hash(locationId, 12345) % 360) * (Math.PI / 180));
+    const distance = ((hash(locationId, 67890) % 10000) / 10000) * radiusInDegrees;
 
     const latOffset = Math.cos(angle) * distance;
     const lngOffset = Math.sin(angle) * distance;
+
+    // Store the deterministic offset for consistency
+    offsetMap[locationId] = { latOffset, lngOffset };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(offsetMap));
+    }
 
     return [lat + latOffset, lng + lngOffset];
   } catch (error) {

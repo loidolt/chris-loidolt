@@ -22,34 +22,35 @@ services:
     environment:
       - TZ=America/Chicago
 
-  # Next.js Development Server
-  nextjs:
+  # SvelteKit Development Server
+  sveltekit:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: nextjs-dev
+    container_name: sveltekit-dev
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3050:3050"
     volumes:
       # Mount source code for hot reload
       - .:/app
       - /app/node_modules
-      - /app/.next
+      - /app/.svelte-kit
+      - /app/build
     environment:
       # PocketBase connection (using Docker service name)
       - POCKETBASE_URL=http://pocketbase:8090
       - POCKETBASE_ADMIN_EMAIL=${POCKETBASE_ADMIN_EMAIL}
       - POCKETBASE_ADMIN_PASSWORD=${POCKETBASE_ADMIN_PASSWORD}
-      # Next.js
+      # SvelteKit
       - NODE_ENV=development
-      - NEXT_PUBLIC_USE_MOCK_LOCATIONS=${NEXT_PUBLIC_USE_MOCK_LOCATIONS:-false}
+      - BASE_DOMAIN=${BASE_DOMAIN:-loidolt.space}
       # Contact form (optional)
       - RESEND_API_KEY=${RESEND_API_KEY}
       - CONTACT_EMAIL_TO=${CONTACT_EMAIL_TO}
       - CONTACT_EMAIL_FROM=${CONTACT_EMAIL_FROM}
-      # Hot reload
-      - WATCHPACK_POLLING=true
+      # Vite HMR
+      - VITE_HMR_PORT=3050
     depends_on:
       pocketbase:
         condition: service_healthy

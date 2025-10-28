@@ -1,5 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import { getAuthUser } from '$lib/auth';
+import { ENV, debugLog } from '$lib/env';
 
 /**
  * SvelteKit server hooks - Multi-tenancy detection + Authentication
@@ -24,6 +25,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   // ===== MULTI-TENANT DETECTION =====
 
+  // Get base domain from centralized environment configuration
+  const baseDomain = ENV.BASE_DOMAIN;
+
   // Extract subdomain from hostname
   // Example: chris.loidolt.space -> 'chris'
   const parts = hostname.split('.');
@@ -36,7 +40,8 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   // Check for root domain -> family hub
-  if (parts.length === 2 && parts[0] === 'loidolt') {
+  // Compare the hostname against the base domain (e.g., loidolt.space)
+  if (hostname === baseDomain || hostname === `www.${baseDomain}`) {
     personSlug = 'family';
   }
 
@@ -58,16 +63,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   // ===== AUTHENTICATION DETECTION =====
 
-  // Get PocketBase URL from environment
-  const pbUrl = process.env.POCKETBASE_URL || 'http://127.0.0.1:8090';
-
-  // Check for authenticated user
-  const user = await getAuthUser(event.cookies, pbUrl);
+  // Check for authenticated user using centralized PocketBase URL
+  const user = await getAuthUser(event.cookies, ENV.POCKETBASE_URL);
   event.locals.user = user;
 
-  // Log auth status for debugging (remove in production)
+  // Log auth status using debug logging
   if (user) {
-    console.log(`[Auth] User authenticated: ${user.email} (${user.id})`);
+    debugLog(`User authenticated: ${user.email} (${user.id})`);
   }
 
   return resolve(event);

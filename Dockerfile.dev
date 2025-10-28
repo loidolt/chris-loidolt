@@ -10,8 +10,8 @@ RUN npm install --legacy-peer-deps
 # Copy source code
 COPY . .
 
-# Expose Next.js dev server port
-EXPOSE 3000
+# Expose SvelteKit dev server port
+EXPOSE 3050
 
 # Start development server
 CMD ["npm", "run", "dev"]
