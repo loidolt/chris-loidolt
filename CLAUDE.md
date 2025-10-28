@@ -65,7 +65,7 @@ Built with **SvelteKit 2.0** using Svelte 5, optimized for modern web deployment
 - **Svelte 5**: Latest version with improved reactivity and runes
 - **PocketBase**: Self-hosted SQLite-based CMS with REST API and multi-tenant support
 - **Docker Compose**: Development environment orchestration
-- **Tailwind CSS v3**: Utility-first CSS with custom terminal theme
+- **Tailwind CSS v3**: Utility-first CSS with shadcn-svelte design system
 - **Three.js**: 3D model rendering
 - **Leaflet**: Interactive maps
 - **D3.js**: Data visualization for project node graphs
@@ -177,30 +177,30 @@ scripts/                            # Migration and utility scripts
 
 ### Design System
 
-**Color Palette:**
-- `terminal-black`: #0a0e14 (darkest)
-- `terminal-darker`: #0d1117 (background)
-- `terminal-dark`: #161b22 (cards)
-- `terminal-gray`: #21262d
-- `terminal-border`: #30363d
-- `terminal-text`: #c9d1d9
-- `terminal-text-bright`: #e6edf3
-- `terminal-green`: #3fb950 (primary accent)
-- `terminal-cyan`: #39c5cf (links, interactive)
-- `terminal-amber`: #d29922 (labels, section headers)
-- `terminal-red`: #f85149 (errors)
-- `terminal-blue`: #58a6ff
+**shadcn-svelte**
+This project uses [shadcn-svelte](https://shadcn-svelte.com/) as its design system, providing:
+- Accessible, customizable UI components
+- Built on Radix UI primitives via bits-ui
+- Full TypeScript support
+- Dark/light mode support via theme system
+- Tailwind CSS for styling
+
+**Color System:**
+- Uses CSS custom properties via `app.css`
+- Light and dark themes defined with HSL values
+- Semantic color tokens (primary, secondary, muted, accent, destructive, etc.)
+- Colors automatically adapt to theme changes
 
 **Typography:**
-- Font: JetBrains Mono (monospace throughout)
-- No ligatures for clean readability
+- Font: System font stack (system-ui, -apple-system, Segoe UI, Roboto, etc.)
+- Clean, readable sans-serif throughout
+- Responsive font sizing with Tailwind utilities
 
-**UI Patterns:**
-- Bracketed links: `[like this →]`
-- Simple section headers with accent colors
-- Clean borders and dividers
-- Tab-style navigation
-- Blinking cursor animation on loading states
+**UI Components:**
+- Import from `$lib/components/ui/*` (e.g., Button, Card, Input, Label)
+- Layout primitives from `$lib/layouts` (Container, Stack, Grid, Flex, Section)
+- Consistent spacing and styling patterns
+- Built-in hover states and transitions
 
 ### Environment Configuration
 
@@ -220,8 +220,8 @@ POCKETBASE_ADMIN_PASSWORD=your_secure_password
 ### Key Features
 
 1. **Homepage** (`routes/+page.svelte`)
-   - Animated welcome text with typing effect
-   - Quick links to main sections
+   - Clean page header with title and subtitle
+   - Quick links cards with descriptions
    - Project statistics overview
 
 2. **Projects Index** (`routes/projects/+page.svelte`)

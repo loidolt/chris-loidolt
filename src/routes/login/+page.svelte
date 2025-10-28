@@ -1,6 +1,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Container, Stack, Card } from '$lib/layouts';
+  import { Container, Stack, PageHeader } from '$lib/layouts';
+  import * as Card from '$lib/components/ui/card';
+  import { Button } from '$lib/components/ui/button';
+  import { Input } from '$lib/components/ui/input';
+  import { Label } from '$lib/components/ui/label';
 
   let email = '';
   let password = '';
@@ -39,81 +43,61 @@
   <title>Login - Family Portfolio</title>
 </svelte:head>
 
-<Container variant="narrow">
+<Container maxWidth="narrow">
   <Stack gap="lg">
-    <div class="text-center">
-      <h1 class="text-3xl mb-2" style="color: var(--text-primary)">
-        [login]
-      </h1>
-      <p class="text-sm" style="color: var(--text-muted)">
-        Sign in to access family content
-      </p>
-    </div>
+    <PageHeader
+      title="Login"
+      subtitle="Sign in to access family content"
+    />
 
-    <Card padding="lg">
-      <form on:submit|preventDefault={handleSubmit}>
-        <Stack gap="md">
-          {#if error}
-            <div class="p-3" style="background-color: rgba(248, 81, 73, 0.1); border-left: 3px solid var(--terminal-red)">
-              <p class="text-sm" style="color: var(--terminal-red)">{error}</p>
+    <Card.Card>
+      <Card.CardContent class="p-6">
+        <form on:submit|preventDefault={handleSubmit}>
+          <Stack gap="md">
+            {#if error}
+              <div class="p-3 bg-destructive/10 border-l-4 border-destructive rounded">
+                <p class="text-sm text-destructive">{error}</p>
+              </div>
+            {/if}
+
+            <div class="space-y-2">
+              <Label for="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                bind:value={email}
+                required
+                placeholder="you@example.com"
+                disabled={loading}
+              />
             </div>
-          {/if}
 
-          <div>
-            <label for="email" class="block text-sm mb-2" style="color: var(--accent-secondary)">
-              email:
-            </label>
-            <input
-              id="email"
-              type="email"
-              bind:value={email}
-              required
-              class="input-terminal w-full"
-              placeholder="you@example.com"
+            <div class="space-y-2">
+              <Label for="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                bind:value={password}
+                required
+                placeholder="••••••••"
+                disabled={loading}
+              />
+            </div>
+
+            <Button
+              type="submit"
               disabled={loading}
-            />
-          </div>
+              class="w-full"
+            >
+              {loading ? 'Signing in...' : 'Sign in'}
+            </Button>
 
-          <div>
-            <label for="password" class="block text-sm mb-2" style="color: var(--accent-secondary)">
-              password:
-            </label>
-            <input
-              id="password"
-              type="password"
-              bind:value={password}
-              required
-              class="input-terminal w-full"
-              placeholder="••••••••"
-              disabled={loading}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            class="btn-terminal w-full"
-            style="background-color: var(--terminal-green); color: var(--terminal-black)"
-          >
-            {loading ? '[signing in...]' : '[sign in →]'}
-          </button>
-
-          <div class="text-center text-sm" style="color: var(--text-muted)">
-            Don't have an account? Contact the family administrator.
-          </div>
-        </Stack>
-      </form>
-    </Card>
+            <div class="text-center text-sm text-muted-foreground">
+              Don't have an account? Contact the family administrator.
+            </div>
+          </Stack>
+        </form>
+      </Card.CardContent>
+    </Card.Card>
   </Stack>
 </Container>
-
-<style>
-  .input-terminal {
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .input-terminal:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-</style>

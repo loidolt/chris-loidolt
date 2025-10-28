@@ -17,5 +17,5 @@ export { default as Sidebar } from './Sidebar.svelte';
 export { default as Split } from './Split.svelte';
 export { default as PageHeader } from './PageHeader.svelte';
 
-// Note: Card, Tabs, Modal, and Panel have been replaced with shadcn-svelte components
-// Import from '$lib/components/ui/...' instead
+// Note: For UI components (cards, tabs, modals, etc), use shadcn-svelte components
+// Import from '$lib/components/ui/...'

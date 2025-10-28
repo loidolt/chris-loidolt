@@ -1,15 +1,15 @@
 <script lang="ts">
-  import TerminalWelcome from '$lib/components/TerminalWelcome.svelte';
-  import { Container, Grid, Stack, Section } from '$lib/layouts';
+  import { Container, Grid, Stack, Section, PageHeader } from '$lib/layouts';
   import * as Card from '$lib/components/ui/card';
+  import { Button } from '$lib/components/ui/button';
   import type { PageData } from './$types';
 
   export let data: PageData;
 
   const quickLinks = [
-    { label: 'View all projects', link: '/projects' },
-    { label: 'Learn more about me', link: '/about' },
-    { label: 'Get in touch', link: '/contact' },
+    { label: 'View Projects', link: '/projects', description: 'Browse my portfolio of work' },
+    { label: 'About Me', link: '/about', description: 'Learn about my background and skills' },
+    { label: 'Get in Touch', link: '/contact', description: 'Start a conversation' },
   ];
 
   const stats = [
@@ -24,42 +24,42 @@
 </svelte:head>
 
 <Container>
-  <!-- Terminal Welcome with typing animation -->
-  <TerminalWelcome />
+  <PageHeader
+    title="Welcome"
+    subtitle="Explore projects, skills, and professional experience"
+  />
 
   <Stack gap="lg">
     <!-- Quick Links Section -->
-    <Section spacing="md" withBorder>
-      <div class="mb-6 text-sm" style="color: var(--accent-secondary)">
-        Quick Links
-      </div>
-      <Stack gap="md">
+    <Section title="Quick Links">
+      <Grid cols={3} gap="md">
         {#each quickLinks as item}
-          <a
-            href={item.link}
-            class="block text-base md:text-sm py-2 transition-opacity hover:opacity-70"
-            style="color: var(--link-color)"
-          >
-            [{item.label} →]
-          </a>
+          <Card.Card class="hover:shadow-lg transition-shadow">
+            <Card.CardHeader>
+              <Card.CardTitle class="text-lg">{item.label}</Card.CardTitle>
+              <Card.CardDescription>{item.description}</Card.CardDescription>
+            </Card.CardHeader>
+            <Card.CardFooter>
+              <Button href={item.link} variant="outline" class="w-full">
+                View
+              </Button>
+            </Card.CardFooter>
+          </Card.Card>
         {/each}
-      </Stack>
+      </Grid>
     </Section>
 
     <!-- Quick Stats -->
-    <Section spacing="md" withBorder>
-      <Grid cols={3} gap="lg">
+    <Section title="Overview">
+      <Grid cols={3} gap="md">
         {#each stats as stat}
-          <a href={stat.href} class="group">
-            <Card.Card class="hover:opacity-70 transition-opacity">
+          <a href={stat.href}>
+            <Card.Card class="hover:shadow-lg transition-shadow">
               <Card.CardContent class="p-6">
-                <div class="text-xs mb-2 transition-opacity" style="color: var(--link-color)">
-                  [{stat.label.toLowerCase()}]
+                <div class="text-sm text-muted-foreground mb-2">
+                  {stat.label}
                 </div>
-                <div
-                  class="text-4xl md:text-3xl lg:text-4xl font-medium"
-                  style="color: var(--accent-primary)"
-                >
+                <div class="text-3xl font-bold">
                   {stat.value}
                 </div>
               </Card.CardContent>

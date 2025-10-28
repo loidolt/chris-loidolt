@@ -125,7 +125,7 @@
           font-size: 11px;
           font-weight: {isActive ? 600 : 400};
           color: {isActive ? 'var(--link-color)' : 'var(--text-muted)'};
-          background-color: {isActive && isPanelOpen ? 'var(--bg-primary)' : isActive ? 'var(--bg-surface)' : 'var(--color-terminal-darker)'};
+          background-color: {isActive && isPanelOpen ? 'var(--bg-primary)' : isActive ? 'var(--bg-surface)' : 'hsl(var(--background))'};
           border: 1px solid var(--border-color);
           opacity: {tab.disabled ? 0.5 : 1};
           min-height: 56px;
