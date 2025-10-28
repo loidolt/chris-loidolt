@@ -21,7 +21,8 @@ export const theme = writable<Theme>(getInitialTheme());
 // Subscribe to theme changes and update DOM + localStorage
 if (browser) {
   theme.subscribe((value) => {
-    document.documentElement.classList.toggle('light', value === 'light');
+    // shadcn uses 'dark' class, no class for light mode
+    document.documentElement.classList.toggle('dark', value === 'dark');
     localStorage.setItem('theme', value);
   });
 }

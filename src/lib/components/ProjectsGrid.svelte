@@ -4,6 +4,9 @@
   import Fuse from 'fuse.js';
   import type { Project } from '$lib/pocketbase';
   import OverlayPanel, { type PanelTab } from './OverlayPanel.svelte';
+  import { Button } from '$lib/components/ui/button';
+  import { Input } from '$lib/components/ui/input';
+  import { Badge } from '$lib/components/ui/badge';
 
   export let projects: Project[];
 
@@ -91,22 +94,26 @@
   storageKey="projects-grid"
 >
   <!-- Custom Header Slot -->
-  <div slot="header" class="px-3 py-1.5 text-xs flex items-center justify-between">
-    <span style="color: var(--text-muted)">
-      {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
+  <div slot="header" class="px-3 py-1.5 text-xs flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2">
+      <span style="color: var(--text-muted)">
+        {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
+      </span>
       {#if activeFilterCount > 0}
-        <span style="color: var(--accent-secondary)"> • {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}</span>
+        <Badge variant="secondary" class="text-xs">
+          {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
+        </Badge>
       {/if}
-    </span>
+    </div>
     {#if showClearButton}
-      <button
-        on:click={clearFilters}
-        class="btn-terminal text-xs px-2.5 py-1.5"
-        style="color: var(--error-color); min-height: 32px;"
-        aria-label="Clear all filters"
+      <Button
+        onclick={clearFilters}
+        variant="destructive"
+        size="sm"
+        class="text-xs"
       >
         Clear all
-      </button>
+      </Button>
     {/if}
   </div>
 
@@ -116,11 +123,10 @@
       <label class="block text-sm mb-3" style="color: var(--accent-secondary)">
         Search
       </label>
-      <input
+      <Input
         type="text"
         bind:value={searchQuery}
         placeholder="Type to search projects..."
-        class="input-terminal transition-all"
       />
     </div>
 
@@ -130,19 +136,21 @@
         Filter by category
       </div>
       <div class="flex flex-wrap gap-2">
-        <button
-          on:click={() => selectedCategory = null}
-          class="px-4 py-2.5 {selectedCategory === null ? 'btn-terminal-selected' : 'btn-terminal-muted'}"
+        <Button
+          onclick={() => selectedCategory = null}
+          variant={selectedCategory === null ? 'default' : 'outline'}
+          size="sm"
         >
           [all]
-        </button>
+        </Button>
         {#each categories as cat}
-          <button
-            on:click={() => selectedCategory = cat}
-            class="px-4 py-2.5 {selectedCategory === cat ? 'btn-terminal-selected' : 'btn-terminal-muted'}"
+          <Button
+            onclick={() => selectedCategory = cat}
+            variant={selectedCategory === cat ? 'default' : 'outline'}
+            size="sm"
           >
             [{cat}]
-          </button>
+          </Button>
         {/each}
       </div>
     </div>

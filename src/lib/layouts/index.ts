@@ -15,8 +15,7 @@ export { default as Section } from './Section.svelte';
 // Advanced layout components
 export { default as Sidebar } from './Sidebar.svelte';
 export { default as Split } from './Split.svelte';
-export { default as Card } from './Card.svelte';
-export { default as Panel } from './Panel.svelte';
 export { default as PageHeader } from './PageHeader.svelte';
-export { default as Tabs } from './Tabs.svelte';
-export { default as Modal } from './Modal.svelte';
+
+// Note: Card, Tabs, Modal, and Panel have been replaced with shadcn-svelte components
+// Import from '$lib/components/ui/...' instead

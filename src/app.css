@@ -1,113 +1,105 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Theme variables will be injected here dynamically */
+/* shadcn-svelte theme variables */
 :root {
-  /* Default dark theme colors */
-  --bg-primary: #0d1117;
-  --bg-surface: #161b22;
-  --bg-elevated: #21262d;
-
-  --text-primary: #e6edf3;
-  --text-secondary: #c9d1d9;
-  --text-muted: #8b949e;
-
-  --accent-primary: #3fb950;
-  --accent-secondary: #39c5cf;
-  --accent-tertiary: #d29922;
-
-  --link-color: #39c5cf;
-  --link-hover: #4fd6e0;
-
-  --border-color: #30363d;
-  --border-subtle: #21262d;
-
-  --success: #3fb950;
-  --error: #f85149;
-  --warning: #d29922;
-  --info: #58a6ff;
-
-  --overlay-bg: rgba(0, 0, 0, 0.7);
-  --shadow: rgba(0, 0, 0, 0.1);
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --accent: 0 0% 96.1%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 0 0% 3.9%;
+  --radius: 0.5rem;
 }
 
-/* Light theme */
-:root.light {
-  --bg-primary: #ffffff;
-  --bg-surface: #f6f8fa;
-  --bg-elevated: #ffffff;
-
-  --text-primary: #24292f;
-  --text-secondary: #57606a;
-  --text-muted: #6e7781;
-
-  --accent-primary: #2da44e;
-  --accent-secondary: #0969da;
-  --accent-tertiary: #bf8700;
-
-  --link-color: #0969da;
-  --link-hover: #0550ae;
-
-  --border-color: #d0d7de;
-  --border-subtle: #eaeef2;
-
-  --success: #2da44e;
-  --error: #cf222e;
-  --warning: #bf8700;
-  --info: #0969da;
-
-  --overlay-bg: rgba(0, 0, 0, 0.5);
-  --shadow: rgba(0, 0, 0, 0.05);
+.dark {
+  --background: 0 0% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 0 0% 83.1%;
 }
 
-/* Global styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Terminal cursor animation */
-.terminal-cursor {
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 49% {
-    opacity: 1;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
   }
-  50%, 100% {
-    opacity: 0;
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Legacy variable compatibility - map old custom vars to shadcn */
+  :root {
+    --bg-primary: hsl(var(--background));
+    --bg-surface: hsl(var(--card));
+    --bg-elevated: hsl(var(--popover));
+    --text-primary: hsl(var(--foreground));
+    --text-secondary: hsl(var(--muted-foreground));
+    --text-muted: hsl(var(--muted-foreground));
+    --accent-primary: hsl(var(--primary));
+    --accent-secondary: hsl(var(--primary));
+    --accent-tertiary: hsl(var(--accent));
+    --link-color: hsl(var(--primary));
+    --link-hover: hsl(var(--primary));
+    --border-color: hsl(var(--border));
+    --border-subtle: hsl(var(--border));
+    --success: hsl(var(--primary));
+    --error: hsl(var(--destructive));
+    --warning: hsl(var(--accent));
+    --info: hsl(var(--primary));
+    --overlay-bg: hsl(var(--background) / 0.8);
+    --shadow: hsl(var(--foreground) / 0.1);
   }
 }
 
-/* Link styles */
-a {
-  color: var(--link-color);
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-}
+/* Custom animations */
+@layer components {
+  .terminal-cursor {
+    animation: blink 1s infinite;
+  }
 
-a:hover {
-  opacity: 0.7;
-}
-
-/* Selection */
-::selection {
-  background-color: var(--accent-primary);
-  color: var(--bg-primary);
+  @keyframes blink {
+    0%, 49% {
+      opacity: 1;
+    }
+    50%, 100% {
+      opacity: 0;
+    }
+  }
 }

@@ -1,8 +1,13 @@
 <script lang="ts">
+  import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '$lib/components/ui/dialog';
+  import { Button } from '$lib/components/ui/button';
+  import { Input } from '$lib/components/ui/input';
+
   export let locationName: string;
   export let onSubmit: (password: string) => void;
   export let onCancel: () => void;
   export let error: string | undefined = undefined;
+  export let open = true;
 
   let password = '';
 
@@ -11,61 +16,46 @@
     onSubmit(password);
   }
 
-  function handleBackdropClick() {
-    onCancel();
-  }
-
-  function handleModalClick(e: Event) {
-    e.stopPropagation();
+  function handleOpenChange(newOpen: boolean) {
+    if (!newOpen) {
+      onCancel();
+    }
   }
 </script>
 
-<div
-  class="fixed inset-0 z-[2000] flex items-center justify-center bg-black/50"
-  on:click={handleBackdropClick}
-  on:keydown={(e) => e.key === 'Escape' && onCancel()}
-  role="dialog"
-  aria-modal="true"
-  tabindex="-1"
->
-  <div
-    class="w-[90%] max-w-md border-2 p-6 shadow-2xl"
-    style="background-color: var(--bg-surface); border-color: var(--border-color)"
-    on:click={handleModalClick}
-    on:keydown={(e) => e.key === 'Enter' && handleSubmit(e)}
-    role="button"
-    tabindex="0"
-  >
-    <h2 class="mb-2 text-sm" style="color: var(--accent-secondary)">
-      Private Location
-    </h2>
+<Dialog {open} onOpenChange={handleOpenChange}>
+  <DialogContent class="sm:max-w-[425px]">
+    <DialogHeader>
+      <DialogTitle class="text-sm" style="color: var(--accent-secondary)">
+        Private Location
+      </DialogTitle>
+      <DialogDescription class="text-sm" style="color: var(--text-muted)">
+        Enter password to view "{locationName}"
+      </DialogDescription>
+    </DialogHeader>
 
-    <p class="mb-4 text-sm" style="color: var(--text-muted)">
-      Enter password to view "{locationName}"
-    </p>
-
-    <form on:submit={handleSubmit}>
-      <input
+    <form on:submit={handleSubmit} class="space-y-4">
+      <Input
         type="password"
         bind:value={password}
         placeholder="Password..."
-        class="input-terminal-primary mb-3"
+        class="font-mono"
       />
 
       {#if error}
-        <div class="mb-3 text-xs" style="color: var(--error-color)">
+        <div class="text-xs" style="color: var(--error)">
           {error}
         </div>
       {/if}
 
       <div class="flex gap-3">
-        <button type="submit" class="btn-terminal-primary flex-1">
+        <Button type="submit" class="flex-1">
           [Unlock]
-        </button>
-        <button type="button" on:click={onCancel} class="btn-terminal-muted flex-1">
+        </Button>
+        <Button type="button" variant="outline" onclick={onCancel} class="flex-1">
           [Cancel]
-        </button>
+        </Button>
       </div>
     </form>
-  </div>
-</div>
+  </DialogContent>
+</Dialog>

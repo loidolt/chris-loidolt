@@ -2,10 +2,20 @@
   import '../app.css';
   import Navigation from '$lib/components/Navigation.svelte';
   import PWAInstaller from '$lib/components/PWAInstaller.svelte';
+  import { theme } from '$lib/stores/theme';
+  import { onMount } from 'svelte';
   import type { LayoutData } from './$types';
 
   // Data from +layout.server.ts
   export let data: LayoutData;
+
+  // Initialize theme on mount to avoid hydration mismatch
+  onMount(() => {
+    // The theme store automatically applies the class to document.documentElement
+    // Just subscribing ensures it runs on client-side
+    const unsubscribe = theme.subscribe(() => {});
+    return unsubscribe;
+  });
 
   // You can use data.personSlug for person-specific theming
   // For now, we're using the same theme for all

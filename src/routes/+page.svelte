@@ -1,6 +1,7 @@
 <script lang="ts">
   import TerminalWelcome from '$lib/components/TerminalWelcome.svelte';
-  import { Container, Grid, Card, Stack, Section } from '$lib/layouts';
+  import { Container, Grid, Stack, Section } from '$lib/layouts';
+  import * as Card from '$lib/components/ui/card';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -50,17 +51,19 @@
       <Grid cols={3} gap="lg">
         {#each stats as stat}
           <a href={stat.href} class="group">
-            <Card interactive>
-              <div class="text-xs mb-2 transition-opacity" style="color: var(--link-color)">
-                [{stat.label.toLowerCase()}]
-              </div>
-              <div
-                class="text-4xl md:text-3xl lg:text-4xl font-medium transition-opacity group-hover:opacity-70"
-                style="color: var(--accent-primary)"
-              >
-                {stat.value}
-              </div>
-            </Card>
+            <Card.Card class="hover:opacity-70 transition-opacity">
+              <Card.CardContent class="p-6">
+                <div class="text-xs mb-2 transition-opacity" style="color: var(--link-color)">
+                  [{stat.label.toLowerCase()}]
+                </div>
+                <div
+                  class="text-4xl md:text-3xl lg:text-4xl font-medium"
+                  style="color: var(--accent-primary)"
+                >
+                  {stat.value}
+                </div>
+              </Card.CardContent>
+            </Card.Card>
           </a>
         {/each}
       </Grid>

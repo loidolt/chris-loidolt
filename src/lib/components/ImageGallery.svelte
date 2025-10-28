@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { browser } from '$app/environment';
+  import { Button } from '$lib/components/ui/button';
 
   export let images: string[];
   export let featuredImage: string | undefined = undefined;
@@ -128,14 +129,15 @@
     tabindex="-1"
   >
     <!-- Close Button -->
-    <button
-      on:click={closeLightbox}
-      class="absolute top-4 right-4 hover:opacity-70 transition-opacity text-2xl z-10"
-      style="color: var(--text-primary)"
+    <Button
+      onclick={closeLightbox}
+      variant="ghost"
+      size="icon"
+      class="absolute top-4 right-4 text-2xl z-10"
       aria-label="Close lightbox"
     >
       [×]
-    </button>
+    </Button>
 
     <!-- Image Counter -->
     <div class="absolute top-4 left-4 text-sm z-10" style="color: var(--link-color)">
@@ -149,32 +151,34 @@
 
     <!-- Previous Button -->
     {#if selectedIndex > 0}
-      <button
-        on:click={(e) => {
+      <Button
+        onclick={(e) => {
           e.stopPropagation();
           goToPrevious();
         }}
-        class="absolute left-4 top-1/2 -translate-y-1/2 hover:opacity-70 transition-opacity text-4xl z-10"
-        style="color: var(--link-color)"
+        variant="ghost"
+        size="icon"
+        class="absolute left-4 top-1/2 -translate-y-1/2 text-4xl z-10"
         aria-label="Previous image"
       >
         ‹
-      </button>
+      </Button>
     {/if}
 
     <!-- Next Button -->
     {#if selectedIndex < allImages.length - 1}
-      <button
-        on:click={(e) => {
+      <Button
+        onclick={(e) => {
           e.stopPropagation();
           goToNext();
         }}
-        class="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-70 transition-opacity text-4xl z-10"
-        style="color: var(--link-color)"
+        variant="ghost"
+        size="icon"
+        class="absolute right-4 top-1/2 -translate-y-1/2 text-4xl z-10"
         aria-label="Next image"
       >
         ›
-      </button>
+      </Button>
     {/if}
 
     <!-- Image Container -->

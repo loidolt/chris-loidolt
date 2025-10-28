@@ -1,6 +1,10 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import type { ActionData } from './$types';
+  import { Button } from '$lib/components/ui/button';
+  import { Input } from '$lib/components/ui/input';
+  import { Label } from '$lib/components/ui/label';
+  import { Textarea } from '$lib/components/ui/textarea';
 
   export let form: ActionData;
 
@@ -60,21 +64,21 @@
   }}>
     <!-- Name Field -->
     <div>
-      <label for="name" class="block text-sm mb-2" style="color: var(--accent-secondary)">
+      <Label for="name" class="block text-sm mb-2" style="color: var(--accent-secondary)">
         name
-      </label>
-      <input
+      </Label>
+      <Input
         type="text"
         id="name"
         name="name"
         bind:value={formData.name}
         required
-        minlength="2"
-        class="input-terminal transition-all"
+        minlength={2}
+        class="font-mono"
         disabled={isSubmitting}
       />
       {#if form?.errors?.name}
-        <p class="mt-2 text-xs" style="color: var(--error-color)">
+        <p class="mt-2 text-xs" style="color: var(--error)">
           {form.errors.name}
         </p>
       {/if}
@@ -82,20 +86,20 @@
 
     <!-- Email Field -->
     <div>
-      <label for="email" class="block text-sm mb-2" style="color: var(--accent-secondary)">
+      <Label for="email" class="block text-sm mb-2" style="color: var(--accent-secondary)">
         email
-      </label>
-      <input
+      </Label>
+      <Input
         type="email"
         id="email"
         name="email"
         bind:value={formData.email}
         required
-        class="input-terminal transition-all"
+        class="font-mono"
         disabled={isSubmitting}
       />
       {#if form?.errors?.email}
-        <p class="mt-2 text-xs" style="color: var(--error-color)">
+        <p class="mt-2 text-xs" style="color: var(--error)">
           {form.errors.email}
         </p>
       {/if}
@@ -103,21 +107,21 @@
 
     <!-- Subject Field -->
     <div>
-      <label for="subject" class="block text-sm mb-2" style="color: var(--accent-secondary)">
+      <Label for="subject" class="block text-sm mb-2" style="color: var(--accent-secondary)">
         subject
-      </label>
-      <input
+      </Label>
+      <Input
         type="text"
         id="subject"
         name="subject"
         bind:value={formData.subject}
         required
-        minlength="3"
-        class="input-terminal transition-all"
+        minlength={3}
+        class="font-mono"
         disabled={isSubmitting}
       />
       {#if form?.errors?.subject}
-        <p class="mt-2 text-xs" style="color: var(--error-color)">
+        <p class="mt-2 text-xs" style="color: var(--error)">
           {form.errors.subject}
         </p>
       {/if}
@@ -125,21 +129,21 @@
 
     <!-- Message Field -->
     <div>
-      <label for="message" class="block text-sm mb-2" style="color: var(--accent-secondary)">
+      <Label for="message" class="block text-sm mb-2" style="color: var(--accent-secondary)">
         message
-      </label>
-      <textarea
+      </Label>
+      <Textarea
         id="message"
         name="message"
         bind:value={formData.message}
         required
-        minlength="10"
-        rows="6"
-        class="input-terminal transition-all resize-y min-h-[120px]"
+        minlength={10}
+        rows={6}
+        class="font-mono resize-y min-h-[120px]"
         disabled={isSubmitting}
       />
       {#if form?.errors?.message}
-        <p class="mt-2 text-xs" style="color: var(--error-color)">
+        <p class="mt-2 text-xs" style="color: var(--error)">
           {form.errors.message}
         </p>
       {/if}
@@ -147,14 +151,13 @@
 
     <!-- Submit Button -->
     <div class="pt-4">
-      <button
+      <Button
         type="submit"
-        class="btn-terminal px-6 py-3 transition-opacity"
         disabled={isSubmitting}
-        style={isSubmitting ? 'opacity: 0.5; cursor: not-allowed;' : ''}
+        class="px-6 py-3"
       >
         {isSubmitting ? '[sending...]' : '[send message →]'}
-      </button>
+      </Button>
     </div>
   </form>
 </div>
