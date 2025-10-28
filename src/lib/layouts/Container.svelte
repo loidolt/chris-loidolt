@@ -11,6 +11,7 @@
 
   export let variant: 'default' | 'narrow' | 'wide' | 'full' = 'default';
   export let noPadding = false;
+  export let noVerticalPadding = false;
   export let className = '';
 
   const containerClasses = {
@@ -20,7 +21,9 @@
     full: 'w-full'
   };
 
-  const paddingClass = noPadding ? '' : 'px-4 sm:px-6 lg:px-8';
+  const horizontalPadding = noPadding ? '' : 'px-4 sm:px-6 lg:px-8';
+  const verticalPadding = noPadding || noVerticalPadding ? '' : 'py-8';
+  const paddingClass = `${horizontalPadding} ${verticalPadding}`;
 </script>
 
 <div class="container mx-auto {containerClasses[variant]} {paddingClass} {className}">

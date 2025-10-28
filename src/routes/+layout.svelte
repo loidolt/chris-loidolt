@@ -41,10 +41,3 @@
   <!-- PWA Install Prompt -->
   <PWAInstaller />
 </div>
-
-<style>
-  /* Layout-specific styles */
-  main {
-    min-height: 60vh;
-  }
-</style>

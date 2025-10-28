@@ -128,7 +128,8 @@
 
     <!-- Menu Panel -->
     <div
-      class="md:hidden fixed top-14 left-0 right-0 z-50 border-b border-border bg-popover shadow-lg opacity-100"
+      class="md:hidden fixed top-14 left-0 right-0 z-50 border-b border-border shadow-lg backdrop-blur-sm"
+      style="background-color: hsl(var(--card)); opacity: 1;"
       transition:fly={{ y: -20, duration: 200, easing: quintOut }}
     >
       {#each navItems as item}
