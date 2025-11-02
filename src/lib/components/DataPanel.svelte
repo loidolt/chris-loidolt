@@ -22,19 +22,27 @@
   };
   export let open: boolean | undefined = undefined;
   export let onOpenChange: ((open: boolean) => void) | undefined = undefined;
+  export let tab: string | undefined = undefined;
+  export let onTabChange: ((tab: string) => void) | undefined = undefined;
   export let storageKey: string | undefined = undefined;
   export let mobileBreakpoint = 640;
 
   let internalPanelOpen = defaultOpen;
-  let activeTab = defaultTab || tabs[0]?.id || '';
+  let internalActiveTab = defaultTab || tabs[0]?.id || '';
   let isMobile = false;
 
   // Use controlled state if provided, otherwise use internal state
   $: isPanelOpen = open !== undefined ? open : internalPanelOpen;
+  $: activeTab = tab !== undefined ? tab : internalActiveTab;
 
   const setIsPanelOpen = (newOpen: boolean) => {
     if (onOpenChange) onOpenChange(newOpen);
     if (open === undefined) internalPanelOpen = newOpen;
+  };
+
+  const setActiveTab = (newTab: string) => {
+    if (onTabChange) onTabChange(newTab);
+    if (tab === undefined) internalActiveTab = newTab;
   };
 
   // Mobile detection and localStorage management
@@ -53,8 +61,8 @@
           internalPanelOpen = JSON.parse(stored);
         }
         const storedTab = localStorage.getItem(`dataPanel_${storageKey}_tab`);
-        if (storedTab && defaultTab === undefined) {
-          activeTab = storedTab;
+        if (storedTab && defaultTab === undefined && tab === undefined) {
+          internalActiveTab = storedTab;
         }
       } catch (error) {
         console.error('Error loading panel state:', error);
@@ -73,7 +81,7 @@
     }
   }
 
-  $: if (browser && storageKey) {
+  $: if (browser && storageKey && tab === undefined) {
     try {
       localStorage.setItem(`dataPanel_${storageKey}_tab`, activeTab);
     } catch (error) {
@@ -174,6 +182,8 @@
           <slot name="filters"></slot>
         {:else if activeTab === 'info'}
           <slot name="info"></slot>
+        {:else if activeTab === 'locations'}
+          <slot name="locations"></slot>
         {:else if activeTab === 'settings'}
           <slot name="settings"></slot>
         {/if}
@@ -215,7 +225,7 @@
             if (isActive && isPanelOpen) {
               setIsPanelOpen(false);
             } else {
-              activeTab = tab.id;
+              setActiveTab(tab.id);
               setIsPanelOpen(true);
             }
           }}
