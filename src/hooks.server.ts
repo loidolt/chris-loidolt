@@ -21,7 +21,7 @@ function isValidPersonSlug(slug: string): slug is PersonSlug {
 export const handle: Handle = async ({ event, resolve }) => {
   const { hostname, pathname } = new URL(event.url);
 
-  let personSlug: PersonSlug = 'chris'; // Default
+  let personSlug: PersonSlug = 'family'; // Default to family hub
 
   // ===== MULTI-TENANT DETECTION =====
 

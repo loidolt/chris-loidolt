@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a **multi-tenant family portfolio system** powered by a single PocketBase instance, supporting **5 separate sites**:
 - **loidolt.space** - Family hub with shared content and collaborative projects
-- **chris.loidolt.space** - Chris's personal portfolio site
-- **julia.loidolt.space** - Julia's personal site
-- **theo.loidolt.space** - Theo's personal site
-- **jack.loidolt.space** - Jack's personal site
+- **chris.loidolt.space** - Chris's personal portfolio site (Terminal Green theme)
+- **julia.loidolt.space** - Julia's personal site (Warm Coral theme)
+- **theo.loidolt.space** - Theo's personal site (Electric Blue theme)
+- **jack.loidolt.space** - Jack's personal site (Sunset Orange theme)
 
-Built with **SvelteKit 2.0** using Svelte 5, optimized for modern web deployment with Node.js server. The site features a clean, monospace aesthetic inspired by developer tools and code editors, with a dark color palette and modern UI elements. It uses **PocketBase** as a self-hosted CMS with **multi-tenant architecture** supporting person-specific data, flexible scoping (Family/Personal), and granular privacy controls (Public/Family/Private). Features include 3D model viewing, client-side search, interactive maps, PWA support, and contact forms.
+Built with **SvelteKit 2.0** using Svelte 5, optimized for modern web deployment with Node.js server. The site features **person-specific theming** with unique color palettes for each family member, a clean monospace aesthetic, and modern UI elements. It uses **PocketBase** as a self-hosted CMS with **multi-tenant architecture** supporting person-specific data, flexible scoping (Family/Personal), and granular privacy controls (Public/Family/Private). Features include 3D model viewing, client-side search, interactive maps, PWA support, contact forms, and **dynamic per-person theming**.
 
 ## Common Commands
 
@@ -109,6 +109,29 @@ The project uses a **flexible multi-tenant architecture** powered by a single Po
 - `MULTITENANT_ARCHITECTURE.md` - Comprehensive architecture guide
 - `MIGRATION_STEPS.md` - Step-by-step migration instructions
 - `MULTITENANT_SUMMARY.md` - High-level overview of changes
+
+### Theming System
+
+**Person-Specific Visual Identities**: Each family member has a unique theme with custom color palettes, typography, and styling.
+
+```
+src/lib/themes/
+├── types.ts           # TypeScript interfaces for themes
+├── index.ts           # Theme registry and utilities
+├── chris.theme.ts     # Terminal Green theme (e-paper aesthetic)
+├── julia.theme.ts     # Warm Coral theme (artistic, inviting)
+├── theo.theme.ts      # Electric Blue theme (cool, tech-focused)
+├── jack.theme.ts      # Sunset Orange theme (playful, energetic)
+└── family.theme.ts    # Unified Family Hub theme (balanced, welcoming)
+```
+
+**Testing Themes**: Use query parameters in development:
+- `http://localhost:3050?person=julia` - Julia's Warm Coral theme
+- `http://localhost:3050?person=theo` - Theo's Electric Blue theme
+- `http://localhost:3050?person=jack` - Jack's Sunset Orange theme
+- `http://localhost:3050?person=family` - Family Hub theme
+
+**Documentation**: See `THEMING_TESTING.md` for complete testing guide and theme details.
 
 ### Directory Structure
 ```
