@@ -1865,6 +1865,26 @@
       },
       {
         "hidden": false,
+        "id": "json1234567891",
+        "maxSize": 0,
+        "name": "enabledRoutes",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "json"
+      },
+      {
+        "hidden": false,
+        "id": "json1234567892",
+        "maxSize": 0,
+        "name": "homepageConfig",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "json"
+      },
+      {
+        "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
         "onCreate": true,

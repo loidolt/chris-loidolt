@@ -10,13 +10,24 @@
 
   let isMobileMenuOpen = $state(false);
 
-  const navItems = [
-    { href: '/', label: 'home' },
-    { href: '/projects', label: 'projects' },
-    { href: '/gis', label: 'gis' },
-    { href: '/about', label: 'about' },
-    { href: '/contact', label: 'contact' },
+  // Get enabled routes from page data (set in +layout.server.ts)
+  let enabledRoutes = $derived($page.data.enabledRoutes || ['projects', 'gis', 'about', 'contact']);
+
+  // Define all possible nav items
+  const allNavItems = [
+    { href: '/', label: 'home', route: 'home', alwaysShow: true },
+    { href: '/projects', label: 'projects', route: 'projects' },
+    { href: '/gis', label: 'gis', route: 'gis' },
+    { href: '/about', label: 'about', route: 'about' },
+    { href: '/contact', label: 'contact', route: 'contact' },
   ];
+
+  // Filter nav items based on person's enabled routes
+  let navItems = $derived(
+    allNavItems.filter(item =>
+      item.alwaysShow || enabledRoutes.includes(item.route)
+    )
+  );
 
   // Check if link is active
   function isActive(href: string): boolean {

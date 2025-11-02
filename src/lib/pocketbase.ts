@@ -1,6 +1,14 @@
 import PocketBase from "pocketbase";
 
 // TypeScript interfaces for PocketBase records
+
+export interface HomepageConfig {
+  layout?: 'grid' | 'timeline' | 'minimal';
+  showProjects?: boolean;
+  showStats?: boolean;
+  welcomeMessage?: string;
+}
+
 export interface Person {
   id: string;
   name: string;
@@ -9,6 +17,8 @@ export interface Person {
   bio?: string;
   avatar?: string;
   user?: string; // Relation to users collection
+  enabledRoutes?: string[]; // Array of enabled route slugs: ['projects', 'gis', 'about', 'contact']
+  homepageConfig?: HomepageConfig; // Homepage layout and display configuration
 }
 
 export interface Project {
@@ -547,6 +557,14 @@ export async function getAllPersons(): Promise<Person[]> {
         ? pb.files.getUrl(record, record.avatar)
         : undefined;
 
+      // Parse JSON fields
+      const enabledRoutes = record.enabledRoutes || ['projects', 'about', 'contact'];
+      const homepageConfig = record.homepageConfig || {
+        layout: 'grid',
+        showProjects: true,
+        showStats: true
+      };
+
       return {
         id: record.id,
         name: String(record.name || ""),
@@ -555,6 +573,12 @@ export async function getAllPersons(): Promise<Person[]> {
         bio: record.bio ? String(record.bio) : undefined,
         avatar,
         user: record.user ? String(record.user) : undefined,
+        enabledRoutes: Array.isArray(enabledRoutes) ? enabledRoutes : ['projects', 'about', 'contact'],
+        homepageConfig: typeof homepageConfig === 'object' ? homepageConfig : {
+          layout: 'grid',
+          showProjects: true,
+          showStats: true
+        },
       };
     });
   } catch (error) {
@@ -574,6 +598,14 @@ export async function getPersonBySlug(slug: string, options: { authToken?: strin
       ? pb.files.getUrl(record, record.avatar)
       : undefined;
 
+    // Parse JSON fields with defaults
+    const enabledRoutes = record.enabledRoutes || ['projects', 'about', 'contact'];
+    const homepageConfig = record.homepageConfig || {
+      layout: 'grid',
+      showProjects: true,
+      showStats: true
+    };
+
     return {
       id: record.id,
       name: String(record.name || ""),
@@ -582,6 +614,12 @@ export async function getPersonBySlug(slug: string, options: { authToken?: strin
       bio: record.bio ? String(record.bio) : undefined,
       avatar,
       user: record.user ? String(record.user) : undefined,
+      enabledRoutes: Array.isArray(enabledRoutes) ? enabledRoutes : ['projects', 'about', 'contact'],
+      homepageConfig: typeof homepageConfig === 'object' ? homepageConfig : {
+        layout: 'grid',
+        showProjects: true,
+        showStats: true
+      },
     };
   } catch (error) {
     console.error(`Error fetching person with slug "${slug}":`, error);

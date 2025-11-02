@@ -1,12 +1,15 @@
 import type { Handle } from '@sveltejs/kit';
 import { getAuthUser } from '$lib/auth';
 import { ENV, debugLog } from '$lib/env';
+import { getPersonBySlug } from '$lib/pocketbase';
+import { error } from '@sveltejs/kit';
 
 /**
  * SvelteKit server hooks - Multi-tenancy detection + Authentication
  *
  * Detects person slug from subdomain or route and sets event.locals
  * Validates authentication and sets user context
+ * Enforces route guards based on person configuration
  * This is MUCH cleaner than Next.js middleware!
  */
 
@@ -70,6 +73,33 @@ export const handle: Handle = async ({ event, resolve }) => {
   // Log auth status using debug logging
   if (user) {
     debugLog(`User authenticated: ${user.email} (${user.id})`);
+  }
+
+  // ===== ROUTE GUARDS =====
+
+  // Check if the requested route is enabled for this person
+  // Skip for home page, static assets, and API routes
+  const isStaticOrApi = pathname.startsWith('/_app') ||
+                        pathname.startsWith('/api') ||
+                        pathname === '/';
+
+  if (!isStaticOrApi && event.locals.personSlug !== 'family') {
+    // Extract route from pathname (e.g., '/projects' -> 'projects', '/projects/foo' -> 'projects')
+    const routeSegment = pathname.split('/')[1];
+
+    if (routeSegment) {
+      // Fetch person config to check enabled routes
+      const person = await getPersonBySlug(event.locals.personSlug);
+
+      if (person && person.enabledRoutes) {
+        const isRouteEnabled = person.enabledRoutes.includes(routeSegment);
+
+        if (!isRouteEnabled) {
+          debugLog(`Route "${routeSegment}" not enabled for person "${event.locals.personSlug}"`);
+          throw error(404, `Page not found`);
+        }
+      }
+    }
   }
 
   // ===== SECURITY HEADERS =====

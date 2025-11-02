@@ -7,7 +7,7 @@
 	import { generateThemeVariables } from '$lib/themes';
 	import type { LayoutData } from './$types';
 
-	// Data from +layout.server.ts (Svelte 5 runes syntax)
+	// Data from +layout.server.ts
 	let { data }: { data: LayoutData } = $props();
 
 	// Generate CSS variables for the current theme and mode
