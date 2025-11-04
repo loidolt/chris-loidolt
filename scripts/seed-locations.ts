@@ -180,7 +180,15 @@ async function main() {
 
   for (const location of SAMPLE_LOCATIONS) {
     try {
-      const record = await pb.collection('locations').create(location);
+      // Transform location data to match PocketBase schema
+      // The schema expects a 'position' geoPoint field (uses 'lon' not 'lng')
+      const { latitude, longitude, ...rest } = location as any;
+      const locationData = {
+        ...rest,
+        position: { lat: latitude, lon: longitude }
+      };
+
+      const record = await pb.collection('locations').create(locationData);
       created++;
 
       const privacyBadge = location.privacy === 'Private' ? '🔒' : '🌍';

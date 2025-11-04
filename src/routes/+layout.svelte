@@ -6,9 +6,10 @@
 	import { onMount } from 'svelte';
 	import { generateThemeVariables } from '$lib/themes';
 	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
 
 	// Data from +layout.server.ts
-	let { data }: { data: LayoutData } = $props();
+	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
 	// Generate CSS variables for the current theme and mode
 	let themeVariables = $derived(generateThemeVariables(data.siteConfig.theme, $theme));
@@ -53,7 +54,7 @@
 	<Navigation />
 
 	<main class="flex-1">
-		<slot />
+		{@render children()}
 	</main>
 
 	<footer class="py-8 px-4 text-center text-sm text-muted-foreground border-t">

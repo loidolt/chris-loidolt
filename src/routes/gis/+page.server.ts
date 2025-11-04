@@ -1,12 +1,12 @@
-import { getPublicLocations, type LocationPublic } from '$lib/pocketbase';
+import { getLocationsByPerson, type LocationPublic } from '$lib/pocketbase';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const personSlug = locals.personSlug || 'chris';
+  const personSlug = locals.personSlug || 'family';
 
   try {
-    // Fetch locations from PocketBase
-    const locations = await getPublicLocations();
+    // Fetch locations filtered by person or family
+    const locations = await getLocationsByPerson(personSlug);
 
     return {
       personSlug,

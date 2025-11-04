@@ -513,12 +513,17 @@ export async function getAllLocations(): Promise<Location[]> {
         ? pb.files.getUrl(record, record.image)
         : undefined;
 
+      // Transform geoPoint field to latitude/longitude for compatibility
+      // Note: PocketBase geoPoint uses 'lon' not 'lng'
+      const latitude = Number(record.position?.lat || record.latitude || 0);
+      const longitude = Number(record.position?.lon || record.longitude || 0);
+
       return {
         id: record.id,
         name: String(record.name || "Untitled Location"),
         description: record.description ? String(record.description) : undefined,
-        latitude: Number(record.latitude || 0),
-        longitude: Number(record.longitude || 0),
+        latitude,
+        longitude,
         category: categoryArray[0] || record.category,
         categories: categoryArray,
         image,
@@ -527,6 +532,9 @@ export async function getAllLocations(): Promise<Location[]> {
         privacy: (record.privacy === 'Private' ? 'Private' : 'Public') as 'Public' | 'Private',
         password: record.password ? String(record.password) : undefined,
         shareToken: record.shareToken ? String(record.shareToken) : undefined,
+        person: record.person,
+        scope: record.scope,
+        visibility: record.visibility,
       };
     });
   } catch (error) {
@@ -541,6 +549,70 @@ export async function getPublicLocations(): Promise<LocationPublic[]> {
 
   // Strip passwords from locations before sending to client
   return locations.map(({ password, ...location }) => location);
+}
+
+// Fetch locations for a specific person or family hub
+export async function getLocationsByPerson(personSlug: string): Promise<LocationPublic[]> {
+  try {
+    const pb = getPocketBase();
+
+    let filter = 'status = "Published"';
+
+    // For family hub, show all Family-scoped locations or locations with no person defined
+    if (personSlug === 'family') {
+      // Show Family-scoped locations, or locations with empty person field
+      filter += ' && (scope = "Family" || person = null || person = "")';
+    } else {
+      // For personal sites, get the person and filter by their ID
+      const person = await getPersonBySlug(personSlug);
+      if (!person) {
+        console.error(`Person with slug "${personSlug}" not found`);
+        return [];
+      }
+      // Show locations where this person is in the person array OR Family-scoped locations
+      filter += ` && (person.id ?= "${person.id}" || scope = "Family")`;
+    }
+
+    const records = await pb.collection('locations').getFullList({
+      filter,
+    });
+
+    return records.map((record) => {
+      // Handle categories - support both single and multiple
+      const categories = record.categories || [];
+      const categoryArray = Array.isArray(categories) ? categories : [];
+
+      // Get image URL if exists
+      const image = record.image
+        ? pb.files.getUrl(record, record.image)
+        : undefined;
+
+      // Transform geoPoint field to latitude/longitude for compatibility
+      const latitude = Number(record.position?.lat || record.latitude || 0);
+      const longitude = Number(record.position?.lon || record.longitude || 0);
+
+      return {
+        id: record.id,
+        name: String(record.name || "Untitled Location"),
+        description: record.description ? String(record.description) : undefined,
+        latitude,
+        longitude,
+        category: categoryArray[0] || record.category,
+        categories: categoryArray,
+        image,
+        url: record.url ? String(record.url) : undefined,
+        status: record.status ? String(record.status) : undefined,
+        privacy: (record.privacy === 'Private' ? 'Private' : 'Public') as 'Public' | 'Private',
+        shareToken: record.shareToken ? String(record.shareToken) : undefined,
+        person: record.person,
+        scope: record.scope,
+        visibility: record.visibility,
+      };
+    });
+  } catch (error) {
+    console.error(`Error fetching locations for person "${personSlug}":`, error);
+    return [];
+  }
 }
 
 // Fetch all persons

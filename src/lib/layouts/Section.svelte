@@ -13,7 +13,6 @@
   export let spacing: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
   export let withBorder = false;
   export let withBackground = false;
-  export let fullWidth = false; // If true, doesn't add Container wrapper
   export let className = '';
 
   const spacingClasses = {

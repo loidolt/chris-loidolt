@@ -66,7 +66,7 @@
 
 {#if showInstallButton}
   <button
-    on:click={installPWA}
+    onclick={installPWA}
     class="fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 transition-all hover:scale-105"
     style="
       background-color: var(--accent-primary);

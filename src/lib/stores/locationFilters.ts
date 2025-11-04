@@ -1,6 +1,7 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, readable } from 'svelte/store';
 import Fuse from 'fuse.js';
 import type { LocationPublic } from '$lib/pocketbase';
+import { MAP_CONFIG } from '$lib/config/map';
 
 // Filter state stores
 export const searchQuery = writable('');
@@ -11,19 +12,54 @@ export const hasImageFilter = writable<boolean | null>(null);
 // Base locations store (will be set by the page)
 export const allLocations = writable<LocationPublic[]>([]);
 
-// Derived store for filtered locations
+// Debounced search query - updates after user stops typing
+export const debouncedSearchQuery = readable('', (set) => {
+  let timeout: ReturnType<typeof setTimeout>;
+
+  const unsubscribe = searchQuery.subscribe((value) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      set(value);
+    }, MAP_CONFIG.SEARCH_DEBOUNCE_MS);
+  });
+
+  return () => {
+    clearTimeout(timeout);
+    unsubscribe();
+  };
+});
+
+// Memoized Fuse instance for better performance
+let fuseInstance: Fuse<LocationPublic> | null = null;
+let lastLocations: LocationPublic[] = [];
+
+function getFuseInstance(locations: LocationPublic[]): Fuse<LocationPublic> {
+  // Only recreate Fuse if locations changed
+  if (fuseInstance && lastLocations === locations) {
+    return fuseInstance;
+  }
+
+  lastLocations = locations;
+  fuseInstance = new Fuse(locations, {
+    keys: ['name', 'description', 'category', 'categories'],
+    threshold: MAP_CONFIG.SEARCH_THRESHOLD,
+    ignoreLocation: true, // Don't weight by position in string
+    minMatchCharLength: 2, // Minimum characters to match
+  });
+
+  return fuseInstance;
+}
+
+// Derived store for filtered locations with debounced search
 export const filteredLocations = derived(
-  [allLocations, searchQuery, selectedCategories, privacyFilter, hasImageFilter],
-  ([$allLocations, $searchQuery, $selectedCategories, $privacyFilter, $hasImageFilter]) => {
+  [allLocations, debouncedSearchQuery, selectedCategories, privacyFilter, hasImageFilter],
+  ([$allLocations, $debouncedSearchQuery, $selectedCategories, $privacyFilter, $hasImageFilter]) => {
     let filtered = $allLocations;
 
-    // Apply search filter
-    if ($searchQuery) {
-      const fuse = new Fuse(filtered, {
-        keys: ['name', 'description', 'category', 'categories'],
-        threshold: 0.3,
-      });
-      filtered = fuse.search($searchQuery).map((result) => result.item);
+    // Apply search filter with debounced query
+    if ($debouncedSearchQuery.trim()) {
+      const fuse = getFuseInstance(filtered);
+      filtered = fuse.search($debouncedSearchQuery).map((result) => result.item);
     }
 
     // Apply category filter (multi-select)
@@ -91,10 +127,10 @@ export const filterKey = derived(
 
 // Derived store for active filter count
 export const activeFilterCount = derived(
-  [searchQuery, selectedCategories, privacyFilter, hasImageFilter],
-  ([$searchQuery, $selectedCategories, $privacyFilter, $hasImageFilter]) => {
+  [debouncedSearchQuery, selectedCategories, privacyFilter, hasImageFilter],
+  ([$debouncedSearchQuery, $selectedCategories, $privacyFilter, $hasImageFilter]) => {
     let count = 0;
-    if ($searchQuery) count++;
+    if ($debouncedSearchQuery.trim()) count++;
     if ($selectedCategories.size > 0) count++;
     if ($privacyFilter !== 'all') count++;
     if ($hasImageFilter !== null) count++;

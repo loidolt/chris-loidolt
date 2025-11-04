@@ -23,7 +23,7 @@
   <meta name="description" content="Interactive topographic map showing points of interest and locations." />
 </svelte:head>
 
-<div class="h-[calc(100vh-3.5rem)] w-full">
+<div class="h-[calc(100dvh-3.5rem)] w-full">
   {#if data.error}
     <div class="flex h-full items-center justify-center">
       <div class="text-center">

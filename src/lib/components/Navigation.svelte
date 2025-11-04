@@ -76,7 +76,7 @@
 
     <!-- Theme Toggle -->
     <button
-      on:click={toggleTheme}
+      onclick={toggleTheme}
       class="h-14 px-4 inline-flex items-center justify-center text-sm font-medium transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label="Toggle theme"
       type="button"
@@ -93,7 +93,7 @@
   <nav class="md:hidden flex items-center justify-between h-14 px-4" aria-label="Main navigation">
     <!-- Mobile Menu Button -->
     <button
-      on:click={() => (isMobileMenuOpen = !isMobileMenuOpen)}
+      onclick={() => (isMobileMenuOpen = !isMobileMenuOpen)}
       class="inline-flex items-center justify-center h-10 w-10 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
       aria-expanded={isMobileMenuOpen}
@@ -113,7 +113,7 @@
 
     <!-- Theme Toggle -->
     <button
-      on:click={toggleTheme}
+      onclick={toggleTheme}
       class="inline-flex items-center justify-center h-10 w-10 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label="Toggle theme"
       type="button"
@@ -131,7 +131,7 @@
     <!-- Backdrop -->
     <button
       class="md:hidden fixed inset-0 z-40 bg-black/50"
-      on:click={() => (isMobileMenuOpen = false)}
+      onclick={() => (isMobileMenuOpen = false)}
       transition:fade={{ duration: 200 }}
       aria-label="Close menu"
       type="button"

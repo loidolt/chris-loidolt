@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3050",
+    "dev:local": "bash scripts/dev-local.sh",
     "build": "vite build",
     "preview": "vite preview",
     "start": "node build",
@@ -26,6 +27,8 @@
     "docker:rebuild": "docker compose up -d --build",
     "docker:clean": "docker compose down -v && rm -rf pb_data",
     "docker:pocketbase": "docker compose exec pocketbase sh",
+    "pocketbase:setup": "bash scripts/setup-pocketbase-local.sh",
+    "pocketbase:local": "./pocketbase_local/pocketbase serve --http=127.0.0.1:8090 --dir=pb_data",
     "pocketbase:init": "sh scripts/init-pocketbase.sh"
   },
   "dependencies": {

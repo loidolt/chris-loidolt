@@ -17,7 +17,15 @@ Built with **SvelteKit 2.0** using Svelte 5, optimized for modern web deployment
 
 ### Development
 
-**Docker Compose (Recommended):**
+> **See `LOCAL_DEVELOPMENT.md`** for detailed guide on choosing between Docker and Local modes.
+
+**Local Mode (Recommended for Active Development):**
+- `npm run dev:local` - Start PocketBase + SvelteKit together (native, fast HMR)
+- `npm run pocketbase:setup` - One-time: Download PocketBase binary
+- `npm run pocketbase:local` - Run just PocketBase locally
+- Fast Vite HMR, better performance, shared `pb_data/` with Docker
+
+**Docker Compose:**
 - `npm run docker:up` - Start PocketBase + SvelteKit together
 - `npm run docker:down` - Stop all services
 - `npm run docker:logs` - View logs from all services

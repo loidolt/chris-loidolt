@@ -9,6 +9,13 @@ dotenv.config({ path: ".env.local" });
 dotenv.config(); // Also load .env as fallback
 
 export default defineConfig({
+  optimizeDeps: {
+    exclude: ['leaflet', 'leaflet-draw', 'leaflet.markercluster'],
+  },
+  ssr: {
+    // Don't bundle Leaflet for SSR - it requires browser window object
+    external: ['leaflet', 'leaflet-draw', 'leaflet.markercluster'],
+  },
   plugins: [
     tailwindcss(),
     sveltekit(),
@@ -82,6 +89,10 @@ export default defineConfig({
   ],
   server: {
     port: 3050,
+    host: true, // Listen on all network interfaces (needed for Docker)
+    watch: {
+      usePolling: true, // Needed for Docker volume mounts
+    },
     fs: {
       allow: [".."],
     },

@@ -2,17 +2,19 @@ version: '3.8'
 
 services:
   # PocketBase - Backend CMS
+  # Using community image - keep version in sync with local binary
+  # Local binary version: 0.31.0 (see scripts/setup-pocketbase-local.sh)
   pocketbase:
-    image: ghcr.io/muchobien/pocketbase:latest
+    image: ghcr.io/muchobien/pocketbase:0.31.0
     container_name: pocketbase
     restart: unless-stopped
     ports:
       - "8090:8090"
     volumes:
       # Persist PocketBase data
-      - ./pb_data:/pb/pb_data
+      - ./pb_data:/pb_data
       # Optionally mount migrations
-      - ./pb_migrations:/pb/pb_migrations:ro
+      - ./pb_migrations:/pb_migrations:ro
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8090/api/health"]
       interval: 10s

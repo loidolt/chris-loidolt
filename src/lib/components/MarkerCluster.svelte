@@ -2,22 +2,30 @@
   import { onMount, onDestroy } from 'svelte';
   import { browser } from '$app/environment';
   import type { LocationPublic } from '$lib/pocketbase';
+  import type { LeafletModule } from '$lib/types/map';
+  import type { Map as LeafletMap } from 'leaflet';
+  import {
+    createCustomIcon,
+    getLocationCoordinates,
+    hasValidCoordinates,
+  } from '$lib/mapUtils';
+  import { getClusterRadius } from '$lib/config/map';
 
-  export let map: any;
-  export let L: any;
-  export let locations: LocationPublic[];
-  export let createCustomIcon: any;
-  export let fuzzCoordinates: any;
-  export let isLocationLocked: (location: LocationPublic) => boolean;
-  export let onLocationClick: (location: LocationPublic) => void;
-  export let maxClusterRadius: (zoom: number) => number = (zoom) => {
-    // Adaptive cluster radius based on zoom level
-    if (zoom <= 3) return 400;
-    if (zoom <= 5) return 300;
-    if (zoom <= 7) return 200;
-    if (zoom <= 10) return 120;
-    return 80;
+  type Props = {
+    map: LeafletMap;
+    L: LeafletModule;
+    locations: LocationPublic[];
+    isLocationLocked: (location: LocationPublic) => boolean;
+    onLocationClick: (location: LocationPublic) => void;
   };
+
+  let {
+    map,
+    L,
+    locations,
+    isLocationLocked,
+    onLocationClick,
+  }: Props = $props();
 
   let markerClusterGroup: any;
   let MarkerClusterGroup: any;
@@ -30,9 +38,9 @@
     await import('leaflet.markercluster/dist/MarkerCluster.css');
     await import('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
-    // Create marker cluster group
+    // Create marker cluster group with adaptive clustering
     markerClusterGroup = (L as any).markerClusterGroup({
-      maxClusterRadius,
+      maxClusterRadius: getClusterRadius,
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
       zoomToBoundsOnClick: true,
@@ -64,9 +72,11 @@
   });
 
   // Update markers when locations change
-  $: if (browser && markerClusterGroup && locations) {
-    updateMarkers();
-  }
+  $effect(() => {
+    if (browser && markerClusterGroup && locations) {
+      updateMarkers();
+    }
+  });
 
   function updateMarkers() {
     if (!markerClusterGroup || !L) return;
@@ -76,16 +86,11 @@
 
     // Add markers for each location
     locations.forEach((location) => {
-      if (!location.latitude || !location.longitude) return;
+      if (!hasValidCoordinates(location)) return;
 
       const isLocked = isLocationLocked(location);
-
-      // Use fuzzy coordinates for locked locations
-      const [lat, lng] = isLocked
-        ? fuzzCoordinates(location.latitude, location.longitude, location.id)
-        : [location.latitude, location.longitude];
-
-      const icon = createCustomIcon(location.category, isLocked);
+      const [lat, lng] = getLocationCoordinates(location, isLocked);
+      const icon = createCustomIcon(L, location.category, isLocked);
       const marker = L.marker([lat, lng], { icon });
 
       // Add click handler
